@@ -23,7 +23,25 @@
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--demo-border) var(--demo-bg);
+  }
+  html::-webkit-scrollbar {
+    width: 10px;
+  }
+  html::-webkit-scrollbar-track {
+    background: var(--demo-bg);
+  }
+  html::-webkit-scrollbar-thumb {
+    background-color: var(--demo-border);
+    border-radius: 9999px;
+    border: 2px solid var(--demo-bg);
+  }
+  html::-webkit-scrollbar-thumb:hover {
+    background-color: var(--demo-accent);
+  }
   body {
     background-color: var(--demo-bg);
     color: var(--demo-text);
@@ -102,6 +120,12 @@
     opacity: 1;
     transform: none;
   }
+}
+
+/* Panel /dashboard — toast de "guardado" (SavedToast.tsx) */
+@keyframes dashboard-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
 
 /* Accesibilidad: si el usuario pide menos movimiento, no animamos nada. */
