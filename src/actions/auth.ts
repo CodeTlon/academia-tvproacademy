@@ -13,7 +13,9 @@ export type AuthState = { error?: string } | undefined
 export async function signIn(prevState: unknown, formData: FormData): Promise<AuthState> {
   const email    = String(formData.get('email') ?? '').trim()
   const password = String(formData.get('password') ?? '')
-  const next     = String(formData.get('next') ?? '/dashboard')
+  const rawNext  = String(formData.get('next') ?? '/dashboard')
+  // Solo rutas internas del panel: nunca redirigir a un host externo.
+  const next     = rawNext.startsWith('/dashboard') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
 
   if (!email || !password) {
     return { error: 'Completá todos los campos.' }

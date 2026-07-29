@@ -29,7 +29,7 @@ export default function CambiarPasswordForm({ forced }: { forced: boolean }) {
       <p className="text-sm text-zinc-500 mb-6">
         {forced
           ? 'Tu contraseña es temporal — elegí una nueva para poder seguir usando el panel.'
-          : 'Vas a tener que volver a iniciar sesión con la contraseña nueva.'}
+          : 'Tu sesión actual sigue activa; usá la contraseña nueva la próxima vez que inicies sesión.'}
       </p>
 
       {state?.error && (

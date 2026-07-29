@@ -1,6 +1,8 @@
 'use client'
 
+import { Suspense } from 'react'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import { useFormState, useFormStatus } from 'react-dom'
 import { signIn } from '@/actions/auth'
 import { Loader2, LogIn, AlertCircle } from 'lucide-react'
@@ -23,8 +25,15 @@ function SubmitButton() {
   )
 }
 
-export default function LoginPage() {
+// Solo rutas internas del panel: evita que un `?next=` manipulado mande a otro sitio.
+function safeNext(next: string | null): string {
+  if (!next || !next.startsWith('/dashboard') || next.startsWith('//')) return '/dashboard'
+  return next
+}
+
+function LoginForm() {
   const [state, action] = useFormState(signIn, undefined)
+  const next = safeNext(useSearchParams().get('next'))
 
   return (
     <div className="w-full max-w-sm">
@@ -55,6 +64,7 @@ export default function LoginPage() {
         )}
 
         <form action={action} className="space-y-4">
+          <input type="hidden" name="next" value={next} />
           <div>
             <label
               htmlFor="email"
@@ -93,5 +103,13 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   )
 }
