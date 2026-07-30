@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Phone, Mail } from 'lucide-react'
-import { demoConfig } from '@/lib/demo-config'
+import { getSiteSettings } from '@/lib/site-settings'
 
 const links = [
   { label: 'Inicio', href: '/' },
@@ -11,8 +11,8 @@ const links = [
   { label: 'Contacto', href: '/contacto' },
 ]
 
-export default function Footer() {
-  const { business } = demoConfig
+export default async function Footer() {
+  const { business } = await getSiteSettings()
 
   return (
     <footer className="w-full bg-[#030f1e] border-t border-white/10 relative overflow-hidden">

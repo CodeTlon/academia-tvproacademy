@@ -6,15 +6,34 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { signOut } from '@/actions/auth'
 import SavedToast from '@/components/dashboard/SavedToast'
-import { LayoutDashboard, LogOut, ChevronRight, Menu, X } from 'lucide-react'
+import {
+  LayoutDashboard, LogOut, ChevronRight, Menu, X,
+  Sparkles, Users2, Dumbbell, MapPinned, Building2, Newspaper,
+} from 'lucide-react'
 
-// Etapas siguientes van agregando secciones acá (Contenido, Blog, Alumnos,
-// Agenda, Usuarios…) a medida que existen — sin links muertos mientras tanto.
+// Etapas siguientes van agregando secciones acá (Alumnos, Agenda, Usuarios…)
+// a medida que existen — sin links muertos mientras tanto.
 const navSections = [
   {
     label: 'Panel',
     links: [
       { href: '/dashboard', label: 'Inicio', icon: LayoutDashboard, exact: true },
+    ],
+  },
+  {
+    label: 'Contenido',
+    links: [
+      { href: '/dashboard/contenido/hero', label: 'Hero', icon: Sparkles },
+      { href: '/dashboard/contenido/nosotros', label: 'Nosotros', icon: Users2 },
+      { href: '/dashboard/contenido/metodologia', label: 'Metodología', icon: Dumbbell },
+      { href: '/dashboard/contenido/instalaciones', label: 'Instalaciones', icon: MapPinned },
+      { href: '/dashboard/contenido/negocio', label: 'Negocio y contacto', icon: Building2 },
+    ],
+  },
+  {
+    label: 'Blog',
+    links: [
+      { href: '/dashboard/blog', label: 'Artículos', icon: Newspaper },
     ],
   },
 ]
@@ -80,15 +99,20 @@ export default function DashboardPanelLayout({
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="px-4 py-5 border-b border-slate-800 flex items-start justify-between gap-2">
-          <Link href="/dashboard" className="flex items-center gap-3">
+          <Link href="/dashboard" className="flex items-center gap-2.5">
             <Image
               src="/images/logo-mark.webp"
-              alt="TV Pro Academy"
-              width={100}
-              height={32}
-              className="h-8 w-auto object-contain"
-              sizes="100px"
+              alt=""
+              width={36}
+              height={36}
+              className="h-9 w-9 object-contain flex-shrink-0"
+              sizes="36px"
             />
+            <span className="text-sm font-bold text-slate-100 leading-tight">
+              TV Pro
+              <br />
+              Academy
+            </span>
           </Link>
           <button
             type="button"

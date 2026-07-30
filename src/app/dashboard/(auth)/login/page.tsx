@@ -37,15 +37,20 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-sm">
-      <div className="flex justify-center mb-8">
+      <div className="flex items-center justify-center gap-3 mb-8">
         <Image
           src="/images/logo-mark.webp"
-          alt="TV Pro Academy"
-          width={160}
-          height={50}
-          className="h-12 w-auto object-contain"
-          sizes="160px"
+          alt=""
+          width={48}
+          height={48}
+          className="h-12 w-12 object-contain"
+          sizes="48px"
         />
+        <span className="text-xl font-bold text-zinc-900 leading-tight">
+          TV Pro
+          <br />
+          Academy
+        </span>
       </div>
 
       <div className="bg-white rounded-2xl p-8 shadow-lg border border-zinc-100">

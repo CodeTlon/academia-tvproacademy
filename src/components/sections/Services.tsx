@@ -1,13 +1,13 @@
 import Image from 'next/image'
 import * as LucideIcons from 'lucide-react'
-import { demoConfig } from '@/lib/demo-config'
+import { getSiteSettings } from '@/lib/site-settings'
 import Reveal from '@/components/Reveal'
 
 const resolveIcon = (name: string): React.ElementType =>
   (LucideIcons[name as keyof typeof LucideIcons] as React.ElementType) ?? LucideIcons.Sparkles
 
-export default function Services() {
-  const { content } = demoConfig
+export default async function Services() {
+  const { services, process: steps } = await getSiteSettings()
 
   return (
     <section id="entrenamiento" className="relative py-24 md:py-32 px-5 md:px-10 bg-[#030f1e]">
@@ -23,20 +23,22 @@ export default function Services() {
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {content.services.map((drill, i) => {
+          {services.map((drill, i) => {
             const Icon = resolveIcon(drill.icon)
             return (
               <Reveal key={drill.title} delay={i * 120}>
                 <div className="group bg-[#071424] border border-white/10 rounded-xl overflow-hidden hover:scale-[1.02] hover:border-[#f5bf00] transition-all duration-500 hover:shadow-[0_10px_40px_-10px_rgba(245,191,0,0.3)]">
-                  <div className="relative aspect-video overflow-hidden">
-                    <Image
-                      src={drill.image}
-                      alt={drill.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      quality={85}
-                      className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
+                  <div className="relative aspect-video overflow-hidden bg-[#0e1b2c]">
+                    {drill.image && (
+                      <Image
+                        src={drill.image}
+                        alt={drill.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        quality={85}
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-[#071424]/40 group-hover:bg-[#071424]/20 transition-colors" />
                   </div>
                   <div className="p-8">
@@ -54,7 +56,7 @@ export default function Services() {
         </div>
 
         <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-10">
-          {content.process.map((step, i) => (
+          {steps.map((step, i) => (
             <Reveal key={step.title} delay={i * 120}>
               <div className="relative pl-16">
                 <span className="absolute left-0 top-0 flex items-center justify-center w-12 h-12 rounded-full border-2 border-[#f5bf00] text-[#f5bf00] font-black text-lg">

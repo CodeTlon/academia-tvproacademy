@@ -1,11 +1,11 @@
 import { Check, Phone, MapPin, Clock } from 'lucide-react'
-import { demoConfig } from '@/lib/demo-config'
+import { getSiteSettings } from '@/lib/site-settings'
 import { waLink } from '@/lib/utils'
 import Reveal from '@/components/Reveal'
 import WhatsAppIcon from '@/components/icons/WhatsAppIcon'
 
-export default function Contact() {
-  const { business, content } = demoConfig
+export default async function Contact() {
+  const { business, facilities, schedule } = await getSiteSettings()
 
   return (
     <section id="contacto" className="min-h-screen flex items-center py-24 md:py-32 px-5 md:px-10 bg-[#030f1e]">
@@ -19,7 +19,7 @@ export default function Contact() {
             Si jugás en algún torneo y tu equipo necesita donde entrenar, comunicate con nosotros. Para que entrenes de la mejor manera.
           </p>
           <ul className="space-y-3 mb-10">
-            {content.facilities.map((item) => (
+            {facilities.map((item) => (
               <li key={item} className="flex items-center gap-3 text-[#d7e3fa] font-medium">
                 <Check size={20} className="text-[#f5bf00]" />
                 {item}
@@ -32,7 +32,7 @@ export default function Contact() {
               <span className="font-bold uppercase tracking-widest text-sm text-white">Horarios de Entrenamiento</span>
             </div>
             <ul className="space-y-1 pl-8">
-              {content.schedule.map((slot) => (
+              {schedule.map((slot) => (
                 <li key={slot.day} className="flex justify-between max-w-xs text-[#d2c5ab]">
                   <span>{slot.day}</span>
                   <span className="text-[#f5bf00] font-semibold">{slot.hours}</span>

@@ -1,10 +1,9 @@
 import { Check, ArrowRight } from 'lucide-react'
-import { demoConfig } from '@/lib/demo-config'
+import { getSiteSettings } from '@/lib/site-settings'
 import Reveal from '@/components/Reveal'
 
-export default function Hero() {
-  const { business, content } = demoConfig
-  const { hero } = content
+export default async function Hero() {
+  const { business, hero } = await getSiteSettings()
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center pt-32 pb-24 overflow-hidden">

@@ -89,6 +89,19 @@
     border-radius: var(--demo-radius);
   }
   .btn-outline:hover { background-color: var(--demo-accent); color: var(--demo-on-accent); }
+
+  /* HTML de artículos del blog (viene del editor Tiptap del dashboard) */
+  .prose-post > * + * { @apply mt-6; }
+  .prose-post h2 { @apply text-2xl font-bold mt-2; color: var(--demo-heading); }
+  .prose-post ul { @apply list-disc pl-6 space-y-2; }
+  .prose-post ol { @apply list-decimal pl-6 space-y-2; }
+  .prose-post blockquote {
+    @apply pl-4 italic;
+    border-left: 3px solid var(--demo-accent);
+    color: var(--demo-muted);
+  }
+  .prose-post a { color: var(--demo-accent); text-decoration: underline; }
+  .prose-post img, .prose-post video { @apply rounded-xl w-full; }
 }
 
 @layer utilities {

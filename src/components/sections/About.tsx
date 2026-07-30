@@ -1,14 +1,15 @@
 import Image from 'next/image'
 import * as LucideIcons from 'lucide-react'
 import { demoConfig } from '@/lib/demo-config'
+import { getSiteSettings } from '@/lib/site-settings'
 import Reveal from '@/components/Reveal'
 
 const resolveIcon = (name: string): React.ElementType =>
   (LucideIcons[name as keyof typeof LucideIcons] as React.ElementType) ?? LucideIcons.Sparkles
 
-export default function About() {
-  const { business, images, content } = demoConfig
-  const { about } = content
+export default async function About() {
+  const { images } = demoConfig
+  const { business, about } = await getSiteSettings()
 
   return (
     <>
