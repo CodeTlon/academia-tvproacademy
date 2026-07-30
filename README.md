@@ -1,6 +1,6 @@
-# CodeTlon Demo Template (Nivel 0)
+# TV Pro Academy
 
-Template para demos visuales de clientes. Sin backend, sin lógica. Solo UI.
+Proyecto real (ex demo, aprobado por cliente). Nace del CodeTlon Demo Template, ahora con dashboard admin y auth Supabase propios.
 
 ## Uso rápido
 

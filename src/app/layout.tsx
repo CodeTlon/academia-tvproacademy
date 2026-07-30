@@ -28,9 +28,26 @@ const FONT_MAP: Record<string, string> = {
   'Nunito': '--font-nunito',
 }
 
+const title = `${demoConfig.business.displayName} | Entrená Como un Profesional`
+
 export const metadata: Metadata = {
-  title: `${demoConfig.business.displayName} | Entrená Como un Profesional`,
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tvproacademy.com.ar',
+  ),
+  title,
   description: demoConfig.business.tagline,
+  openGraph: {
+    title,
+    description: demoConfig.business.tagline,
+    type: 'website',
+    locale: 'es_AR',
+    images: [{ url: '/images/hero.webp', width: 1200, height: 630, alt: title }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description: demoConfig.business.tagline,
+  },
 }
 
 const RADIUS_MAP: Record<string, [string, string]> = {
