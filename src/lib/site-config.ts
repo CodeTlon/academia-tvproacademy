@@ -1,11 +1,11 @@
 // ============================================================
-// ARCHIVO PRINCIPAL DE CONFIGURACIÓN DE LA DEMO
-// Editá solo este archivo para personalizar toda la demo.
+// ARCHIVO PRINCIPAL DE CONFIGURACIÓN DEL SITIO
+// Editá solo este archivo para personalizar el sitio (fallback de site_settings).
 // Diseño leído 1:1 de client-assets/tvproacademy (Stitch export
 // "landing_page_tvpro_academy" + DESIGN.md "Gold Strike Performance").
 // ============================================================
 
-export const demoConfig = {
+export const siteConfig = {
 
   // ── Información del negocio ──────────────────────────────
   business: {
@@ -140,4 +140,4 @@ export const demoConfig = {
   },
 }
 
-export type DemoConfig = typeof demoConfig
+export type SiteConfig = typeof siteConfig

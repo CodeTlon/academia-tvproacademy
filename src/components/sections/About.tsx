@@ -1,15 +1,15 @@
 import Image from 'next/image'
 import * as LucideIcons from 'lucide-react'
-import { demoConfig } from '@/lib/demo-config'
 import { getSiteSettings } from '@/lib/site-settings'
+import { focalImageProps } from '@/lib/image-focal'
 import Reveal from '@/components/Reveal'
 
 const resolveIcon = (name: string): React.ElementType =>
   (LucideIcons[name as keyof typeof LucideIcons] as React.ElementType) ?? LucideIcons.Sparkles
 
 export default async function About() {
-  const { images } = demoConfig
   const { business, about } = await getSiteSettings()
+  const fp = focalImageProps(about.image)
 
   return (
     <>
@@ -33,12 +33,13 @@ export default async function About() {
             <div className="relative bg-[#071424]/70 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-2xl shadow-black/40 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
               <div className="relative aspect-[4/5] rounded-xl overflow-hidden">
                 <Image
-                  src={images.about}
+                  src={fp.src}
                   alt={`${about.founderName}, fundador y entrenador de ${business.name}`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   quality={90}
                   priority
+                  style={fp.style}
                   className="object-cover"
                 />
                 <div className="absolute inset-4 border border-white/20 rounded-lg pointer-events-none" />

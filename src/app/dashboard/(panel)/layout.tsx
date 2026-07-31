@@ -7,17 +7,23 @@ import { usePathname } from 'next/navigation'
 import { signOut } from '@/actions/auth'
 import SavedToast from '@/components/dashboard/SavedToast'
 import {
-  LayoutDashboard, LogOut, ChevronRight, Menu, X,
-  Sparkles, Users2, Dumbbell, MapPinned, Building2, Newspaper,
+  LayoutDashboard, LogOut, ChevronRight, Menu, X, KeyRound,
+  Sparkles, Users2, Dumbbell, MapPinned, Building2, Newspaper, GraduationCap,
 } from 'lucide-react'
 
-// Etapas siguientes van agregando secciones acá (Alumnos, Agenda, Usuarios…)
+// Etapas siguientes van agregando secciones acá (Agenda, Usuarios…)
 // a medida que existen — sin links muertos mientras tanto.
 const navSections = [
   {
     label: 'Panel',
     links: [
       { href: '/dashboard', label: 'Inicio', icon: LayoutDashboard, exact: true },
+    ],
+  },
+  {
+    label: 'Alumnos',
+    links: [
+      { href: '/dashboard/alumnos', label: 'Alumnos', icon: GraduationCap },
     ],
   },
   {
@@ -141,9 +147,17 @@ export default function DashboardPanelLayout({
         </nav>
 
         <div
-          className="px-3 py-4 border-t border-slate-800"
+          className="px-3 py-4 border-t border-slate-800 space-y-1"
           style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))' }}
         >
+          <Link
+            href="/dashboard/cambiar-password"
+            onClick={() => setNavOpen(false)}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all"
+          >
+            <KeyRound size={16} className="flex-shrink-0" />
+            Cambiar contraseña
+          </Link>
           <form action={signOut}>
             <button
               type="submit"

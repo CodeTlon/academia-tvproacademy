@@ -47,14 +47,14 @@ export default function HeroForm({ settings }: { settings: HeroSettings }) {
           name="videoDesktop"
           defaultValue={settings.videoDesktop}
           folder="hero"
-          hint="MP4, hasta 25MB. Se ve en pantallas de 768px o más."
+          hint="MP4 o MOV, hasta 25MB. Se ve en pantallas de 768px o más."
         />
         <VideoUpload
           label="Video de fondo (mobile)"
           name="videoMobile"
           defaultValue={settings.videoMobile}
           folder="hero"
-          hint="MP4, hasta 25MB. Exportalo liviano: 1080p o menos, unos segundos en loop alcanza."
+          hint="MP4 o MOV, hasta 25MB. Exportalo liviano: 1080p o menos, unos segundos en loop alcanza."
         />
       </div>
 

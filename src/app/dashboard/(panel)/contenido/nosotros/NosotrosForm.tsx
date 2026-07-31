@@ -2,7 +2,7 @@
 
 import { useFormState } from 'react-dom'
 import { updateSiteSettings } from '@/actions/settings'
-import { TextField, TextArea, ListField } from '@/components/dashboard/Field'
+import { TextField, TextArea, ListField, ImageUpload } from '@/components/dashboard/Field'
 import SaveButton from '@/components/dashboard/SaveButton'
 import InlineSavedBanner from '@/components/dashboard/InlineSavedBanner'
 import { AlertCircle } from 'lucide-react'
@@ -38,6 +38,15 @@ export default function NosotrosForm({ settings }: { settings: AboutSettings }) 
       <TextArea label="Texto" name="body" defaultValue={settings.body} rows={5} placeholder="Sumate a TVPro y empezá a mejorar tu juego..." />
 
       <TextField label="Badge" name="badge" defaultValue={settings.badge} placeholder="Experiencia Profesional" />
+
+      <ImageUpload
+        label="Foto del fundador"
+        name="image"
+        defaultValue={settings.image}
+        folder="nosotros"
+        hint="Se muestra en la sección Nosotros del sitio."
+        previewAspect="4 / 5"
+      />
 
       <ListField
         label="Valores"

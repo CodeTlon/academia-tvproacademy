@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    /* Defaults (los reescribe layout.tsx desde demo-config.ts). Esquema semántico:
+    /* Defaults (los reescribe layout.tsx desde site-config.ts). Esquema semántico:
        cada rol existe para que el MISMO componente funcione en claro y oscuro. */
-    --demo-bg: #ffffff;
-    --demo-surface: #f5f0e8;        /* cards y secciones alternas */
-    --demo-surface-alt: #ffffff;    /* segundo tono / cards destacadas / inputs */
-    --demo-heading: #1a1a1a;
-    --demo-text: #1a1a1a;
-    --demo-muted: #6b6b6b;          /* texto secundario (color real, no opacity) */
-    --demo-border: #e7ddcf;
-    --demo-accent: #c8a96e;         /* CTA / highlight */
-    --demo-on-accent: #1a1a1a;      /* texto sobre el accent */
-    --demo-structural: #1a1a1a;     /* bandas (navbar / footer / stats) */
-    --demo-on-structural: #ffffff;
-    --demo-font: Inter;
-    --demo-radius: 0.75rem;         /* botones, chips, inputs, cards chicas */
-    --demo-radius-lg: 1rem;         /* cards grandes, frames de imagen */
+    --brand-bg: #ffffff;
+    --brand-surface: #f5f0e8;        /* cards y secciones alternas */
+    --brand-surface-alt: #ffffff;    /* segundo tono / cards destacadas / inputs */
+    --brand-heading: #1a1a1a;
+    --brand-text: #1a1a1a;
+    --brand-muted: #6b6b6b;          /* texto secundario (color real, no opacity) */
+    --brand-border: #e7ddcf;
+    --brand-accent: #c8a96e;         /* CTA / highlight */
+    --brand-on-accent: #1a1a1a;      /* texto sobre el accent */
+    --brand-structural: #1a1a1a;     /* bandas (navbar / footer / stats) */
+    --brand-on-structural: #ffffff;
+    --brand-font: Inter;
+    --brand-radius: 0.75rem;         /* botones, chips, inputs, cards chicas */
+    --brand-radius-lg: 1rem;         /* cards grandes, frames de imagen */
   }
 
   * { box-sizing: border-box; }
   html {
     scroll-behavior: smooth;
     scrollbar-width: thin;
-    scrollbar-color: var(--demo-border) var(--demo-bg);
+    scrollbar-color: var(--brand-border) var(--brand-bg);
   }
   html::-webkit-scrollbar {
     width: 10px;
   }
   html::-webkit-scrollbar-track {
-    background: var(--demo-bg);
+    background: var(--brand-bg);
   }
   html::-webkit-scrollbar-thumb {
-    background-color: var(--demo-border);
+    background-color: var(--brand-border);
     border-radius: 9999px;
-    border: 2px solid var(--demo-bg);
+    border: 2px solid var(--brand-bg);
   }
   html::-webkit-scrollbar-thumb:hover {
-    background-color: var(--demo-accent);
+    background-color: var(--brand-accent);
   }
   body {
-    background-color: var(--demo-bg);
-    color: var(--demo-text);
-    font-family: var(--demo-font), sans-serif;
+    background-color: var(--brand-bg);
+    color: var(--brand-text);
+    font-family: var(--brand-font), sans-serif;
   }
 }
 
@@ -53,16 +53,16 @@
   /* Etiqueta "eyebrow" reutilizable (antes era un bloque inline repetido 10 veces) */
   .eyebrow {
     @apply text-sm font-semibold uppercase tracking-[0.3em] mb-3;
-    color: var(--demo-accent);
+    color: var(--brand-accent);
   }
 
   .section-title {
     @apply text-3xl md:text-4xl font-bold mb-4;
-    color: var(--demo-heading);
+    color: var(--brand-heading);
   }
   .section-subtitle {
     @apply text-lg max-w-2xl;
-    color: var(--demo-muted);
+    color: var(--brand-muted);
   }
   .section-pad { @apply py-20 md:py-28; }
 
@@ -70,37 +70,37 @@
      data-cards en <html>, seteado desde style.cards del config. */
   .card {
     @apply p-6 transition-all duration-200;
-    background-color: var(--demo-surface);
-    border-radius: var(--demo-radius-lg);
+    background-color: var(--brand-surface);
+    border-radius: var(--brand-radius-lg);
   }
 
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold transition-all duration-200;
-    background-color: var(--demo-accent);
-    color: var(--demo-on-accent);
-    border-radius: var(--demo-radius);
+    background-color: var(--brand-accent);
+    color: var(--brand-on-accent);
+    border-radius: var(--brand-radius);
   }
   .btn-primary:hover { opacity: 0.9; }
 
   .btn-outline {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold border-2 transition-all duration-200;
-    border-color: var(--demo-accent);
-    color: var(--demo-accent);
-    border-radius: var(--demo-radius);
+    border-color: var(--brand-accent);
+    color: var(--brand-accent);
+    border-radius: var(--brand-radius);
   }
-  .btn-outline:hover { background-color: var(--demo-accent); color: var(--demo-on-accent); }
+  .btn-outline:hover { background-color: var(--brand-accent); color: var(--brand-on-accent); }
 
   /* HTML de artículos del blog (viene del editor Tiptap del dashboard) */
   .prose-post > * + * { @apply mt-6; }
-  .prose-post h2 { @apply text-2xl font-bold mt-2; color: var(--demo-heading); }
+  .prose-post h2 { @apply text-2xl font-bold mt-2; color: var(--brand-heading); }
   .prose-post ul { @apply list-disc pl-6 space-y-2; }
   .prose-post ol { @apply list-decimal pl-6 space-y-2; }
   .prose-post blockquote {
     @apply pl-4 italic;
-    border-left: 3px solid var(--demo-accent);
-    color: var(--demo-muted);
+    border-left: 3px solid var(--brand-accent);
+    color: var(--brand-muted);
   }
-  .prose-post a { color: var(--demo-accent); text-decoration: underline; }
+  .prose-post a { color: var(--brand-accent); text-decoration: underline; }
   .prose-post img, .prose-post video { @apply rounded-xl w-full; }
   .prose-post iframe { @apply rounded-xl w-full border-0; aspect-ratio: 16 / 9; height: auto; }
 }
@@ -112,14 +112,14 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   }
   [data-cards='border'] .card {
-    border: 1px solid var(--demo-border);
+    border: 1px solid var(--brand-border);
   }
   [data-cards='border'] .card:hover {
-    border-color: var(--demo-accent);
+    border-color: var(--brand-accent);
   }
   [data-cards='glass'] .card {
-    border: 1px solid var(--demo-border);
-    background-color: color-mix(in srgb, var(--demo-surface) 70%, transparent);
+    border: 1px solid var(--brand-border);
+    background-color: color-mix(in srgb, var(--brand-surface) 70%, transparent);
     backdrop-filter: blur(12px);
   }
 

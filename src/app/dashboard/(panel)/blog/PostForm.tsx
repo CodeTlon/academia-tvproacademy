@@ -236,7 +236,7 @@ function ContentEditor({ editor }: { editor: Editor | null }) {
 
         <label className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-900" title={`Subir video propio (máx. ${Math.round(MAX_INLINE_VIDEO_BYTES / (1024 * 1024))}MB)`}>
           {busyVideo ? <Loader2 size={14} className="animate-spin" /> : <VideoIcon size={14} />}
-          <input type="file" accept="video/mp4" onChange={pickVideo} disabled={busyVideo} className="hidden" />
+          <input type="file" accept="video/mp4,video/quicktime,video/*" onChange={pickVideo} disabled={busyVideo} className="hidden" />
         </label>
 
         <ToolbarBtn onClick={() => { setShowYt(!showYt); setErr(null) }} active={showYt} title="Insertar video de YouTube">

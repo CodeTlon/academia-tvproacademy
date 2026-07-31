@@ -344,8 +344,8 @@ export function VideoUpload({
         <div className="flex items-center gap-3">
           <label className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors bg-gold/10 text-gold-dark border border-gold/30 hover:bg-gold/20">
             {busy ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
-            {busy ? 'Subiendo…' : 'Subir MP4'}
-            <input type="file" accept="video/mp4" onChange={onPick} disabled={busy} className="hidden" />
+            {busy ? 'Subiendo…' : 'Subir video'}
+            <input type="file" accept="video/mp4,video/quicktime,video/*" onChange={onPick} disabled={busy} className="hidden" />
           </label>
           {url && (
             <button

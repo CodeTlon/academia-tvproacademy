@@ -40,7 +40,7 @@ export async function updateSiteSettings(
 
     // Las settings "lista pura" (services, facilities, process, schedule) usan
     // un único ListField/StringList — su value en DB es el array tal cual, no
-    // { fieldName: [...] }, para calzar 1:1 con el fallback de demoConfig (ver
+    // { fieldName: [...] }, para calzar 1:1 con el fallback de siteConfig (ver
     // FALLBACK en lib/site-settings.ts). Las settings "objeto" (business, hero,
     // about) mandan 2+ campos y se arman como objeto.
     // Los campos "$ACTION_*"/"$ACTION_KEY" los inyecta React al usar una server

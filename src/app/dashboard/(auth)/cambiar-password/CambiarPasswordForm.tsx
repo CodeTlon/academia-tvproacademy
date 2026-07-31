@@ -1,8 +1,9 @@
 'use client'
 
+import Link from 'next/link'
 import { useFormState, useFormStatus } from 'react-dom'
 import { changePassword } from '@/actions/auth'
-import { Loader2, KeyRound, AlertCircle } from 'lucide-react'
+import { Loader2, KeyRound, AlertCircle, ArrowLeft } from 'lucide-react'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -23,6 +24,11 @@ export default function CambiarPasswordForm({ forced }: { forced: boolean }) {
 
   return (
     <div className="bg-white rounded-2xl p-8 shadow-lg border border-zinc-100">
+      {!forced && (
+        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-6">
+          <ArrowLeft size={14} /> Volver al panel
+        </Link>
+      )}
       <h1 className="text-xl font-bold text-zinc-900 mb-1">
         {forced ? 'Elegí una contraseña nueva' : 'Cambiar contraseña'}
       </h1>

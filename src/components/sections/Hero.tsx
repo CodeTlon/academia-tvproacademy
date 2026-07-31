@@ -17,8 +17,11 @@ export default async function Hero() {
           className="absolute inset-0 w-full h-full object-cover object-center opacity-40"
           key={`${hero.videoDesktop}-${hero.videoMobile}`}
         >
-          <source src={hero.videoDesktop} type="video/mp4" media="(min-width: 768px)" />
-          <source src={hero.videoMobile} type="video/mp4" />
+          {/* Sin `type` fijo: el navegador infiere el MIME real desde el Content-Type
+              que devuelve Storage — necesario porque en iOS el video grabado por
+              cámara sube como .mov (video/quicktime), no .mp4. */}
+          <source src={hero.videoDesktop} media="(min-width: 768px)" />
+          <source src={hero.videoMobile} />
         </video>
         <div className="absolute inset-0 bg-gradient-to-t from-[#071424] via-[#071424]/80 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#071424] via-[#071424]/60 to-transparent" />
