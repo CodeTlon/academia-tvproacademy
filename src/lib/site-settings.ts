@@ -32,9 +32,19 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
 
   const result = { ...FALLBACK }
   for (const row of data ?? []) {
-    if (row.key in result) {
-      ;(result as Record<string, unknown>)[row.key] = row.value
-    }
+    if (!(row.key in result)) continue
+    const current = (result as Record<string, unknown>)[row.key]
+    // Merge en vez de reemplazo directo: si el fallback en código agrega un
+    // campo nuevo a una setting "objeto" (ej: `image` en `about`) y la fila
+    // guardada en site_settings es de antes de ese campo existir, un
+    // reemplazo directo lo perdería — el campo nuevo quedaría undefined hasta
+    // que alguien vuelva a guardar ese formulario. Los arrays (services,
+    // facilities, process, schedule) sí se reemplazan enteros: no tiene
+    // sentido "mergear" por índice.
+    const isMergeableObject = (v: unknown): v is Record<string, unknown> =>
+      v !== null && typeof v === 'object' && !Array.isArray(v)
+    ;(result as Record<string, unknown>)[row.key] =
+      isMergeableObject(current) && isMergeableObject(row.value) ? { ...current, ...row.value } : row.value
   }
   return result
 })
