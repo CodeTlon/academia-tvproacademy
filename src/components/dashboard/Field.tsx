@@ -7,6 +7,7 @@ import { uploadDirectToStorage, deleteFromStorage } from '@/lib/client-upload'
 import { resizeImageFile } from '@/lib/client-image-resize'
 import { MAX_IMAGE_BYTES, MAX_VIDEO_BYTES } from '@/lib/upload-limits'
 import { friendlyError } from '@/lib/friendly-error'
+import FocalPicker from '@/components/dashboard/FocalPicker'
 
 export const fieldLabel = 'block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5'
 export const fieldInput =
@@ -119,6 +120,7 @@ export function ImageUpload({
   compact,
   value,
   onChangeUrl,
+  previewAspect = '16 / 9',
 }: {
   label?: string
   /** Requerido en modo standalone (hidden input propio). Omitir en modo controlado (dentro de ListField). */
@@ -130,6 +132,8 @@ export function ImageUpload({
   /** Modo controlado: si se pasan value/onChangeUrl, el padre maneja el valor y no se renderiza hidden input propio. */
   value?: string
   onChangeUrl?: (url: string) => void
+  /** Aspect ratio del preview del selector de foco (ej: "16 / 9", "1 / 1"). */
+  previewAspect?: string
 }) {
   const controlled = onChangeUrl !== undefined
   const [internalUrl, setInternalUrl] = useState(defaultValue ?? '')
@@ -190,21 +194,26 @@ export function ImageUpload({
     e.target.value = ''
   }
 
+  function handleUrlChange(newUrl: string) {
+    setUrl(newUrl)
+    if (!controlled) setCommittedUrl(newUrl)
+  }
+
   return (
     <div>
       {label && <label className={fieldLabel}>{label}</label>}
       {!controlled && <input type="hidden" name={name} value={committedUrl} />}
-      <div className={`flex gap-3 ${compact ? 'items-center' : 'items-start'}`}>
+      <div className={`flex gap-4 ${compact ? 'items-center' : 'items-start'}`}>
         <div
           className={`flex-shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 overflow-hidden flex items-center justify-center ${
-            compact ? 'w-14 h-14' : 'w-24 h-24'
+            compact ? 'w-24 h-24' : 'w-40 h-40'
           }`}
         >
           {url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={url} alt="" className="w-full h-full object-cover" />
           ) : (
-            <ImageIcon size={compact ? 16 : 20} className="text-zinc-300" />
+            <ImageIcon size={compact ? 24 : 32} className="text-zinc-300" />
           )}
         </div>
         <div className="flex-1 flex flex-col gap-2 min-w-0">
@@ -212,10 +221,7 @@ export function ImageUpload({
             <input
               type="text"
               value={url}
-              onChange={(e) => {
-                setUrl(e.target.value)
-                if (!controlled) setCommittedUrl(e.target.value)
-              }}
+              onChange={(e) => handleUrlChange(e.target.value)}
               placeholder="URL de la imagen, o subí un archivo"
               className={fieldInput}
             />
@@ -235,8 +241,7 @@ export function ImageUpload({
                 type="button"
                 onClick={() => {
                   deleteMediaAction(url)
-                  setUrl('')
-                  if (!controlled) setCommittedUrl('')
+                  handleUrlChange('')
                 }}
                 className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors"
               >
@@ -247,6 +252,11 @@ export function ImageUpload({
           {err && <p className="text-xs text-red-500">{err}</p>}
         </div>
       </div>
+      {url && !url.startsWith('blob:') && (
+        <div className="mt-3 pt-3 border-t border-zinc-100">
+          <FocalPicker value={url} onChange={handleUrlChange} previewAspect={previewAspect} previewWidth={compact ? 220 : 320} />
+        </div>
+      )}
       {hint && <p className="text-zinc-400 text-xs mt-1.5">{hint}</p>}
     </div>
   )

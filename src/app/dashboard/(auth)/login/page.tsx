@@ -46,10 +46,8 @@ function LoginForm() {
           className="h-12 w-12 object-contain"
           sizes="48px"
         />
-        <span className="text-xl font-bold text-zinc-900 leading-tight">
-          TV Pro
-          <br />
-          Academy
+        <span className="italic font-black uppercase tracking-tighter text-xl text-zinc-900">
+          TVPRO<span className="text-[#f5bf00]">ACADEMY</span>
         </span>
       </div>
 

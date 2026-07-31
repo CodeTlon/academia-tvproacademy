@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { readTime } from '@/lib/utils'
 import { demoConfig } from '@/lib/demo-config'
+import { focalImageProps } from '@/lib/image-focal'
 import Reveal from '@/components/Reveal'
 
 export const metadata: Metadata = {
@@ -41,18 +42,22 @@ export default async function BlogIndex() {
               {posts.map((post, i) => (
                 <Reveal key={post.slug} delay={(i % 3) * 120}>
                   <Link href={`/blog/${post.slug}`} className="card group block overflow-hidden h-full">
-                    {post.cover_image && (
-                      <div className="relative aspect-video -m-6 mb-6 overflow-hidden rounded-t-[inherit]">
-                        <Image
-                          src={post.cover_image}
-                          alt={post.title}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          quality={85}
-                          className="object-cover group-hover:scale-105 transition-transform duration-700"
-                        />
-                      </div>
-                    )}
+                    {post.cover_image && (() => {
+                      const fp = focalImageProps(post.cover_image)
+                      return (
+                        <div className="relative aspect-video -m-6 mb-6 overflow-hidden rounded-t-[inherit]">
+                          <Image
+                            src={fp.src}
+                            alt={post.title}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            quality={85}
+                            style={fp.style}
+                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        </div>
+                      )
+                    })()}
                     {post.category && <span className="eyebrow !mb-2 text-xs">{post.category}</span>}
                     <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--demo-heading)' }}>
                       {post.title}

@@ -8,6 +8,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { getSiteSettings } from '@/lib/site-settings'
+import { focalImageProps } from '@/lib/image-focal'
 import { readTime, waLink } from '@/lib/utils'
 import { demoConfig } from '@/lib/demo-config'
 
@@ -53,11 +54,14 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
             {new Date(post.created_at).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })} · {readTime(post.content)}
           </div>
 
-          {post.cover_image && (
-            <div className="relative aspect-video rounded-2xl overflow-hidden mb-10">
-              <Image src={post.cover_image} alt={post.title} fill sizes="100vw" quality={85} priority className="object-cover" />
-            </div>
-          )}
+          {post.cover_image && (() => {
+            const fp = focalImageProps(post.cover_image)
+            return (
+              <div className="relative aspect-video rounded-2xl overflow-hidden mb-10">
+                <Image src={fp.src} alt={post.title} fill sizes="100vw" quality={85} priority style={fp.style} className="object-cover" />
+              </div>
+            )
+          })()}
 
           <div
             className="prose-post text-lg leading-relaxed"

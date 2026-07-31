@@ -34,9 +34,9 @@ export default async function BlogListPage() {
       ) : (
         <div className="bg-white rounded-xl border border-zinc-200 shadow-sm divide-y divide-zinc-100">
           {posts.map((post) => (
-            <div key={post.id} className="flex items-center gap-4 p-4">
+            <div key={post.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4">
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-zinc-900 truncate">{post.title}</p>
+                <p className="font-bold text-zinc-900">{post.title}</p>
                 <p className="text-xs text-zinc-500 mt-0.5 flex items-center gap-2">
                   {post.category && <span>{post.category}</span>}
                   <span className="inline-flex items-center gap-1">
@@ -45,16 +45,18 @@ export default async function BlogListPage() {
                   </span>
                 </p>
               </div>
-              <Link
-                href={`/dashboard/blog/${post.id}`}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-zinc-900 border border-zinc-200 px-3 py-2 rounded-md transition-colors"
-              >
-                <Pencil size={13} /> Editar
-              </Link>
-              <form action={deletePostAction}>
-                <input type="hidden" name="id" value={post.id} />
-                <DeleteButton confirmMessage={`¿Eliminar "${post.title}"? Esta acción no se puede deshacer.`} />
-              </form>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Link
+                  href={`/dashboard/blog/${post.id}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-zinc-900 border border-zinc-200 px-3 py-2 rounded-md transition-colors"
+                >
+                  <Pencil size={13} /> Editar
+                </Link>
+                <form action={deletePostAction}>
+                  <input type="hidden" name="id" value={post.id} />
+                  <DeleteButton confirmMessage={`¿Eliminar "${post.title}"? Esta acción no se puede deshacer.`} />
+                </form>
+              </div>
             </div>
           ))}
         </div>

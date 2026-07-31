@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import * as LucideIcons from 'lucide-react'
 import { getSiteSettings } from '@/lib/site-settings'
+import { focalImageProps } from '@/lib/image-focal'
 import Reveal from '@/components/Reveal'
 
 const resolveIcon = (name: string): React.ElementType =>
@@ -29,16 +30,20 @@ export default async function Services() {
               <Reveal key={drill.title} delay={i * 120}>
                 <div className="group bg-[#071424] border border-white/10 rounded-xl overflow-hidden hover:scale-[1.02] hover:border-[#f5bf00] transition-all duration-500 hover:shadow-[0_10px_40px_-10px_rgba(245,191,0,0.3)]">
                   <div className="relative aspect-video overflow-hidden bg-[#0e1b2c]">
-                    {drill.image && (
-                      <Image
-                        src={drill.image}
-                        alt={drill.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        quality={85}
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                    )}
+                    {drill.image && (() => {
+                      const fp = focalImageProps(drill.image)
+                      return (
+                        <Image
+                          src={fp.src}
+                          alt={drill.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          quality={85}
+                          style={fp.style}
+                          className="object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      )
+                    })()}
                     <div className="absolute inset-0 bg-[#071424]/40 group-hover:bg-[#071424]/20 transition-colors" />
                   </div>
                   <div className="p-8">

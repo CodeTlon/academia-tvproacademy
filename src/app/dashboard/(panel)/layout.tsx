@@ -108,10 +108,8 @@ export default function DashboardPanelLayout({
               className="h-9 w-9 object-contain flex-shrink-0"
               sizes="36px"
             />
-            <span className="text-sm font-bold text-slate-100 leading-tight">
-              TV Pro
-              <br />
-              Academy
+            <span className="italic font-black uppercase tracking-tighter text-sm text-slate-100">
+              TVPRO<span className="text-[#f5bf00]">ACADEMY</span>
             </span>
           </Link>
           <button

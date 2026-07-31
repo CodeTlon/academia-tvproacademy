@@ -268,7 +268,7 @@ function ContentEditor({ editor }: { editor: Editor | null }) {
 
       <EditorContent
         editor={editor}
-        className="border border-zinc-200 rounded-b-md px-3 py-2.5 min-h-[240px] text-sm text-zinc-900 [&_.ProseMirror]:outline-none [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-zinc-400 [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none"
+        className="border border-zinc-200 rounded-b-md px-3 py-2.5 min-h-[240px] text-sm text-zinc-900 overflow-hidden [&_.ProseMirror]:outline-none [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-zinc-400 [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none [&_.ProseMirror_iframe]:w-full [&_.ProseMirror_iframe]:max-w-full [&_.ProseMirror_iframe]:aspect-video [&_.ProseMirror_iframe]:h-auto [&_.ProseMirror_iframe]:rounded-lg [&_.ProseMirror_img]:max-w-full [&_.ProseMirror_video]:max-w-full"
       />
     </div>
   )

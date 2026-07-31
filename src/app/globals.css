@@ -102,6 +102,7 @@
   }
   .prose-post a { color: var(--demo-accent); text-decoration: underline; }
   .prose-post img, .prose-post video { @apply rounded-xl w-full; }
+  .prose-post iframe { @apply rounded-xl w-full border-0; aspect-ratio: 16 / 9; height: auto; }
 }
 
 @layer utilities {
