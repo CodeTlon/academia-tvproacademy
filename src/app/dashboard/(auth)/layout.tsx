@@ -9,7 +9,7 @@ export default function DashboardAuthLayout({
     /* Cubre cualquier layout público con z-index alto */
     <div className="fixed inset-0 z-[100] lg:grid lg:grid-cols-2">
       <div className="hidden lg:block relative h-screen">
-        <Image src="/images/hero.webp" alt="" fill priority sizes="50vw" className="object-cover" />
+        <Image src="/images/auth-bg.webp" alt="" fill priority sizes="50vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-zinc-950/20 to-transparent" />
       </div>
 

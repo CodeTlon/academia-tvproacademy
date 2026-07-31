@@ -15,9 +15,10 @@ export default async function Hero() {
           playsInline
           poster="/images/hero-poster.webp"
           className="absolute inset-0 w-full h-full object-cover object-center opacity-40"
+          key={`${hero.videoDesktop}-${hero.videoMobile}`}
         >
-          <source src="/videos/hero-desktop.mp4" type="video/mp4" media="(min-width: 768px)" />
-          <source src="/videos/hero-mobile.mp4" type="video/mp4" />
+          <source src={hero.videoDesktop} type="video/mp4" media="(min-width: 768px)" />
+          <source src={hero.videoMobile} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-t from-[#071424] via-[#071424]/80 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#071424] via-[#071424]/60 to-transparent" />

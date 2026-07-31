@@ -61,6 +61,8 @@ export const demoConfig = {
       title: 'Entrená como',
       titleAccent: 'un profesional',
       bullets: ['Técnica individual', 'Velocidad y coordinación', 'Toma de decisiones'],
+      videoDesktop: '/videos/hero-desktop.mp4',
+      videoMobile: '/videos/hero-mobile.mp4',
     },
 
     about: {

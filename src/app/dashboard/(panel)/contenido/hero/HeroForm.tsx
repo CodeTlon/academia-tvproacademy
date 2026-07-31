@@ -2,7 +2,7 @@
 
 import { useFormState } from 'react-dom'
 import { updateSiteSettings } from '@/actions/settings'
-import { TextField, StringList } from '@/components/dashboard/Field'
+import { TextField, StringList, VideoUpload } from '@/components/dashboard/Field'
 import SaveButton from '@/components/dashboard/SaveButton'
 import InlineSavedBanner from '@/components/dashboard/InlineSavedBanner'
 import { AlertCircle } from 'lucide-react'
@@ -40,6 +40,23 @@ export default function HeroForm({ settings }: { settings: HeroSettings }) {
         placeholder="Técnica individual"
         hint="Se muestran con un check dorado debajo del título."
       />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <VideoUpload
+          label="Video de fondo (desktop)"
+          name="videoDesktop"
+          defaultValue={settings.videoDesktop}
+          folder="hero"
+          hint="MP4, hasta 25MB. Se ve en pantallas de 768px o más."
+        />
+        <VideoUpload
+          label="Video de fondo (mobile)"
+          name="videoMobile"
+          defaultValue={settings.videoMobile}
+          folder="hero"
+          hint="MP4, hasta 25MB. Exportalo liviano: 1080p o menos, unos segundos en loop alcanza."
+        />
+      </div>
 
       <div className="flex justify-end pt-2">
         <SaveButton />
