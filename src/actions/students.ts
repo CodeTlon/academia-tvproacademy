@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { friendlyError } from '@/lib/friendly-error'
+import { todayStr } from '@/lib/date'
 import { requireUser } from './auth'
 
 export type StudentState = { error?: string } | undefined
@@ -66,17 +67,21 @@ export async function deleteStudentAction(formData: FormData) {
   redirect('/dashboard/alumnos?saved=deleted')
 }
 
-/** Marca presente al alumno en `class_date` (default hoy). Idempotente: si ya estaba marcado, no hace nada. */
+/** Marca presente al alumno en `class_date` (default hoy), con hora opcional. Idempotente: si ya estaba marcado, no hace nada. */
 export async function markAttendanceAction(formData: FormData) {
   const studentId = String(formData.get('student_id') ?? '')
-  const classDate = String(formData.get('class_date') ?? '').trim() || new Date().toISOString().slice(0, 10)
+  const classDate = String(formData.get('class_date') ?? '').trim() || todayStr()
+  const classTime = String(formData.get('class_time') ?? '').trim() || null
   const redirectTo = String(formData.get('redirect_to') ?? '/dashboard/alumnos')
   if (!studentId) return
   await requireUser()
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase
     .from('class_attendance')
-    .upsert({ student_id: studentId, class_date: classDate }, { onConflict: 'student_id,class_date', ignoreDuplicates: true })
+    .upsert(
+      { student_id: studentId, class_date: classDate, class_time: classTime },
+      { onConflict: 'student_id,class_date', ignoreDuplicates: true },
+    )
   if (error) throw new Error(friendlyError(error, 'No se pudo marcar la clase.'))
   revalidatePath('/dashboard/alumnos')
   revalidatePath(`/dashboard/alumnos/${studentId}`)
@@ -99,7 +104,7 @@ export async function unmarkAttendanceAction(formData: FormData) {
  * `amount`/`classes_qty` son opcionales: la acción rápida de la lista solo manda la fecha. */
 export async function addPaymentAction(formData: FormData) {
   const studentId = String(formData.get('student_id') ?? '')
-  const paidAt = String(formData.get('paid_at') ?? '').trim() || new Date().toISOString().slice(0, 10)
+  const paidAt = String(formData.get('paid_at') ?? '').trim() || todayStr()
   const amountRaw = String(formData.get('amount') ?? '').trim()
   const qtyRaw = String(formData.get('classes_qty') ?? '').trim()
   const redirectTo = String(formData.get('redirect_to') ?? '/dashboard/alumnos')

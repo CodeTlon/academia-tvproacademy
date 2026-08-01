@@ -47,7 +47,7 @@ export default async function AlumnosListPage() {
                     )}
                   </p>
                   <p className="text-xs text-zinc-500 mt-0.5">
-                    {s.weekly_frequency}x/semana{s.price_per_class != null && ` · $${s.price_per_class}/clase`} · {s.classesTaken}/{s.classesAllowed} clases este ciclo · último pago {fmtDate(s.lastPaymentAt)}
+                    {s.weekly_frequency}x/semana{s.price_per_class != null && ` · $${s.price_per_class}/clase`} · {s.classesTaken}/{s.classesAllowed} clases este ciclo · último pago {fmtDate(s.lastPaymentAt)} · vence {fmtDate(s.cycleEnd)}
                   </p>
                 </div>
                 <span

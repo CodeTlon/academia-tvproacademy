@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from './supabase-server'
+import { todayStr } from './date'
 
 export type Student = {
   id: string
@@ -21,14 +22,17 @@ export type StudentStatus = Student & {
   attendanceDates: string[]
 }
 
+/** Suma meses clampeando al último día del mes destino si no existe (31 ene + 1 mes = 28/29
+ * feb, no "3 de marzo" como haría `setMonth` con overflow crudo) — importante porque los
+ * alumnos pagan en cualquier día del mes, no solo el 1. */
 function addMonths(dateStr: string, months: number) {
   const d = new Date(`${dateStr}T00:00:00`)
+  const day = d.getDate()
+  d.setDate(1)
   d.setMonth(d.getMonth() + months)
+  const daysInTargetMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()
+  d.setDate(Math.min(day, daysInTargetMonth))
   return d.toISOString().slice(0, 10)
-}
-
-function todayStr() {
-  return new Date().toISOString().slice(0, 10)
 }
 
 /**
@@ -79,7 +83,7 @@ export async function getStudentDetail(id: string) {
   const supabase = await createSupabaseServerClient()
   const [{ data: student }, { data: attendance }, { data: payments }] = await Promise.all([
     supabase.from('students').select('*').eq('id', id).single(),
-    supabase.from('class_attendance').select('id, class_date').eq('student_id', id).order('class_date', { ascending: false }),
+    supabase.from('class_attendance').select('id, class_date, class_time').eq('student_id', id).order('class_date', { ascending: false }),
     supabase.from('payments').select('id, paid_at, amount, classes_qty').eq('student_id', id).order('paid_at', { ascending: false }),
   ])
   if (!student) return null

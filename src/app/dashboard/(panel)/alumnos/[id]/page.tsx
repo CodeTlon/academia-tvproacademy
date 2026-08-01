@@ -6,13 +6,14 @@ import { markAttendanceAction, unmarkAttendanceAction, addPaymentAction, deleteP
 import PageHeader from '@/components/dashboard/PageHeader'
 import { fieldInput } from '@/components/dashboard/Field'
 import StudentForm from '../StudentForm'
+import { todayStr } from '@/lib/date'
 
 function fmtDate(d: string) {
   return new Date(`${d}T00:00:00`).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-function todayStr() {
-  return new Date().toISOString().slice(0, 10)
+function fmtTime(t: string | null) {
+  return t ? t.slice(0, 5) : null
 }
 
 export default async function StudentDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -52,6 +53,10 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
             <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Marcar clase</label>
             <input type="date" name="class_date" defaultValue={todayStr()} max={todayStr()} className={fieldInput} />
           </div>
+          <div>
+            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Hora</label>
+            <input type="time" name="class_time" className={fieldInput} />
+          </div>
           <button type="submit" className="bg-gold text-on-gold px-4 py-2.5 rounded-md font-bold text-sm hover:brightness-95 transition-all active:scale-95">
             Marcar
           </button>
@@ -63,7 +68,10 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
           <ul className="space-y-1.5 max-h-64 overflow-y-auto">
             {attendance.map((a) => (
               <li key={a.id} className="flex items-center justify-between text-sm bg-zinc-50 border border-zinc-100 rounded-md px-3 py-2">
-                <span className={a.class_date >= cycleStart ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}>{fmtDate(a.class_date)}</span>
+                <span className={a.class_date >= cycleStart ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}>
+                  {fmtDate(a.class_date)}
+                  {fmtTime(a.class_time) && <span className="text-zinc-400 font-normal"> — {fmtTime(a.class_time)}</span>}
+                </span>
                 <form action={unmarkAttendanceAction}>
                   <input type="hidden" name="attendance_id" value={a.id} />
                   <input type="hidden" name="student_id" value={student.id} />
