@@ -1,10 +1,11 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { useFormState, useFormStatus } from 'react-dom'
 import { signIn } from '@/actions/auth'
+import PasswordInput from '@/components/dashboard/PasswordInput'
 import { Loader2, LogIn, AlertCircle } from 'lucide-react'
 
 function SubmitButton() {
@@ -34,6 +35,17 @@ function safeNext(next: string | null): string {
 function LoginForm() {
   const [state, action] = useFormState(signIn, undefined)
   const next = safeNext(useSearchParams().get('next'))
+  const emailRef = useRef<HTMLInputElement>(null)
+
+  // El input es no controlado, así que tras un error el email queda escrito y
+  // se puede reintentar solo la contraseña. Se limpia únicamente cuando el
+  // email no existe (el mensaje de error es el mismo en los dos casos).
+  useEffect(() => {
+    if (state?.clearEmail && emailRef.current) {
+      emailRef.current.value = ''
+      emailRef.current.focus()
+    }
+  }, [state])
 
   return (
     <div className="w-full max-w-sm">
@@ -76,10 +88,12 @@ function LoginForm() {
               Email
             </label>
             <input
+              ref={emailRef}
               id="email"
               name="email"
               type="email"
               required
+              autoComplete="email"
               placeholder="admin@tvproacademy.com.ar"
               className="w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors"
             />
@@ -92,14 +106,7 @@ function LoginForm() {
             >
               Contraseña
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              placeholder="••••••••"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors"
-            />
+            <PasswordInput id="password" name="password" required autoComplete="current-password" />
           </div>
 
           <SubmitButton />
