@@ -21,7 +21,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
   const detail = await getStudentDetail(id)
   if (!detail) notFound()
 
-  const { student, attendance, payments, cycleStart, cycleEnd, classesAllowed, classesTaken, classesRemaining, expired } = detail
+  const { student, attendance, payments, cycleStart, cycleEnd, classesAllowed, classesTaken, classesRemaining, expired, currentBlockStart } = detail
 
   return (
     <div className="max-w-2xl">
@@ -35,7 +35,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
           {expired ? 'Vencido — necesita renovar' : `Al día — quedan ${classesRemaining} clases`}
         </p>
         <p className="text-xs text-zinc-500 mt-1">
-          Ciclo desde {fmtDate(cycleStart)} hasta {fmtDate(cycleEnd)} · {classesTaken}/{classesAllowed} clases tomadas
+          Cuota desde {fmtDate(cycleStart)}, vence {fmtDate(cycleEnd)} · {classesTaken}/{classesAllowed} clases del bloque actual
         </p>
       </div>
 
@@ -46,7 +46,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
 
       <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Asistencia</h2>
-        <form action={markAttendanceAction} className="flex items-end gap-2 mb-4">
+        <form action={markAttendanceAction} className="flex items-end gap-2 mb-2">
           <input type="hidden" name="student_id" value={student.id} />
           <input type="hidden" name="redirect_to" value={`/dashboard/alumnos/${student.id}`} />
           <div className="flex-1">
@@ -61,6 +61,20 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
             Marcar
           </button>
         </form>
+        <form action={markAttendanceAction} className="flex items-end gap-2 mb-4">
+          <input type="hidden" name="student_id" value={student.id} />
+          <input type="hidden" name="redirect_to" value={`/dashboard/alumnos/${student.id}`} />
+          <input type="hidden" name="excused" value="true" />
+          <div className="flex-1">
+            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
+              Ausencia justificada <span className="normal-case font-normal text-zinc-400">(igual descuenta, queda anotado el motivo)</span>
+            </label>
+            <input type="date" name="class_date" defaultValue={todayStr()} max={todayStr()} className={fieldInput} />
+          </div>
+          <button type="submit" className="bg-zinc-100 text-zinc-700 border border-zinc-200 px-4 py-2.5 rounded-md font-bold text-sm hover:bg-zinc-200 transition-all active:scale-95">
+            Marcar
+          </button>
+        </form>
 
         {attendance.length === 0 ? (
           <p className="text-sm text-zinc-400">Sin clases registradas todavía.</p>
@@ -68,9 +82,10 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
           <ul className="space-y-1.5 max-h-64 overflow-y-auto">
             {attendance.map((a) => (
               <li key={a.id} className="flex items-center justify-between text-sm bg-zinc-50 border border-zinc-100 rounded-md px-3 py-2">
-                <span className={a.class_date >= cycleStart ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}>
+                <span className={currentBlockStart && a.class_date >= currentBlockStart ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}>
                   {fmtDate(a.class_date)}
                   {fmtTime(a.class_time) && <span className="text-zinc-400 font-normal"> — {fmtTime(a.class_time)}</span>}
+                  {a.excused && <span className="text-amber-600 font-normal"> — justificada</span>}
                 </span>
                 <form action={unmarkAttendanceAction}>
                   <input type="hidden" name="attendance_id" value={a.id} />

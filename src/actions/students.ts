@@ -67,11 +67,14 @@ export async function deleteStudentAction(formData: FormData) {
   redirect('/dashboard/alumnos?saved=deleted')
 }
 
-/** Marca presente al alumno en `class_date` (default hoy), con hora opcional. Idempotente: si ya estaba marcado, no hace nada. */
+/** Marca una clase en `class_date` (default hoy), con hora opcional. Idempotente: si ya estaba
+ * marcada, no hace nada. `excused` = clase programada que el alumno no pudo tomar: queda
+ * registrada pero no descuenta del ciclo (ver classesTaken en lib/students.ts). */
 export async function markAttendanceAction(formData: FormData) {
   const studentId = String(formData.get('student_id') ?? '')
   const classDate = String(formData.get('class_date') ?? '').trim() || todayStr()
   const classTime = String(formData.get('class_time') ?? '').trim() || null
+  const excused = formData.get('excused') === 'true'
   const redirectTo = String(formData.get('redirect_to') ?? '/dashboard/alumnos')
   if (!studentId) return
   await requireUser()
@@ -79,7 +82,7 @@ export async function markAttendanceAction(formData: FormData) {
   const { error } = await supabase
     .from('class_attendance')
     .upsert(
-      { student_id: studentId, class_date: classDate, class_time: classTime },
+      { student_id: studentId, class_date: classDate, class_time: classTime, excused },
       { onConflict: 'student_id,class_date', ignoreDuplicates: true },
     )
   if (error) throw new Error(friendlyError(error, 'No se pudo marcar la clase.'))
@@ -100,7 +103,9 @@ export async function unmarkAttendanceAction(formData: FormData) {
   if (studentId) revalidatePath(`/dashboard/alumnos/${studentId}`)
 }
 
-/** Registra un pago en `paid_at` (default hoy) — reinicia el ciclo de clases del alumno.
+/** Registra un pago en `paid_at` (default hoy) — mueve la fecha de vencimiento de la cuota
+ * (1 mes desde el pago), pero NO reinicia el conteo de clases: eso es corrido e independiente
+ * del pago (ver getStudentsWithStatus en lib/students.ts).
  * `amount`/`classes_qty` son opcionales: la acción rápida de la lista solo manda la fecha. */
 export async function addPaymentAction(formData: FormData) {
   const studentId = String(formData.get('student_id') ?? '')
