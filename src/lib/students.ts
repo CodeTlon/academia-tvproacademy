@@ -1,6 +1,8 @@
 import { createSupabaseServerClient } from './supabase-server'
 import { todayStr } from './date'
 
+export type StatusOverride = 'al_dia' | 'vencido' | null
+
 export type Student = {
   id: string
   name: string
@@ -8,6 +10,7 @@ export type Student = {
   weekly_frequency: number
   price_per_class: number | null
   active: boolean
+  status_override: StatusOverride
   created_at: string
 }
 
@@ -41,6 +44,14 @@ function classesInCurrentCycle(totalTaken: number, classesAllowed: number) {
   return totalTaken === 0 ? 0 : ((totalTaken - 1) % classesAllowed) + 1
 }
 
+/** `status_override` pisa el cálculo automático — para cuando se dejó al alumno al día
+ * "de palabra" (o se lo cortó) y el sistema todavía no lo refleja por clases/pagos. */
+function resolveExpired(statusOverride: StatusOverride, autoExpired: boolean) {
+  if (statusOverride === 'al_dia') return false
+  if (statusOverride === 'vencido') return true
+  return autoExpired
+}
+
 /**
  * Estado de cada alumno — no se guarda "vencido" en la base, se calcula siempre
  * en caliente. Son dos cosas independientes:
@@ -71,7 +82,7 @@ export async function getStudentsWithStatus(): Promise<StudentStatus[]> {
     const classesAllowed = student.weekly_frequency * 4
     const classesTaken = classesInCurrentCycle(totalTaken, classesAllowed)
     const classesRemaining = classesAllowed - classesTaken
-    const expired = classesRemaining <= 0 || today >= cycleEnd
+    const expired = resolveExpired(student.status_override, classesRemaining <= 0 || today >= cycleEnd)
 
     return {
       ...student,
@@ -102,7 +113,7 @@ export async function getStudentDetail(id: string) {
   const totalTaken = attendance?.length ?? 0
   const classesTaken = classesInCurrentCycle(totalTaken, classesAllowed)
   const classesRemaining = classesAllowed - classesTaken
-  const expired = classesRemaining <= 0 || todayStr() >= cycleEnd
+  const expired = resolveExpired(student.status_override, classesRemaining <= 0 || todayStr() >= cycleEnd)
   // Fecha de la clase más vieja que todavía forma parte del bloque de 8 sin
   // completar — para marcar en la lista cuáles cuentan del ciclo actual.
   const currentBlockStart = classesTaken > 0 ? [...(attendance ?? [])].sort((a, b) => a.class_date.localeCompare(b.class_date))[totalTaken - classesTaken]?.class_date : null

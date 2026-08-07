@@ -41,7 +41,12 @@ export async function createStudentAction(_prev: StudentState, formData: FormDat
 export async function updateStudentAction(id: string, _prev: StudentState, formData: FormData): Promise<StudentState> {
   try {
     await requireUser()
-    const data = { ...parseStudentForm(formData), active: formData.get('active') === 'on' }
+    const statusOverride = String(formData.get('status_override') ?? '')
+    const data = {
+      ...parseStudentForm(formData),
+      active: formData.get('active') === 'on',
+      status_override: statusOverride === 'al_dia' || statusOverride === 'vencido' ? statusOverride : null,
+    }
     if (!data.name) return { error: 'El nombre es obligatorio.' }
 
     const supabase = await createSupabaseServerClient()

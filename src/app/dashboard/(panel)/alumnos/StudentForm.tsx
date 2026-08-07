@@ -60,6 +60,23 @@ export default function StudentForm({ student }: { student?: Student }) {
         />
       )}
 
+      {isEdit && (
+        <div>
+          <label htmlFor="status_override" className={fieldLabel}>Estado de la cuota</label>
+          <select
+            id="status_override"
+            name="status_override"
+            defaultValue={student?.status_override ?? ''}
+            className={fieldInput}
+          >
+            <option value="">Automático (calculado por clases y pago)</option>
+            <option value="al_dia">Al día</option>
+            <option value="vencido">Vencido / no pagó</option>
+          </select>
+          <p className="text-zinc-400 text-xs mt-1.5">Cambiá esto a mano cuando el cálculo automático no coincide con la realidad (se lo dejó al día de palabra, se cargó un pago por error, etc).</p>
+        </div>
+      )}
+
       <div className="flex justify-end pt-2">
         <SaveButton />
       </div>
