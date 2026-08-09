@@ -95,8 +95,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   ].join(' ')
 
   return (
-    <html lang="es" className={allFontVars} data-cards={style.cards}>
-      <body style={cssVars}>
+    <html lang="es" className={allFontVars} data-cards={style.cards} style={cssVars}>
+      <body>
         {children}
       </body>
     </html>
