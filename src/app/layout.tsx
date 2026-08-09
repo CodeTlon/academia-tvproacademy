@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   title,
   description: siteConfig.business.tagline,
   alternates: { canonical: '/' },
-  icons: { apple: '/apple-touch-icon.png' },
+  icons: { icon: '/icon.png', apple: '/apple-touch-icon.png' },
   openGraph: {
     title,
     description: siteConfig.business.tagline,
