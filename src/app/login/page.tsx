@@ -2,9 +2,10 @@
 
 import { Suspense, useEffect, useRef } from 'react'
 import Image from 'next/image'
+import { useActionState } from 'react'
+import { useFormStatus } from 'react-dom'
 import { useSearchParams } from 'next/navigation'
-import { useFormState, useFormStatus } from 'react-dom'
-import { studentSignIn } from '@/actions/auth'
+import { login } from '@/actions/auth'
 import PasswordInput from '@/components/dashboard/PasswordInput'
 import { Loader2, LogIn, AlertCircle } from 'lucide-react'
 
@@ -26,15 +27,9 @@ function SubmitButton() {
   )
 }
 
-// Solo rutas internas del portal: evita que un `?next=` manipulado mande a otro sitio.
-function safeNext(next: string | null): string {
-  if (!next || !next.startsWith('/portal') || next.startsWith('//')) return '/portal'
-  return next
-}
-
 function LoginForm() {
-  const [state, action] = useFormState(studentSignIn, undefined)
-  const next = safeNext(useSearchParams().get('next'))
+  const [state, action] = useActionState(login, undefined)
+  const next = useSearchParams().get('next') ?? ''
   const emailRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -62,10 +57,10 @@ function LoginForm() {
 
       <div className="bg-white rounded-2xl p-8 shadow-lg border border-zinc-100">
         <h1 className="text-xl font-bold text-zinc-900 mb-1">
-          Portal de alumnos
+          Iniciar sesión
         </h1>
         <p className="text-sm text-zinc-500 mb-6">
-          Ingresá para ver tus clases y el estado de tu cuota.
+          Ingresá con tu cuenta para continuar.
         </p>
 
         {state?.error && (
@@ -113,7 +108,7 @@ function LoginForm() {
   )
 }
 
-export default function PortalLoginPage() {
+export default function LoginPage() {
   return (
     <Suspense fallback={null}>
       <LoginForm />

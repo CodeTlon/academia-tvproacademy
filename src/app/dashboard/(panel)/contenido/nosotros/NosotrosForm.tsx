@@ -1,6 +1,6 @@
 'use client'
 
-import { useFormState } from 'react-dom'
+import { useActionState } from 'react'
 import { updateSiteSettings } from '@/actions/settings'
 import { TextField, TextArea, ListField, ImageUpload } from '@/components/dashboard/Field'
 import SaveButton from '@/components/dashboard/SaveButton'
@@ -17,7 +17,7 @@ const VALUE_FIELDS = [
 ]
 
 export default function NosotrosForm({ settings }: { settings: AboutSettings }) {
-  const [state, formAction] = useFormState(action, undefined)
+  const [state, formAction] = useActionState(action, undefined)
 
   return (
     <form action={formAction} className="space-y-6">

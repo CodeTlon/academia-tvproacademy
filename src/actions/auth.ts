@@ -44,25 +44,25 @@ async function emailExists(email: string): Promise<boolean | null> {
 }
 
 /**
- * Iniciar sesión con email y contraseña.
- * En caso de éxito redirige al dashboard (no retorna).
+ * Iniciar sesión con email y contraseña — sirve para admin y alumno por
+ * igual. El rol recién se sabe después de autenticar (viene en los metadatos
+ * del usuario), así que la redirección a `/dashboard` o `/portal` se resuelve
+ * acá, no de antemano.
  */
-export async function signIn(prevState: unknown, formData: FormData): Promise<AuthState> {
+export async function login(prevState: unknown, formData: FormData): Promise<AuthState> {
   const email    = String(formData.get('email') ?? '').trim()
   const password = String(formData.get('password') ?? '')
-  const rawNext  = String(formData.get('next') ?? '/dashboard')
-  // Solo rutas internas del panel: nunca redirigir a un host externo.
-  const next     = rawNext.startsWith('/dashboard') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
+  const rawNext  = String(formData.get('next') ?? '')
 
   if (!email || !password) {
     return { error: 'Completá todos los campos.' }
   }
 
   const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    console.error('signIn error:', error.message)
+    console.error('login error:', error.message)
     // Mismo mensaje exista o no el email; lo único que cambia es si el form
     // limpia el campo (solo si el email directamente no existe).
     return {
@@ -71,48 +71,20 @@ export async function signIn(prevState: unknown, formData: FormData): Promise<Au
     }
   }
 
+  const home = data.user?.user_metadata?.role === 'student' ? '/portal' : '/dashboard'
+  // Solo rutas internas del área que corresponde: nunca redirigir a un host externo,
+  // ni mandar a un alumno al panel de admin (o viceversa) vía `?next=`.
+  const next = rawNext.startsWith(home) && !rawNext.startsWith('//') ? rawNext : home
   redirect(next)
 }
 
 /**
- * Iniciar sesión de un alumno en el portal. Mismo flujo que `signIn` pero
- * acotado a `/portal` — un alumno nunca debería poder pasar un `next` hacia
- * el panel de admin.
- */
-export async function studentSignIn(prevState: unknown, formData: FormData): Promise<AuthState> {
-  const email    = String(formData.get('email') ?? '').trim()
-  const password = String(formData.get('password') ?? '')
-  const rawNext  = String(formData.get('next') ?? '/portal')
-  const next     = rawNext.startsWith('/portal') && !rawNext.startsWith('//') ? rawNext : '/portal'
-
-  if (!email || !password) {
-    return { error: 'Completá todos los campos.' }
-  }
-
-  const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-  if (error) {
-    console.error('studentSignIn error:', error.message)
-    return {
-      error: 'Credenciales incorrectas. Verificá tu email y contraseña.',
-      clearEmail: (await emailExists(email)) === false,
-    }
-  }
-
-  redirect(next)
-}
-
-/**
- * Cerrar sesión y redirigir al login que corresponda según el rol de la
- * cuenta (admin → panel, alumno → portal).
+ * Cerrar sesión. El login es único ahora, así que siempre vuelve a `/login`.
  */
 export async function signOut(): Promise<void> {
   const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const isStudent = user?.user_metadata?.role === 'student'
   await supabase.auth.signOut()
-  redirect(isStudent ? '/portal/login' : '/dashboard/login')
+  redirect('/login')
 }
 
 /**
@@ -126,7 +98,7 @@ export async function changePassword(prevState: unknown, formData: FormData): Pr
   const confirmPassword = String(formData.get('confirmPassword') ?? '')
 
   if (!password || !confirmPassword) return { error: 'Completá todos los campos.' }
-  if (password.length < 6) return { error: 'La contraseña debe tener al menos 6 caracteres.' }
+  if (password.length < 8) return { error: 'La contraseña debe tener al menos 8 caracteres.' }
   if (password !== confirmPassword) return { error: 'Las contraseñas no coinciden.' }
 
   const supabase = await createSupabaseServerClient()

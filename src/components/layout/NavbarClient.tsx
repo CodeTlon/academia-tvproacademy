@@ -41,7 +41,7 @@ export default function NavbarClient({ whatsapp }: { whatsapp: string }) {
 
           <div className="flex items-center gap-4">
             <Link
-              href="/portal/login"
+              href="/login"
               className="hidden lg:inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-[#d2c5ab] hover:text-[#f5bf00] transition-colors"
             >
               <LogIn size={16} /> ¿Sos alumno?
@@ -87,7 +87,7 @@ export default function NavbarClient({ whatsapp }: { whatsapp: string }) {
             Reservá tu turno
           </a>
           <Link
-            href="/portal/login"
+            href="/login"
             className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-[#d2c5ab] py-2"
             onClick={() => setOpen(false)}
           >

@@ -21,12 +21,12 @@ export default function DeleteButton({
         type="button"
         onClick={() => setOpen(true)}
         disabled={pending}
-        className="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2.5 rounded-md font-bold text-sm hover:bg-red-100 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 border border-red-200 px-3 py-2 rounded-md font-bold text-xs hover:bg-red-100 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {pending ? (
-          <Loader2 size={15} className="animate-spin" />
+          <Loader2 size={13} className="animate-spin" />
         ) : (
-          <Trash2 size={15} />
+          <Trash2 size={13} />
         )}
         {pending ? 'Eliminando…' : 'Eliminar'}
       </button>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useFormState } from 'react-dom'
+import { useActionState } from 'react'
 import { updateSiteSettings } from '@/actions/settings'
 import { TextField } from '@/components/dashboard/Field'
 import SaveButton from '@/components/dashboard/SaveButton'
@@ -11,7 +11,7 @@ import type { BusinessSettings } from '@/lib/site-settings'
 const action = updateSiteSettings.bind(null, 'business')
 
 export default function NegocioForm({ settings }: { settings: BusinessSettings }) {
-  const [state, formAction] = useFormState(action, undefined)
+  const [state, formAction] = useActionState(action, undefined)
 
   return (
     <form action={formAction} className="space-y-6">

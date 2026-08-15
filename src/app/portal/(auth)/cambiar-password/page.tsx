@@ -9,15 +9,18 @@ export default async function PortalCambiarPasswordPage() {
 
   return (
     <div className="w-full max-w-sm">
-      <div className="flex justify-center mb-8">
+      <div className="flex items-center justify-center gap-3 mb-8">
         <Image
           src="/images/logo-mark.webp"
-          alt="TV Pro Academy"
-          width={160}
-          height={50}
-          className="h-12 w-auto object-contain"
-          sizes="160px"
+          alt=""
+          width={48}
+          height={48}
+          className="h-12 w-12 object-contain"
+          sizes="48px"
         />
+        <span className="italic font-black uppercase tracking-tighter text-xl text-zinc-900">
+          TVPRO<span className="text-[#f5bf00]">ACADEMY</span>
+        </span>
       </div>
       <CambiarPasswordForm forced={forced} backHref="/portal" />
     </div>

@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { useFormState } from 'react-dom'
+import { useActionState, useState } from 'react'
 import { Node, mergeAttributes } from '@tiptap/core'
 import { useEditor, EditorContent, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -50,7 +49,7 @@ type Post = {
 export default function PostForm({ post }: { post?: Post }) {
   const isEdit = !!post
   const action = isEdit ? updatePostAction.bind(null, post.id) : createPostAction
-  const [state, formAction] = useFormState<PostState, FormData>(action, undefined)
+  const [state, formAction] = useActionState<PostState, FormData>(action, undefined)
 
   const editor = useEditor({
     extensions: [

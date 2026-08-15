@@ -1,6 +1,6 @@
 'use client'
 
-import { useFormState } from 'react-dom'
+import { useActionState } from 'react'
 import { updateSiteSettings } from '@/actions/settings'
 import { ListField } from '@/components/dashboard/Field'
 import SaveButton from '@/components/dashboard/SaveButton'
@@ -19,7 +19,7 @@ const SERVICE_FIELDS = [
 ]
 
 export default function ServicesForm({ items }: { items: ServiceItem[] }) {
-  const [state, formAction] = useFormState(action, undefined)
+  const [state, formAction] = useActionState(action, undefined)
 
   return (
     <form action={formAction} className="space-y-6">

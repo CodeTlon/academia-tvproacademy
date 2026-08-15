@@ -1,6 +1,6 @@
 'use client'
 
-import { useFormState } from 'react-dom'
+import { useActionState } from 'react'
 import { createStudentAction, updateStudentAction, type StudentState } from '@/actions/students'
 import { TextField, Checkbox, fieldLabel, fieldInput } from '@/components/dashboard/Field'
 import SaveButton from '@/components/dashboard/SaveButton'
@@ -10,7 +10,7 @@ import type { Student } from '@/lib/students'
 export default function StudentForm({ student }: { student?: Student }) {
   const isEdit = !!student
   const action = isEdit ? updateStudentAction.bind(null, student.id) : createStudentAction
-  const [state, formAction] = useFormState<StudentState, FormData>(action, undefined)
+  const [state, formAction] = useActionState<StudentState, FormData>(action, undefined)
 
   return (
     <form action={formAction} className="space-y-6">
