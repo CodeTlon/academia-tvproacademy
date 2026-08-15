@@ -13,7 +13,7 @@ const navLinks = [
   { label: 'Contacto', href: '/contacto' },
 ]
 
-export default function NavbarClient({ panelHref }: { panelHref: string | null }) {
+export default function NavbarClient({ panelHref, panelLabel }: { panelHref: string | null; panelLabel: string | null }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -44,7 +44,7 @@ export default function NavbarClient({ panelHref }: { panelHref: string | null }
               href={panelHref ?? '/login'}
               className="hidden lg:inline-flex items-center justify-center border-2 border-[#f5bf00] text-[#f5bf00] text-sm font-bold uppercase tracking-wider px-5 py-3 rounded-full hover:bg-[#f5bf00] hover:text-[#241a00] transition-colors"
             >
-              {panelHref ? 'Mi panel' : 'Portal alumnos'}
+              {panelLabel ?? 'Portal alumnos'}
             </Link>
             <button
               className="lg:hidden text-white p-2"
@@ -78,7 +78,7 @@ export default function NavbarClient({ panelHref }: { panelHref: string | null }
             className="mt-2 inline-flex items-center justify-center border-2 border-[#f5bf00] text-[#f5bf00] text-sm font-bold uppercase tracking-wider px-6 py-3 rounded-full"
             onClick={() => setOpen(false)}
           >
-            {panelHref ? 'Ir a mi panel' : 'Portal alumnos'}
+            {panelLabel ?? 'Portal alumnos'}
           </Link>
         </div>
       </div>
