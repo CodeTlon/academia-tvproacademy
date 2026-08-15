@@ -7,6 +7,8 @@ export type Student = {
   id: string
   name: string
   phone: string | null
+  email: string | null
+  user_id: string | null
   weekly_frequency: number
   price_per_class: number | null
   active: boolean
@@ -95,6 +97,15 @@ export async function getStudentsWithStatus(): Promise<StudentStatus[]> {
       expired,
     }
   })
+}
+
+/** Id del alumno ligado a la sesión actual (portal) — null si no hay sesión o no está vinculada. */
+export async function getMyStudentId(): Promise<string | null> {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  const { data } = await supabase.from('students').select('id').eq('user_id', user.id).single()
+  return data?.id ?? null
 }
 
 export async function getStudentDetail(id: string) {

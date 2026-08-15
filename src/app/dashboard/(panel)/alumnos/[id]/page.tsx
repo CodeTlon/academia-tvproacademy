@@ -6,6 +6,7 @@ import { markAttendanceAction, unmarkAttendanceAction, addPaymentAction, deleteP
 import PageHeader from '@/components/dashboard/PageHeader'
 import { fieldInput } from '@/components/dashboard/Field'
 import StudentForm from '../StudentForm'
+import AccountForm from './AccountForm'
 import { todayStr } from '@/lib/date'
 
 function fmtDate(d: string) {
@@ -42,6 +43,11 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
       <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Datos del alumno</h2>
         <StudentForm student={student} />
+      </div>
+
+      <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">
+        <h2 className="text-sm font-bold text-zinc-900 mb-4">Acceso al portal</h2>
+        <AccountForm student={student} />
       </div>
 
       <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">

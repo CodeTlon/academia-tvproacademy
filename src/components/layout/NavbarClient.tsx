@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, LogIn } from 'lucide-react'
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
@@ -40,6 +40,12 @@ export default function NavbarClient({ whatsapp }: { whatsapp: string }) {
           </nav>
 
           <div className="flex items-center gap-4">
+            <Link
+              href="/portal/login"
+              className="hidden lg:inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-[#d2c5ab] hover:text-[#f5bf00] transition-colors"
+            >
+              <LogIn size={16} /> ¿Sos alumno?
+            </Link>
             <a
               href={`https://wa.me/${whatsapp}`}
               className="hidden lg:inline-flex items-center justify-center bg-[#f5bf00] text-[#241a00] text-sm font-bold uppercase tracking-wider px-6 py-3 rounded-full shadow-[0_0_20px_rgba(245,191,0,0.4)] hover:shadow-[0_0_30px_rgba(245,191,0,0.6)] transition-shadow"
@@ -80,6 +86,13 @@ export default function NavbarClient({ whatsapp }: { whatsapp: string }) {
           >
             Reservá tu turno
           </a>
+          <Link
+            href="/portal/login"
+            className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-[#d2c5ab] py-2"
+            onClick={() => setOpen(false)}
+          >
+            <LogIn size={16} /> ¿Sos alumno? Entrá acá
+          </Link>
         </div>
       </div>
     </header>

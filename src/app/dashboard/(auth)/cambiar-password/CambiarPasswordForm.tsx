@@ -1,8 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import { changePassword } from '@/actions/auth'
+import PasswordStrength from '@/components/dashboard/PasswordStrength'
 import { Loader2, KeyRound, AlertCircle, ArrowLeft } from 'lucide-react'
 
 function SubmitButton() {
@@ -19,13 +21,14 @@ function SubmitButton() {
   )
 }
 
-export default function CambiarPasswordForm({ forced }: { forced: boolean }) {
+export default function CambiarPasswordForm({ forced, backHref = '/dashboard' }: { forced: boolean; backHref?: string }) {
   const [state, action] = useFormState(changePassword, undefined)
+  const [password, setPassword] = useState('')
 
   return (
     <div className="bg-white rounded-2xl p-8 shadow-lg border border-zinc-100">
       {!forced && (
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-6">
+        <Link href={backHref} className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-6">
           <ArrowLeft size={14} /> Volver al panel
         </Link>
       )}
@@ -57,8 +60,11 @@ export default function CambiarPasswordForm({ forced }: { forced: boolean }) {
             required
             minLength={6}
             placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors"
           />
+          <PasswordStrength value={password} className="mt-3" />
         </div>
 
         <div>

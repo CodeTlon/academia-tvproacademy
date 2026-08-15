@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { randomBytes } from 'crypto'
+import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase-server'
 import { friendlyError } from '@/lib/friendly-error'
 import { todayStr } from '@/lib/date'
 import { requireUser } from './auth'
@@ -143,4 +144,73 @@ export async function deletePaymentAction(formData: FormData) {
   if (error) throw new Error(friendlyError(error, 'No se pudo eliminar el pago.'))
   revalidatePath('/dashboard/alumnos')
   if (studentId) revalidatePath(`/dashboard/alumnos/${studentId}`)
+}
+
+// ─── Acceso al portal — alta y reset de contraseña ──────────────────────────
+// El admin genera una contraseña temporal y se la pasa al alumno por fuera
+// del sistema (WhatsApp) — no hay envío de mail. Por eso las acciones no
+// redirigen: devuelven la contraseña una sola vez para mostrarla en pantalla.
+
+export type AccountState = { error?: string; tempPassword?: string; email?: string } | undefined
+
+const TEMP_PASSWORD_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // sin caracteres ambiguos (0/O, 1/I/l)
+
+function generateTempPassword(length = 8) {
+  const bytes = randomBytes(length)
+  return Array.from(bytes, (b) => TEMP_PASSWORD_CHARS[b % TEMP_PASSWORD_CHARS.length]).join('')
+}
+
+/** Crea la cuenta de portal de un alumno: usuario en Supabase Auth + `email`/`user_id` en la fila del alumno. */
+export async function createStudentAccountAction(_prev: AccountState, formData: FormData): Promise<AccountState> {
+  const studentId = String(formData.get('student_id') ?? '')
+  const email = String(formData.get('email') ?? '').trim().toLowerCase()
+  if (!studentId || !email) return { error: 'Falta el email del alumno.' }
+
+  await requireUser()
+  const tempPassword = generateTempPassword()
+  const admin = createSupabaseAdminClient()
+
+  const { data, error } = await admin.auth.admin.createUser({
+    email,
+    password: tempPassword,
+    email_confirm: true,
+    user_metadata: { role: 'student', student_id: studentId, must_change_password: true },
+  })
+  if (error || !data.user) return { error: friendlyError(error, 'No se pudo crear el acceso.') }
+
+  const supabase = await createSupabaseServerClient()
+  const { error: updateError } = await supabase
+    .from('students')
+    .update({ email, user_id: data.user.id })
+    .eq('id', studentId)
+  if (updateError) {
+    await admin.auth.admin.deleteUser(data.user.id)
+    return { error: friendlyError(updateError, 'No se pudo vincular el acceso al alumno.') }
+  }
+
+  revalidatePath(`/dashboard/alumnos/${studentId}`)
+  return { tempPassword, email }
+}
+
+/** Genera una contraseña temporal nueva para un alumno que ya tiene cuenta (ej: se olvidó la contraseña). */
+export async function resetStudentPasswordAction(_prev: AccountState, formData: FormData): Promise<AccountState> {
+  const studentId = String(formData.get('student_id') ?? '')
+  const userId = String(formData.get('user_id') ?? '')
+  if (!studentId || !userId) return { error: 'Falta el alumno.' }
+
+  await requireUser()
+  const tempPassword = generateTempPassword()
+  const admin = createSupabaseAdminClient()
+
+  const { data: existing, error: getError } = await admin.auth.admin.getUserById(userId)
+  if (getError || !existing.user) return { error: friendlyError(getError, 'No se pudo encontrar la cuenta.') }
+
+  const { error } = await admin.auth.admin.updateUserById(userId, {
+    password: tempPassword,
+    user_metadata: { ...existing.user.user_metadata, must_change_password: true },
+  })
+  if (error) return { error: friendlyError(error, 'No se pudo regenerar la contraseña.') }
+
+  revalidatePath(`/dashboard/alumnos/${studentId}`)
+  return { tempPassword, email: existing.user.email ?? undefined }
 }

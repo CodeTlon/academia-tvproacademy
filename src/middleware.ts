@@ -30,6 +30,10 @@ export async function middleware(request: NextRequest) {
   const isDashboard = path.startsWith('/dashboard')
   const isLogin = path === '/dashboard/login'
   const isCambiarPassword = path === '/dashboard/cambiar-password'
+  const isPortal = path.startsWith('/portal')
+  const isPortalLogin = path === '/portal/login'
+  const isPortalCambiarPassword = path === '/portal/cambiar-password'
+  const isStudent = user?.user_metadata?.role === 'student'
 
   // Sin sesión en una ruta protegida del panel → redirigir al login
   if (isDashboard && !isLogin && !user) {
@@ -39,8 +43,37 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Ya autenticado intentando entrar al login → redirigir al panel
+  // Sin sesión en una ruta protegida del portal → redirigir al login del portal
+  if (isPortal && !isPortalLogin && !user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/portal/login'
+    url.searchParams.set('next', path)
+    return NextResponse.redirect(url)
+  }
+
+  // Ya autenticado intentando entrar al login → redirigir a su panel
   if (isLogin && user) {
+    const url = request.nextUrl.clone()
+    url.pathname = isStudent ? '/portal' : '/dashboard'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+  if (isPortalLogin && user) {
+    const url = request.nextUrl.clone()
+    url.pathname = isStudent ? '/portal' : '/dashboard'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+
+  // Cuenta de alumno pidiendo el panel de admin, o cuenta de admin pidiendo
+  // el portal → cada una a lo suyo.
+  if (isDashboard && !isLogin && user && isStudent) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/portal'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+  if (isPortal && !isPortalLogin && user && !isStudent) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     url.search = ''
@@ -48,10 +81,16 @@ export async function middleware(request: NextRequest) {
   }
 
   // Contraseña temporal (alta nueva o reset) sin cambiar → forzar a cambiarla
-  // antes de dejar entrar a cualquier otra ruta del panel.
+  // antes de dejar entrar a cualquier otra ruta del panel/portal.
   if (isDashboard && !isLogin && !isCambiarPassword && user?.user_metadata?.must_change_password) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard/cambiar-password'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+  if (isPortal && !isPortalLogin && !isPortalCambiarPassword && user?.user_metadata?.must_change_password) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/portal/cambiar-password'
     url.search = ''
     return NextResponse.redirect(url)
   }
@@ -60,5 +99,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/portal/:path*'],
 }
