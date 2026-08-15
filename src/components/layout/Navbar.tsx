@@ -1,7 +1,9 @@
-import { getSiteSettings } from '@/lib/site-settings'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import NavbarClient from './NavbarClient'
 
 export default async function Navbar() {
-  const settings = await getSiteSettings()
-  return <NavbarClient whatsapp={settings.business.whatsapp} />
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const panelHref = user ? (user.user_metadata?.role === 'student' ? '/portal' : '/dashboard') : null
+  return <NavbarClient panelHref={panelHref} />
 }
