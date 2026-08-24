@@ -12,10 +12,12 @@ export type StudentState = { error?: string } | undefined
 
 function parseStudentForm(formData: FormData) {
   const price = String(formData.get('price_per_class') ?? '').trim()
+  const frequency = Number(formData.get('weekly_frequency') ?? 2)
   return {
     name: String(formData.get('name') ?? '').trim(),
     phone: String(formData.get('phone') ?? '').trim() || null,
-    weekly_frequency: Number(formData.get('weekly_frequency') ?? 2),
+    // Clamp 1-7: coincide con el check constraint de la tabla (máx. una clase por día).
+    weekly_frequency: Math.min(7, Math.max(1, Number.isFinite(frequency) ? frequency : 2)),
     price_per_class: price ? Number(price) : null,
   }
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { createStudentAction, updateStudentAction, type StudentState } from '@/actions/students'
 import { TextField, Checkbox, fieldLabel, fieldInput } from '@/components/dashboard/Field'
 import SaveButton from '@/components/dashboard/SaveButton'
@@ -11,6 +11,9 @@ export default function StudentForm({ student }: { student?: Student }) {
   const isEdit = !!student
   const action = isEdit ? updateStudentAction.bind(null, student.id) : createStudentAction
   const [state, formAction] = useActionState<StudentState, FormData>(action, undefined)
+  const [weeklyFrequency, setWeeklyFrequency] = useState(student?.weekly_frequency ?? 2)
+  const [pricePerClass, setPricePerClass] = useState(student?.price_per_class ?? null)
+  const monthlyClasses = weeklyFrequency * 4
 
   return (
     <form action={formAction} className="space-y-6">
@@ -26,30 +29,44 @@ export default function StudentForm({ student }: { student?: Student }) {
         <TextField label="Teléfono" name="phone" defaultValue={student?.phone ?? ''} placeholder="351 555-5555" />
       </div>
 
-      <TextField
-        label="Precio por clase"
-        name="price_per_class"
-        type="number"
-        defaultValue={student?.price_per_class != null ? String(student.price_per_class) : ''}
-        placeholder="5000"
-        hint="Opcional — para referencia rápida si este alumno paga distinto al resto."
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="price_per_class" className={fieldLabel}>Precio por clase</label>
+          <input
+            id="price_per_class"
+            name="price_per_class"
+            type="number"
+            min={0}
+            step="0.01"
+            value={pricePerClass ?? ''}
+            onChange={(e) => setPricePerClass(e.target.value === '' ? null : Number(e.target.value))}
+            placeholder="5000"
+            className={fieldInput}
+          />
+          <p className="text-zinc-400 text-xs mt-1.5">Precio 100% personalizado por alumno — poné el que corresponda, no hay tarifa fija.</p>
+        </div>
 
-      <div>
-        <label htmlFor="weekly_frequency" className={fieldLabel}>Clases por semana</label>
-        <select
-          id="weekly_frequency"
-          name="weekly_frequency"
-          defaultValue={student?.weekly_frequency ?? 2}
-          className={fieldInput}
-        >
-          <option value={1}>1 vez por semana (4 clases/mes)</option>
-          <option value={2}>2 veces por semana (8 clases/mes)</option>
-          <option value={3}>3 veces por semana (12 clases/mes)</option>
-          <option value={4}>4 veces por semana (16 clases/mes)</option>
-        </select>
-        <p className="text-zinc-400 text-xs mt-1.5">Se usa para calcular cuántas clases le quedan en el ciclo.</p>
+        <div>
+          <label htmlFor="weekly_frequency" className={fieldLabel}>Clases por semana</label>
+          <input
+            id="weekly_frequency"
+            name="weekly_frequency"
+            type="number"
+            min={1}
+            max={7}
+            step={1}
+            value={weeklyFrequency}
+            onChange={(e) => setWeeklyFrequency(Math.min(7, Math.max(1, Number(e.target.value) || 1)))}
+            className={fieldInput}
+          />
+          <p className="text-zinc-400 text-xs mt-1.5">La cantidad que quieras, de 1 a 7 por semana.</p>
+        </div>
       </div>
+
+      <p className="text-zinc-500 text-xs -mt-2">
+        = {monthlyClasses} clases/mes
+        {pricePerClass != null && ` · $${(pricePerClass * monthlyClasses).toLocaleString('es-AR')}/mes`}
+      </p>
 
       {isEdit && (
         <Checkbox
