@@ -11,7 +11,7 @@ import FocalPicker from '@/components/dashboard/FocalPicker'
 
 export const fieldLabel = 'block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5'
 export const fieldInput =
-  'w-full bg-white border border-zinc-200 rounded-md px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors'
+  'w-full bg-white border border-zinc-200 rounded-md px-3 py-2.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors'
 
 export function TextField({
   label,

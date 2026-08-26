@@ -36,6 +36,7 @@ export default function StudentForm({ student }: { student?: Student }) {
             id="price_per_class"
             name="price_per_class"
             type="number"
+            inputMode="decimal"
             min={0}
             step="0.01"
             value={pricePerClass ?? ''}
@@ -52,6 +53,7 @@ export default function StudentForm({ student }: { student?: Student }) {
             id="weekly_frequency"
             name="weekly_frequency"
             type="number"
+            inputMode="numeric"
             min={1}
             max={7}
             step={1}
