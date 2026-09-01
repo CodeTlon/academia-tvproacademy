@@ -6,7 +6,7 @@ import { randomBytes } from 'crypto'
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase-server'
 import { friendlyError } from '@/lib/friendly-error'
 import { todayStr } from '@/lib/date'
-import { requireUser } from './auth'
+import { requireAdmin } from './auth'
 
 export type StudentState = { error?: string } | undefined
 
@@ -25,7 +25,7 @@ function parseStudentForm(formData: FormData) {
 export async function createStudentAction(_prev: StudentState, formData: FormData): Promise<StudentState> {
   let newId: string
   try {
-    await requireUser()
+    await requireAdmin()
     // Sin `active`: los alumnos nuevos siempre arrancan activos (default de la tabla) — el
     // checkbox recién aparece en el form de edición, así que acá no viaja en el FormData.
     const data = parseStudentForm(formData)
@@ -48,7 +48,7 @@ export async function createStudentAction(_prev: StudentState, formData: FormDat
 
 export async function updateStudentAction(id: string, _prev: StudentState, formData: FormData): Promise<StudentState> {
   try {
-    await requireUser()
+    await requireAdmin()
     const statusOverride = String(formData.get('status_override') ?? '')
     const data = {
       ...parseStudentForm(formData),
@@ -72,7 +72,7 @@ export async function updateStudentAction(id: string, _prev: StudentState, formD
 export async function deleteStudentAction(formData: FormData) {
   const id = String(formData.get('id') ?? '')
   if (!id) return
-  await requireUser()
+  await requireAdmin()
   const supabase = await createSupabaseServerClient()
 
   // Si tenía acceso al portal, borrar primero el usuario de Supabase Auth —
@@ -102,7 +102,7 @@ export async function markAttendanceAction(formData: FormData) {
   const excused = formData.get('excused') === 'true'
   const redirectTo = String(formData.get('redirect_to') ?? '/dashboard/alumnos')
   if (!studentId) return
-  await requireUser()
+  await requireAdmin()
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase
     .from('class_attendance')
@@ -120,7 +120,7 @@ export async function unmarkAttendanceAction(formData: FormData) {
   const attendanceId = String(formData.get('attendance_id') ?? '')
   const studentId = String(formData.get('student_id') ?? '')
   if (!attendanceId) return
-  await requireUser()
+  await requireAdmin()
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase.from('class_attendance').delete().eq('id', attendanceId)
   if (error) throw new Error(friendlyError(error, 'No se pudo quitar la asistencia.'))
@@ -139,7 +139,7 @@ export async function addPaymentAction(formData: FormData) {
   const qtyRaw = String(formData.get('classes_qty') ?? '').trim()
   const redirectTo = String(formData.get('redirect_to') ?? '/dashboard/alumnos')
   if (!studentId) return
-  await requireUser()
+  await requireAdmin()
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase.from('payments').insert({
     student_id: studentId,
@@ -157,7 +157,7 @@ export async function deletePaymentAction(formData: FormData) {
   const paymentId = String(formData.get('payment_id') ?? '')
   const studentId = String(formData.get('student_id') ?? '')
   if (!paymentId) return
-  await requireUser()
+  await requireAdmin()
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase.from('payments').delete().eq('id', paymentId)
   if (error) throw new Error(friendlyError(error, 'No se pudo eliminar el pago.'))
@@ -205,7 +205,7 @@ export async function createStudentAccountAction(_prev: AccountState, formData: 
   const name = String(formData.get('name') ?? '').trim()
   if (!studentId || !name) return { error: 'Falta el alumno.' }
 
-  await requireUser()
+  await requireAdmin()
   const tempPassword = generateTempPassword()
   const admin = createSupabaseAdminClient()
   const base = slugifyForEmail(name)
@@ -245,7 +245,7 @@ export async function resetStudentPasswordAction(_prev: AccountState, formData: 
   const userId = String(formData.get('user_id') ?? '')
   if (!studentId || !userId) return { error: 'Falta el alumno.' }
 
-  await requireUser()
+  await requireAdmin()
   const tempPassword = generateTempPassword()
   const admin = createSupabaseAdminClient()
 
