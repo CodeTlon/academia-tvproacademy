@@ -126,3 +126,13 @@ export async function requireStudent() {
   if (user.user_metadata?.role !== 'student') throw new Error('No autorizado')
   return user
 }
+
+/** Igual que `requireUser`, pero además excluye cuentas de alumno — defensa en profundidad
+ * para las Server Actions del panel de admin (blog, contenido, media). La RLS (migración 010)
+ * ya bloquea a un alumno a nivel de base, pero esto corta el flujo antes de llegar ahí, para
+ * que el error sea claro y no dependa únicamente de que la policy esté bien aplicada. */
+export async function requireAdmin() {
+  const user = await requireUser()
+  if (user.user_metadata?.role === 'student') throw new Error('No autorizado')
+  return user
+}
