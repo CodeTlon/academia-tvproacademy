@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { friendlyError } from '@/lib/friendly-error'
-import { requireUser } from './auth'
+import { requireAdmin } from './auth'
 import type { SiteSettingsKey } from '@/lib/site-settings'
 
 export type SettingsState = { success?: boolean; error?: string } | undefined
@@ -36,7 +36,7 @@ export async function updateSiteSettings(
   formData: FormData,
 ): Promise<SettingsState> {
   try {
-    await requireUser()
+    await requireAdmin()
 
     // Las settings "lista pura" (services, facilities, process, schedule) usan
     // un único ListField/StringList — su value en DB es el array tal cual, no

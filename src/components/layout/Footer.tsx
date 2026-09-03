@@ -34,7 +34,7 @@ export default async function Footer() {
         <nav className="flex flex-col gap-3">
           <span className="text-xs font-bold uppercase tracking-widest text-[#f5bf00] mb-1">Navegación</span>
           {links.map((link) => (
-            <Link key={link.href} href={link.href} className="text-sm text-[#a9b7cc] hover:text-[#f5bf00] transition-colors w-fit">
+            <Link key={link.href} href={link.href} className="text-sm text-[#a9b7cc] hover:text-[#f5bf00] transition-colors w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">
               {link.label}
             </Link>
           ))}

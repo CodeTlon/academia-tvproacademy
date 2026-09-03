@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { friendlyError } from '@/lib/friendly-error'
 import { extractStoragePath } from '@/lib/storage'
 import { MAX_IMAGE_BYTES } from '@/lib/upload-limits'
-import { requireUser } from './auth'
+import { requireAdmin } from './auth'
 
 /**
  * Sube una imagen al bucket `media`. El archivo ya viene achicado por
@@ -15,7 +15,7 @@ import { requireUser } from './auth'
  */
 export async function uploadImageAction(formData: FormData): Promise<{ url?: string; error?: string }> {
   try {
-    await requireUser()
+    await requireAdmin()
     const file = formData.get('file')
     if (!(file instanceof File)) return { error: 'Archivo inválido.' }
     if (file.size > MAX_IMAGE_BYTES) return { error: 'La imagen no puede superar 12 MB.' }
@@ -53,7 +53,7 @@ export async function uploadImageAction(formData: FormData): Promise<{ url?: str
 /** Borra un archivo del bucket `media` a partir de su URL pública (botón "Quitar"). */
 export async function deleteMediaAction(url: string): Promise<{ error?: string }> {
   try {
-    await requireUser()
+    await requireAdmin()
     const path = extractStoragePath(url)
     if (!path) return {}
     const supabase = await createSupabaseServerClient()

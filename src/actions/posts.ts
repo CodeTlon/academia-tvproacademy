@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation'
 import slugify from 'slugify'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { friendlyError } from '@/lib/friendly-error'
-import { requireUser } from './auth'
+import { sanitizePostContent } from '@/lib/sanitize-html'
+import { requireAdmin } from './auth'
 
 export type PostState = { error?: string } | undefined
 
@@ -13,7 +14,10 @@ function parseForm(formData: FormData) {
   return {
     title: String(formData.get('title') ?? '').trim(),
     excerpt: String(formData.get('excerpt') ?? '').trim() || null,
-    content: String(formData.get('content') ?? ''),
+    // Sanitizado acá, antes de que llegue a la DB — el editor Tiptap manda HTML
+    // crudo (editor.getHTML()) y esto es lo único que se sirve luego sin escapar
+    // (dangerouslySetInnerHTML en blog/[slug]/page.tsx). Ver lib/sanitize-html.ts.
+    content: sanitizePostContent(String(formData.get('content') ?? '')),
     cover_image: String(formData.get('cover_image') ?? '').trim() || null,
     category: String(formData.get('category') ?? '').trim() || null,
     published: formData.get('published') === 'on',
@@ -37,7 +41,7 @@ async function uniqueSlug(
 
 export async function createPostAction(_prev: PostState, formData: FormData): Promise<PostState> {
   try {
-    await requireUser()
+    await requireAdmin()
     const data = parseForm(formData)
     if (!data.title) return { error: 'El título es obligatorio.' }
 
@@ -56,7 +60,7 @@ export async function createPostAction(_prev: PostState, formData: FormData): Pr
 
 export async function updatePostAction(id: string, _prev: PostState, formData: FormData): Promise<PostState> {
   try {
-    await requireUser()
+    await requireAdmin()
     const data = parseForm(formData)
     if (!data.title) return { error: 'El título es obligatorio.' }
 
@@ -84,7 +88,7 @@ export async function updatePostAction(id: string, _prev: PostState, formData: F
 export async function deletePostAction(formData: FormData) {
   const id = String(formData.get('id') ?? '')
   if (!id) return
-  await requireUser()
+  await requireAdmin()
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase.from('posts').delete().eq('id', id)
   if (error) throw new Error(friendlyError(error, 'No se pudo eliminar el artículo.'))

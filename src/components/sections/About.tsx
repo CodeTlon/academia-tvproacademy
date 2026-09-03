@@ -16,10 +16,10 @@ export default async function About() {
       <section id="nosotros" className="py-24 md:py-32 px-5 md:px-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <Reveal className="order-2 md:order-1">
-            <h2 className="font-extrabold uppercase text-3xl md:text-5xl text-white mb-2">
+            <h1 className="font-extrabold uppercase text-3xl md:text-5xl text-white mb-2">
               {about.eyebrow} <br />
               <span className="text-[#f5bf00]">{about.founderName}</span>
-            </h2>
+            </h1>
             <p className="text-sm font-bold uppercase tracking-widest text-[#d2c5ab] mb-6">{about.role}</p>
             <p className="text-lg text-[#d2c5ab] leading-relaxed mb-8">{about.body}</p>
             <div className="flex items-center gap-4">

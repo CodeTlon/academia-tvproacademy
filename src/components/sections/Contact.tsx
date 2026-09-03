@@ -11,10 +11,10 @@ export default async function Contact() {
     <section id="contacto" className="min-h-screen flex items-center py-24 md:py-32 px-5 md:px-10 bg-[#030f1e]">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         <Reveal>
-          <h2 className="font-extrabold uppercase text-3xl md:text-5xl text-white mb-6">
+          <h1 className="font-extrabold uppercase text-3xl md:text-5xl text-white mb-6">
             Nuestras Instalaciones <br />
             <span className="text-[#f5bf00]">Y Contacto</span>
-          </h2>
+          </h1>
           <p className="text-lg text-[#d2c5ab] leading-relaxed mb-8">
             Si jugás en algún torneo y tu equipo necesita donde entrenar, comunicate con nosotros. Para que entrenes de la mejor manera.
           </p>
@@ -56,7 +56,7 @@ export default async function Contact() {
           </div>
           <a
             href={waLink(business.whatsapp, `Hola! Quiero reservar un turno en ${business.name}`)}
-            className="w-full inline-flex items-center justify-center gap-3 bg-[#f5bf00] text-[#241a00] font-bold uppercase tracking-wider px-8 py-4 rounded-full shadow-[0_0_20px_rgba(245,191,0,0.4)] hover:shadow-[0_0_30px_rgba(245,191,0,0.6)] transition-shadow"
+            className="w-full inline-flex items-center justify-center gap-3 bg-[#f5bf00] text-[#241a00] font-bold uppercase tracking-wider px-8 py-4 rounded-full shadow-[0_0_20px_rgba(245,191,0,0.4)] hover:shadow-[0_0_30px_rgba(245,191,0,0.6)] transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
           >
             <WhatsAppIcon size={20} />
             Escribinos Ahora

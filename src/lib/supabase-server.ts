@@ -20,7 +20,15 @@ export async function createSupabaseServerClient() {
       setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
         try {
           cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options),
+            // `secure` explícito: @supabase/ssr no lo setea por defecto (ver
+            // DEFAULT_COOKIE_OPTIONS), así que sin esto la cookie de sesión
+            // viajaría sin el flag Secure. httpOnly queda en false (default de
+            // la librería): createSupabaseBrowserClient() en supabase.ts la
+            // necesita legible desde JS para el upload directo a Storage.
+            cookieStore.set(name, value, {
+              ...options,
+              secure: process.env.NODE_ENV === 'production',
+            }),
           )
         } catch {
           // Server Component sin permisos para escribir cookies;

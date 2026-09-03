@@ -50,7 +50,7 @@ export default async function Hero() {
         <Reveal delay={300}>
           <a
             href={`https://wa.me/${business.whatsapp}`}
-            className="group inline-flex items-center justify-center gap-3 bg-[#f5bf00] text-[#241a00] font-bold uppercase tracking-wider text-lg px-10 py-4 rounded-full shadow-[0_0_20px_rgba(245,191,0,0.4)] hover:shadow-[0_0_30px_rgba(245,191,0,0.6)] transition-shadow"
+            className="group inline-flex items-center justify-center gap-3 bg-[#f5bf00] text-[#241a00] font-bold uppercase tracking-wider text-lg px-10 py-4 rounded-full shadow-[0_0_20px_rgba(245,191,0,0.4)] hover:shadow-[0_0_30px_rgba(245,191,0,0.6)] transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
           >
             Reservá tu turno
             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />

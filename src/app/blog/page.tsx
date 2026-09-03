@@ -4,6 +4,7 @@ import Footer from '@/components/layout/Footer'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { siteConfig } from '@/lib/site-config'
 import Reveal from '@/components/Reveal'
+import PublicExtras from '@/components/layout/PublicExtras'
 import BlogFilters from './BlogFilters'
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default async function BlogIndex() {
           <BlogFilters posts={posts ?? []} />
         </div>
       </main>
+      <PublicExtras />
       <Footer />
     </>
   )

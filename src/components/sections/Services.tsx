@@ -15,9 +15,9 @@ export default async function Services() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(245,191,0,0.08)_0%,transparent_60%)]" />
       <div className="relative max-w-7xl mx-auto">
         <Reveal className="text-center mb-16">
-          <h2 className="font-extrabold uppercase text-3xl md:text-5xl text-white mb-4">
+          <h1 className="font-extrabold uppercase text-3xl md:text-5xl text-white mb-4">
             Nuestra <span className="text-[#f5bf00]">Metodología</span>
-          </h2>
+          </h1>
           <p className="text-lg text-[#d2c5ab] max-w-2xl mx-auto">
             Ejercicios de alta intensidad diseñados para potenciar cada aspecto de tu juego bajo presión.
           </p>

@@ -17,7 +17,7 @@ export default function QuickLinks() {
           <Reveal key={href} delay={i * 100}>
             <Link
               href={href}
-              className="group block h-full bg-[#071424] border border-white/10 rounded-xl p-8 hover:border-[#f5bf00] hover:scale-[1.02] transition-all duration-500"
+              className="group block h-full bg-[#071424] border border-white/10 rounded-xl p-8 hover:border-[#f5bf00] hover:scale-[1.02] active:scale-[0.99] transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00]"
             >
               <Icon size={28} className="text-[#f5bf00] mb-4" />
               <h3 className="font-bold uppercase text-lg text-white mb-2">{title}</h3>
