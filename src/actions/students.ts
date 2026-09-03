@@ -218,7 +218,9 @@ export async function createStudentAccountAction(_prev: AccountState, formData: 
       email,
       password: tempPassword,
       email_confirm: true,
-      user_metadata: { role: 'student', student_id: studentId, must_change_password: true },
+      // `app_metadata` (no `user_metadata`): solo el service role puede escribirla — un alumno
+      // no puede auto-escalarse a admin llamando updateUser() desde el cliente con su propio token.
+      app_metadata: { role: 'student', student_id: studentId, must_change_password: true },
     })
     if (!error && data.user) { userId = data.user.id; break }
     if (!isDuplicateEmailError(error)) return { error: friendlyError(error, 'No se pudo crear el acceso.') }
@@ -254,7 +256,7 @@ export async function resetStudentPasswordAction(_prev: AccountState, formData: 
 
   const { error } = await admin.auth.admin.updateUserById(userId, {
     password: tempPassword,
-    user_metadata: { ...existing.user.user_metadata, must_change_password: true },
+    app_metadata: { ...existing.user.app_metadata, must_change_password: true },
   })
   if (error) return { error: friendlyError(error, 'No se pudo regenerar la contraseña.') }
 

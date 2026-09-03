@@ -71,7 +71,7 @@ export async function login(prevState: unknown, formData: FormData): Promise<Aut
     }
   }
 
-  const home = data.user?.user_metadata?.role === 'student' ? '/portal' : '/dashboard'
+  const home = data.user?.app_metadata?.role === 'student' ? '/portal' : '/dashboard'
   // Solo rutas internas del área que corresponde: nunca redirigir a un host externo,
   // ni mandar a un alumno al panel de admin (o viceversa) vía `?next=`.
   const next = rawNext.startsWith(home) && !rawNext.startsWith('//') ? rawNext : home
@@ -102,14 +102,21 @@ export async function changePassword(prevState: unknown, formData: FormData): Pr
   if (password !== confirmPassword) return { error: 'Las contraseñas no coinciden.' }
 
   const supabase = await createSupabaseServerClient()
-  const { data, error } = await supabase.auth.updateUser({
-    password,
-    data: { must_change_password: false },
-  })
+  const { data, error } = await supabase.auth.updateUser({ password })
 
   if (error) return { error: friendlyError(error, 'No se pudo cambiar la contraseña. Intentá de nuevo.') }
 
-  redirect(data.user?.user_metadata?.role === 'student' ? '/portal' : '/dashboard')
+  // `must_change_password` vive en `app_metadata` (ver nota de seguridad en `requireStudent`/
+  // `requireAdmin` más abajo) — solo el service role puede escribirla, así que limpiarla acá
+  // requiere el admin client aunque el usuario esté tocando su propia cuenta.
+  if (data.user) {
+    const admin = createSupabaseAdminClient()
+    await admin.auth.admin.updateUserById(data.user.id, {
+      app_metadata: { ...data.user.app_metadata, must_change_password: false },
+    })
+  }
+
+  redirect(data.user?.app_metadata?.role === 'student' ? '/portal' : '/dashboard')
 }
 
 /** Lanza si no hay sesión — defensa en profundidad además del middleware, para usar al tope de cada Server Action. */
@@ -123,7 +130,7 @@ export async function requireUser() {
 /** Igual que `requireUser`, pero además exige que la cuenta sea de alumno — defensa en profundidad para las lecturas del portal (la RLS ya acota los datos, esto evita que una cuenta admin entre a rutas del portal por error). */
 export async function requireStudent() {
   const user = await requireUser()
-  if (user.user_metadata?.role !== 'student') throw new Error('No autorizado')
+  if (user.app_metadata?.role !== 'student') throw new Error('No autorizado')
   return user
 }
 
@@ -133,6 +140,6 @@ export async function requireStudent() {
  * que el error sea claro y no dependa únicamente de que la policy esté bien aplicada. */
 export async function requireAdmin() {
   const user = await requireUser()
-  if (user.user_metadata?.role === 'student') throw new Error('No autorizado')
+  if (user.app_metadata?.role === 'student') throw new Error('No autorizado')
   return user
 }

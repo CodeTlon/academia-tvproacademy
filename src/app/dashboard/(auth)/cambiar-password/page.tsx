@@ -5,7 +5,7 @@ import CambiarPasswordForm from './CambiarPasswordForm'
 export default async function CambiarPasswordPage() {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const forced = Boolean(user?.user_metadata?.must_change_password)
+  const forced = Boolean(user?.app_metadata?.must_change_password)
 
   return (
     <div className="w-full max-w-sm">
