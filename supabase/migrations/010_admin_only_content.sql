@@ -18,8 +18,8 @@
 drop policy if exists "Authenticated can manage posts" on public.posts;
 create policy "Admin can manage posts"
   on public.posts for all
-  using (coalesce(auth.jwt()->'user_metadata'->>'role', '') <> 'student')
-  with check (coalesce(auth.jwt()->'user_metadata'->>'role', '') <> 'student');
+  using (coalesce(auth.jwt()->'app_metadata'->>'role', '') <> 'student')
+  with check (coalesce(auth.jwt()->'app_metadata'->>'role', '') <> 'student');
 
 -- ─── site_settings ───────────────────────────────────────────────────────
 -- "Public can read site_settings" (select, using true) no se toca: el
@@ -27,8 +27,8 @@ create policy "Admin can manage posts"
 drop policy if exists "Authenticated can write site_settings" on public.site_settings;
 create policy "Admin can write site_settings"
   on public.site_settings for all
-  using (coalesce(auth.jwt()->'user_metadata'->>'role', '') <> 'student')
-  with check (coalesce(auth.jwt()->'user_metadata'->>'role', '') <> 'student');
+  using (coalesce(auth.jwt()->'app_metadata'->>'role', '') <> 'student')
+  with check (coalesce(auth.jwt()->'app_metadata'->>'role', '') <> 'student');
 
 -- ─── storage.objects (bucket `media`) ────────────────────────────────────
 -- "Public can read media" (select) no se toca: el bucket es público a
@@ -40,7 +40,7 @@ create policy "Admin can upload media"
   to authenticated
   with check (
     bucket_id = 'media'
-    and coalesce(auth.jwt()->'user_metadata'->>'role', '') <> 'student'
+    and coalesce(auth.jwt()->'app_metadata'->>'role', '') <> 'student'
   );
 
 drop policy if exists "Authenticated can update media" on storage.objects;
@@ -49,7 +49,7 @@ create policy "Admin can update media"
   to authenticated
   using (
     bucket_id = 'media'
-    and coalesce(auth.jwt()->'user_metadata'->>'role', '') <> 'student'
+    and coalesce(auth.jwt()->'app_metadata'->>'role', '') <> 'student'
   );
 
 drop policy if exists "Authenticated can delete media" on storage.objects;
@@ -58,5 +58,5 @@ create policy "Admin can delete media"
   to authenticated
   using (
     bucket_id = 'media'
-    and coalesce(auth.jwt()->'user_metadata'->>'role', '') <> 'student'
+    and coalesce(auth.jwt()->'app_metadata'->>'role', '') <> 'student'
   );
