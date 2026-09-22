@@ -20,9 +20,11 @@ crear posts de prueba, dar de alta una cuenta de portal de prueba) está mutando
 la academia. No hay red de seguridad — no hay una base de "desarrollo" separada a la que apuntar
 en su lugar.
 
-**Fix propuesto (sin aplicar)**: crear un segundo proyecto Supabase para desarrollo, con su
-propio `.env.local`, y correr las 11 migraciones ahí. Es una decisión de infraestructura que
-excede el alcance de esta tarea de documentación — queda en `OPEN_QUESTIONS.md` para el usuario.
+**Fix propuesto (sin aplicar, decidido posponer 2026-09-21)**: crear un segundo proyecto Supabase
+para desarrollo, con su propio `.env.local`, y correr las 11 migraciones ahí. Es una decisión de
+infraestructura que excede el alcance de una tarea de documentación — el plan de 5 pasos ya está
+resuelto y escrito en `OPEN_QUESTIONS.md` #2, listo para ejecutar cuando el usuario lo pida. No es
+trabajo pendiente urgente, es trabajo futuro con el plan ya armado.
 
 ### 2. ~~Sin CI/gate obligatorio antes de que un push a `main` llegue a producción~~ (RESUELTO 2026-09-21)
 
