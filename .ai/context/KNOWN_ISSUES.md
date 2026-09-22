@@ -24,11 +24,11 @@ en su lugar.
 propio `.env.local`, y correr las 11 migraciones ahí. Es una decisión de infraestructura que
 excede el alcance de esta tarea de documentación — queda en `OPEN_QUESTIONS.md` para el usuario.
 
-### 2. Sin CI/gate obligatorio antes de que un push a `main` llegue a producción
+### 2. ~~Sin CI/gate obligatorio antes de que un push a `main` llegue a producción~~ (RESUELTO 2026-09-21)
 
-**Evidencia**: no hay `.github/workflows/`, ni pre-commit/pre-push hook, ni script `lint`. El
-deployment `academia-tvproacademy-k2r2l9550-...` (2026-09-01T04:04, estado Error) falló el build
-en producción con `Type error: Module "./auth" has no exported member 'requireAdmin'` —
+**Evidencia original**: no había `.github/workflows/`, ni pre-commit/pre-push hook, ni script
+`lint`. El deployment `academia-tvproacademy-k2r2l9550-...` (2026-09-01T04:04, estado Error) falló
+el build en producción con `Type error: Module "./auth" has no exported member 'requireAdmin'` —
 exactamente el bug que describe el commit `b562af9` ("fix: add missing requireAdmin export (was
 only in working tree, broke prod build)"). El primer lugar donde se detectó fue el build de
 Vercel en producción, no una corrida local de `npm run type-check`.
@@ -37,9 +37,12 @@ Vercel en producción, no una corrida local de `npm run type-check`.
 sirviendo tráfico), así que no hubo downtime — pero el push llegó a intentar deployar a
 producción sin haber pasado type-check localmente.
 
-**Fix propuesto (sin aplicar)**: un workflow de GitHub Actions que corra `npm run type-check` en
-cada PR/push, o como mínimo un hook de pre-push local. Decisión de tooling nueva, no aplicada en
-esta tarea.
+**Fix aplicado** (commit `c014c30`): `.github/workflows/ci.yml` corre `npm run type-check` +
+`npm run build` en cada push/PR a `main`. Verificado localmente antes de commitear (build/
+type-check limpios sin `.env.local`, confirmando que no hace falta configurar secrets en el
+workflow — todas las rutas son dinámicas, ninguna llama a Supabase en build-time). No hay `lint`
+script todavía, así que no hay step de lint (queda comentado en el workflow para cuando se agregue
+uno).
 
 ---
 
@@ -58,16 +61,23 @@ de privilegios (migraciones 010/011 documentan el bug en detalle en sus propios 
 CodeTlon/academia-tvproacademy --visibility private`) — acción que no se ejecutó, requiere
 confirmación explícita del usuario.
 
-### 4. Vulnerabilidad `@tiptap/*` con fix disponible
+### 4. ~~Vulnerabilidad `@tiptap/*` con fix disponible~~ (RESUELTO 2026-09-21)
 
-**Evidencia**: `npm audit` reporta `@tiptap/core <=3.30.4` (y toda la familia de extensions que
-dependen de él) con severidad "high" por CVSS pero **explotabilidad real acotada**: el vector es
-`mergeAttributes()` con una key `__proto__` maliciosa y ReDoS en el parseo de Markdown — el único
-punto de entrada es el editor del blog, detrás de `requireAdmin()` + middleware. Requiere que
-quien pega/escribe el contenido ya sea un admin autenticado, no es explotable por un visitante.
-**Fix disponible sin breaking change** vía `npm audit fix` (no se corrió — es una mutación del
-`package.json`/lockfile, no de datos de producción, pero se deja para que el usuario lo apruebe
-explícitamente dado que toca dependencias).
+**Evidencia original**: `npm audit` reportaba `@tiptap/core <=3.30.4` (y toda la familia de
+extensions que dependen de él) con severidad "high" por CVSS pero **explotabilidad real acotada**:
+el vector es `mergeAttributes()` con una key `__proto__` maliciosa y ReDoS en el parseo de
+Markdown — el único punto de entrada es el editor del blog, detrás de `requireAdmin()` +
+middleware. Requiere que quien pega/escribe el contenido ya sea un admin autenticado, no es
+explotable por un visitante.
+
+**Fix aplicado** (commit `c655da2`, aprobado explícitamente por el usuario): `@tiptap/*` (los 6
+paquetes en `package.json`) actualizados de `^3.23.6` a `^3.31.3` — mismo major, sin breaking
+change. **Ojo**: `npm audit fix` sin `--force` (el comando que originalmente se proponía acá) no
+alcanzaba — `extension-image`/`extension-link` fijan `peerDependencies` con versión exacta de
+`@tiptap/core`, así que hace falta el bump coordinado de todo el set (`npm install
+@tiptap/react@^3.31.3 @tiptap/starter-kit@^3.31.3 ...`), no un solo comando genérico. Verificado:
+`type-check` y `build` limpios post-upgrade, 29→2 vulnerabilidades restantes (las 2 que quedan son
+`postcss`/`next`, ítem #6 de esta lista, BAJA, requiere major de Next).
 
 ### 5. `README.md` desactualizado
 

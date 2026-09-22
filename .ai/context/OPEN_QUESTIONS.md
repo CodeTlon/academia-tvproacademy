@@ -25,6 +25,5 @@ Preguntas que solo el usuario puede responder — no asumir una respuesta y segu
    contradicen sobre si debería descontar del ciclo de 8 clases. El código hoy SÍ la descuenta.
    Confirmar antes de tocar esa lógica.
 
-5. **¿Se corrió `npm audit fix` para `@tiptap/*` alguna vez, o conviene hacerlo ahora?**
-   (`KNOWN_ISSUES.md` #4). Fix sin breaking change disponible, pero toca `package-lock.json` —
-   no se ejecutó en esta sesión de documentación por alcance, no por riesgo técnico.
+5. ~~¿Se corrió `npm audit fix` para `@tiptap/*` alguna vez, o conviene hacerlo ahora?~~
+   **Resuelta 2026-09-21**: sí, aplicado (commit `c655da2`). Ver `KNOWN_ISSUES.md` #4.
