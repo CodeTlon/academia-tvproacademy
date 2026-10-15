@@ -7,9 +7,8 @@
 #
 # Variables a cargar en Coolify (sin comillas):
 #   Obligatoria : BETTER_AUTH_SECRET   (openssl rand -base64 48 | tr -d '\n=+/' | cut -c1-64; distinto por entorno)
-#   Opcionales  : NEXT_PUBLIC_SITE_URL, NEXT_PUBLIC_GA_ID (entran en el BUILD), RESEND_API_KEY, RESEND_FROM_EMAIL,
-#                 COMPANY_EMAIL, APP_ENV, MAIL_SANDBOX_TO (obligatoria en test, prohibida en prod),
-#                 TRANSCODE_SERVICE_URL, TRANSCODE_API_KEY (servicio global de video, ver video-transcode.md)
+#   Obligatoria : NEXT_PUBLIC_SITE_URL (entra en el BUILD: sitemap, robots y metadatos)
+#   Opcional    : NEXT_PUBLIC_GA_ID (entra en el BUILD; vacio = sin analytics ni banner de cookies)
 # La contraseña de Postgres y el CRON_SECRET los genera Coolify (variables mágicas SERVICE_PASSWORD_*): no se tipean.
 #
 # Reglas que costaron un bug real (no las cambies):
@@ -34,20 +33,12 @@ services:
     environment:
       SERVICE_FQDN_APP_3000:
       NODE_ENV: production
-      APP_ENV: ${APP_ENV:-production}
       DATABASE_URL: postgres://app:${SERVICE_PASSWORD_POSTGRES}@db:5432/app
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Definí BETTER_AUTH_SECRET en las variables del recurso}
       BETTER_AUTH_URL: ${SERVICE_URL_APP}
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
       STORAGE_DIR: /data/storage
       STORAGE_PUBLIC_URL: ${SERVICE_URL_APP}/media
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
-      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-}
-      COMPANY_EMAIL: ${COMPANY_EMAIL:-}
-      MAIL_SANDBOX_TO: ${MAIL_SANDBOX_TO:-}
-      # Servicio global de compresión de video (opcional; sin él se guarda el original).
-      TRANSCODE_SERVICE_URL: ${TRANSCODE_SERVICE_URL:-}
-      TRANSCODE_API_KEY: ${TRANSCODE_API_KEY:-}
     volumes:
       - storage:/data/storage
     healthcheck:

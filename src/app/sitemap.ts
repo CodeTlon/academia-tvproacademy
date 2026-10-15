@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { posts as postsTable } from '@/db/schema'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tvproacademy.com.ar'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tvproacademy.com.ar'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Sin base (build de CI) el sitemap sale solo con las rutas fijas.

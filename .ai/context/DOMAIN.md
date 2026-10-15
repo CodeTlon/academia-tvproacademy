@@ -42,13 +42,13 @@ que el código actual es el deseado solo porque es lo que hay hoy.
   contraseña temporal random (8 caracteres, alfabeto sin ambiguos — sin `0/O/1/I/l`) y un email
   **sintético**: `slugify(nombre)@tvproacademy.com.ar` (con sufijo numérico si ya existe otro
   alumno con el mismo nombre normalizado).
-- Ese email **nunca recibe nada** — Supabase Auth lo exige como identificador único de login,
+- Ese email **nunca recibe nada** — Better Auth lo exige como identificador único de login,
   pero no hay envío de mail real (coherente con que `resend` esté en `package.json` sin ningún
   call site en `src/`).
 - La contraseña temporal se muestra una sola vez en pantalla al admin, que se la pasa al alumno
   **fuera del sistema** (WhatsApp). `must_change_password: true` en `app_metadata` fuerza el
   cambio en el primer login (gateado por `middleware.ts`).
 - Al borrar un alumno con cuenta de portal (`deleteStudentAction`), se borra primero el usuario
-  de Supabase Auth y después la fila — si no, el email sintético queda "tomado" para siempre y un
+  del usuario y después la fila — si no, el email sintético queda "tomado" para siempre y un
   alumno nuevo con el mismo nombre no puede recibir cuenta (bug real que ya pasó, según el
   comentario en el código).

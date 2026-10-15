@@ -35,7 +35,7 @@ const title = `${siteConfig.business.displayName} | Entrená Como un Profesional
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tvproacademy.com.ar',
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://tvproacademy.com.ar',
   ),
   title,
   description: siteConfig.business.tagline,
@@ -72,7 +72,7 @@ const schemaOrg = {
   name: siteConfig.business.displayName,
   alternateName: siteConfig.business.name,
   description: siteConfig.business.tagline,
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tvproacademy.com.ar',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tvproacademy.com.ar',
   image: '/images/og-image.jpg',
   telephone: siteConfig.business.phone,
   email: siteConfig.business.email,
