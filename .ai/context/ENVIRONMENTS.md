@@ -15,4 +15,4 @@
 - `produccion.yml` y `backup-check.yml`: de la plantilla; **no activar hasta el corte** (requieren `PRODUCCION_HABILITADA`, `PROD_URL`, el Environment `prod-coolify` y la clave de lectura de B2).
 
 ## Backups
-Pendiente (obligatorio antes de cargar datos reales): `scripts/backup/` con `backup-coolify.sh` y `restore-test.sh` de la fábrica, cron en el VPS, `FILES_MODE=volume` y simulacro de restauración fechado. Ver `docs/BACKUPS.md` en `codetlon-cloud`.
+Scripts copiados en `scripts/backup/` (de la fábrica; sin probar contra B2 real). Falta (obligatorio antes de cargar datos reales): cron en el VPS, `FILES_MODE=volume` y simulacro de restauración fechado. Ver `docs/BACKUPS.md` en `codetlon-cloud`.
