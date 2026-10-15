@@ -13,7 +13,7 @@ calidad."
 Nació como una instancia del "CodeTlon Demo Template" (de ahí el `name: "codetlon-demo-template"`
 que todavía queda en `package.json`, y el `README.md` desactualizado — ver `KNOWN_ISSUES.md`)
 y se convirtió en un proyecto real con lógica propia: dashboard de admin y portal de alumnos con
-Supabase, que el template genérico no tiene.
+un backend propio (Postgres + Better Auth), que el template genérico no tiene.
 
 ## Para quién
 

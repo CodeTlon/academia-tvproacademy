@@ -2,7 +2,7 @@
 // GoogleAnalytics.tsx (gtag consent bootstrap) — pasar a nonces sería más
 // estricto pero requiere generar el nonce en middleware.ts y pasarlo a cada
 // <Script>, fuera de alcance de un fix de bajo riesgo. connect-src incluye
-// el dominio de Supabase (API + Auth); frame-src permite embeds de YouTube
+// 'self' (todo, incluidos los archivos de /media, sale del propio dominio); frame-src permite embeds de YouTube
 // (Tiptap extension-youtube en el contenido del blog).
 const CSP = [
   "default-src 'self'",
@@ -10,7 +10,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' https: data: blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://www.googletagmanager.com",
+  "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com",
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -33,6 +33,8 @@ const securityHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Imagen mínima para Docker/Coolify: server.js autocontenido en .next/standalone.
+  output: 'standalone',
   images: {
     // '**' porque el dashboard deja pegar cualquier URL de imagen (portada de
     // blog, drills de metodología) — sin esto, next/image tira 400 apenas el
@@ -50,4 +52,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig

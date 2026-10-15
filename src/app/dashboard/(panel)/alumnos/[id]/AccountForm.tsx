@@ -142,7 +142,6 @@ export default function AccountForm({ student }: { student: Student }) {
         {student.user_id && (
           <form action={resetAction}>
             <input type="hidden" name="student_id" value={student.id} />
-            <input type="hidden" name="user_id" value={student.user_id} />
             <ResetSubmitButton />
           </form>
         )}

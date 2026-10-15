@@ -1,4 +1,7 @@
-import { createSupabaseServerClient } from './supabase-server'
+import { asc, desc, eq } from 'drizzle-orm'
+import { db } from './db'
+import { classAttendance, payments, students } from '@/db/schema'
+import { getUser } from './session'
 import { todayStr } from './date'
 
 export type StatusOverride = 'al_dia' | 'vencido' | null
@@ -67,20 +70,19 @@ function resolveExpired(statusOverride: StatusOverride, autoExpired: boolean) {
  * venció el mes.
  */
 export async function getStudentsWithStatus(): Promise<StudentStatus[]> {
-  const supabase = await createSupabaseServerClient()
-  const [{ data: students }, { data: attendance }, { data: payments }] = await Promise.all([
-    supabase.from('students').select('*').order('name'),
-    supabase.from('class_attendance').select('student_id, class_date'),
-    supabase.from('payments').select('student_id, paid_at').order('paid_at', { ascending: false }),
+  const [studentRows, attendance, paymentRows] = await Promise.all([
+    db.select().from(students).orderBy(asc(students.name)),
+    db.select({ student_id: classAttendance.student_id, class_date: classAttendance.class_date }).from(classAttendance),
+    db.select({ student_id: payments.student_id, paid_at: payments.paid_at }).from(payments).orderBy(desc(payments.paid_at)),
   ])
 
   const today = todayStr()
 
-  return (students ?? []).map((student) => {
-    const lastPaymentAt = (payments ?? []).find((p) => p.student_id === student.id)?.paid_at ?? null
+  return studentRows.map((student) => {
+    const lastPaymentAt = paymentRows.find((p) => p.student_id === student.id)?.paid_at ?? null
     const cycleStart = lastPaymentAt ?? student.created_at.slice(0, 10)
     const cycleEnd = addMonths(cycleStart, 1)
-    const totalTaken = (attendance ?? []).filter((a) => a.student_id === student.id).length
+    const totalTaken = attendance.filter((a) => a.student_id === student.id).length
     const classesAllowed = student.weekly_frequency * 4
     const classesTaken = classesInCurrentCycle(totalTaken, classesAllowed)
     const classesRemaining = classesAllowed - classesTaken
@@ -101,38 +103,40 @@ export async function getStudentsWithStatus(): Promise<StudentStatus[]> {
 
 /** Id del alumno ligado a la sesión actual (portal) — null si no hay sesión o no está vinculada. */
 export async function getMyStudentId(): Promise<string | null> {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getUser()
   if (!user) return null
-  const { data } = await supabase.from('students').select('id').eq('user_id', user.id).single()
-  return data?.id ?? null
+  const [row] = await db.select({ id: students.id }).from(students).where(eq(students.user_id, user.id)).limit(1)
+  return row?.id ?? null
 }
 
 export async function getStudentDetail(id: string) {
-  const supabase = await createSupabaseServerClient()
-  const [{ data: student }, { data: attendance }, { data: payments }] = await Promise.all([
-    supabase.from('students').select('*').eq('id', id).single(),
-    supabase.from('class_attendance').select('id, class_date, class_time, excused').eq('student_id', id).order('class_date', { ascending: false }),
-    supabase.from('payments').select('id, paid_at, amount, classes_qty').eq('student_id', id).order('paid_at', { ascending: false }),
+  // Un id que no es UUID haría fallar la consulta en Postgres: se trata como "no existe".
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return null
+  const [[student], attendance, paymentRows] = await Promise.all([
+    db.select().from(students).where(eq(students.id, id)).limit(1),
+    db.select({ id: classAttendance.id, class_date: classAttendance.class_date, class_time: classAttendance.class_time, excused: classAttendance.excused })
+      .from(classAttendance).where(eq(classAttendance.student_id, id)).orderBy(desc(classAttendance.class_date)),
+    db.select({ id: payments.id, paid_at: payments.paid_at, amount: payments.amount, classes_qty: payments.classes_qty })
+      .from(payments).where(eq(payments.student_id, id)).orderBy(desc(payments.paid_at)),
   ])
   if (!student) return null
 
-  const lastPaymentAt = payments?.[0]?.paid_at ?? null
+  const lastPaymentAt = paymentRows[0]?.paid_at ?? null
   const cycleStart = lastPaymentAt ?? student.created_at.slice(0, 10)
   const cycleEnd = addMonths(cycleStart, 1)
   const classesAllowed = student.weekly_frequency * 4
-  const totalTaken = attendance?.length ?? 0
+  const totalTaken = attendance.length
   const classesTaken = classesInCurrentCycle(totalTaken, classesAllowed)
   const classesRemaining = classesAllowed - classesTaken
   const expired = resolveExpired(student.status_override, classesRemaining <= 0 || todayStr() >= cycleEnd)
   // Fecha de la clase más vieja que todavía forma parte del bloque de 8 sin
   // completar — para marcar en la lista cuáles cuentan del ciclo actual.
-  const currentBlockStart = classesTaken > 0 ? [...(attendance ?? [])].sort((a, b) => a.class_date.localeCompare(b.class_date))[totalTaken - classesTaken]?.class_date : null
+  const currentBlockStart = classesTaken > 0 ? [...attendance].sort((a, b) => a.class_date.localeCompare(b.class_date))[totalTaken - classesTaken]?.class_date : null
 
   return {
     student: student as Student,
-    attendance: attendance ?? [],
-    payments: payments ?? [],
+    attendance,
+    payments: paymentRows,
     cycleStart,
     cycleEnd,
     classesAllowed,

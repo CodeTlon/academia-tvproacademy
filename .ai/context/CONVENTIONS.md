@@ -8,7 +8,7 @@ no hay convención real, se dice explícito — no se inventa una.
 - `'use server'` al tope del archivo (no por función).
 - Toda acción de escritura empieza con `await requireAdmin()` (o `requireUser`/`requireStudent`
   según corresponda) dentro de un `try`. Ver `ARCHITECTURE.md`.
-- Errores de Supabase se pasan siempre por `friendlyError(error, 'mensaje default en castellano')`
+- Errores de Postgres se pasan siempre por `friendlyError(error, 'mensaje default en castellano')`
   (`src/lib/friendly-error.ts`) antes de devolverlos al estado del form — nunca `error.message`
   crudo a la UI.
 - `revalidatePath(...)` después de cada mutación exitosa, sobre las rutas que muestran ese dato.
@@ -66,13 +66,13 @@ componentes de página/sección.
 
 | Archivo | Qué hace |
 |---|---|
-| `friendly-error.ts` | Traduce errores de Postgres/Supabase (por código PG o por patrón de mensaje) a castellano apto para UI. |
+| `friendly-error.ts` | Traduce errores de Postgres (por código PG o por patrón de mensaje) a castellano apto para UI. |
 | `sanitize-html.ts` | Sanitiza HTML del editor del blog (whitelist + hook que bloquea iframes que no sean de YouTube). |
 | `date.ts` | `todayStr()` y helpers de fecha en formato `YYYY-MM-DD`. |
 | `utils.ts` | Utilidades genéricas (`cn()` para clases Tailwind vía `clsx`/`tailwind-merge`, etc.). |
 | `storage.ts` | `extractStoragePath()` — deriva el path interno del bucket a partir de una URL pública, para poder borrar el archivo. |
 | `upload-limits.ts` | Constantes de límite de tamaño de imagen (`MAX_IMAGE_BYTES`). |
-| `client-upload.ts` / `client-image-resize.ts` | Resize de imagen en el navegador antes de subir (evita el límite de body de Vercel). |
+| `client-upload.ts` / `client-image-resize.ts` | Resize de imagen en el navegador antes de subir (achica el peso del envío). |
 | `image-focal.ts` | Punto focal de imagen (para el `FocalPicker` del dashboard). |
 
 ## Lo que NO hay (decilo así si te preguntan, no lo inventes)

@@ -3,10 +3,13 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { randomBytes } from 'crypto'
-import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase-server'
+import { eq } from 'drizzle-orm'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { classAttendance, payments, students, session as sessionTable, user as userTable } from '@/db/schema'
 import { friendlyError } from '@/lib/friendly-error'
 import { todayStr } from '@/lib/date'
-import { requireAdmin } from './auth'
+import { requireAdmin } from '@/lib/session'
 
 export type StudentState = { error?: string } | undefined
 
@@ -31,9 +34,7 @@ export async function createStudentAction(_prev: StudentState, formData: FormDat
     const data = parseStudentForm(formData)
     if (!data.name) return { error: 'El nombre es obligatorio.' }
 
-    const supabase = await createSupabaseServerClient()
-    const { data: inserted, error } = await supabase.from('students').insert(data).select('id').single()
-    if (error) return { error: friendlyError(error, 'No se pudo crear el alumno.') }
+    const [inserted] = await db.insert(students).values(data).returning({ id: students.id })
 
     revalidatePath('/dashboard/alumnos')
     newId = inserted.id
@@ -53,13 +54,11 @@ export async function updateStudentAction(id: string, _prev: StudentState, formD
     const data = {
       ...parseStudentForm(formData),
       active: formData.get('active') === 'on',
-      status_override: statusOverride === 'al_dia' || statusOverride === 'vencido' ? statusOverride : null,
+      status_override: (statusOverride === 'al_dia' || statusOverride === 'vencido' ? statusOverride : null) as 'al_dia' | 'vencido' | null,
     }
     if (!data.name) return { error: 'El nombre es obligatorio.' }
 
-    const supabase = await createSupabaseServerClient()
-    const { error } = await supabase.from('students').update(data).eq('id', id)
-    if (error) return { error: friendlyError(error, 'No se pudo guardar el alumno.') }
+    await db.update(students).set(data).where(eq(students.id, id))
 
     revalidatePath('/dashboard/alumnos')
     revalidatePath(`/dashboard/alumnos/${id}`)
@@ -73,21 +72,16 @@ export async function deleteStudentAction(formData: FormData) {
   const id = String(formData.get('id') ?? '')
   if (!id) return
   await requireAdmin()
-  const supabase = await createSupabaseServerClient()
 
-  // Si tenía acceso al portal, borrar primero el usuario de Supabase Auth —
-  // si no, el email queda "tomado" para siempre y no se puede reusar en un
-  // alumno nuevo (es lo que pasó: se borró el alumno de prueba pero no la
-  // cuenta, y el siguiente alta con el mismo mail tiró "ya existe").
-  const { data: student } = await supabase.from('students').select('user_id').eq('id', id).single()
-  if (student?.user_id) {
-    const admin = createSupabaseAdminClient()
-    const { error: authError } = await admin.auth.admin.deleteUser(student.user_id)
-    if (authError) throw new Error(friendlyError(authError, 'No se pudo eliminar la cuenta de portal del alumno.'))
+  // Si tenía acceso al portal, borrar también el usuario: si no, el email queda "tomado" para siempre y no se
+  // puede reusar en un alumno nuevo. Sesiones y credenciales caen en cascada con el usuario.
+  try {
+    const [student] = await db.select({ user_id: students.user_id }).from(students).where(eq(students.id, id)).limit(1)
+    if (student?.user_id) await db.delete(userTable).where(eq(userTable.id, student.user_id))
+    await db.delete(students).where(eq(students.id, id))
+  } catch (e) {
+    throw new Error(friendlyError(e, 'No se pudo eliminar el alumno.'))
   }
-
-  const { error } = await supabase.from('students').delete().eq('id', id)
-  if (error) throw new Error(friendlyError(error, 'No se pudo eliminar el alumno.'))
   revalidatePath('/dashboard/alumnos')
   redirect('/dashboard/alumnos?saved=deleted')
 }
@@ -103,14 +97,14 @@ export async function markAttendanceAction(formData: FormData) {
   const redirectTo = String(formData.get('redirect_to') ?? '/dashboard/alumnos')
   if (!studentId) return
   await requireAdmin()
-  const supabase = await createSupabaseServerClient()
-  const { error } = await supabase
-    .from('class_attendance')
-    .upsert(
-      { student_id: studentId, class_date: classDate, class_time: classTime, excused },
-      { onConflict: 'student_id,class_date', ignoreDuplicates: true },
-    )
-  if (error) throw new Error(friendlyError(error, 'No se pudo marcar la clase.'))
+  try {
+    await db
+      .insert(classAttendance)
+      .values({ student_id: studentId, class_date: classDate, class_time: classTime, excused })
+      .onConflictDoNothing({ target: [classAttendance.student_id, classAttendance.class_date] })
+  } catch (e) {
+    throw new Error(friendlyError(e, 'No se pudo marcar la clase.'))
+  }
   revalidatePath('/dashboard/alumnos')
   revalidatePath(`/dashboard/alumnos/${studentId}`)
   redirect(redirectTo)
@@ -121,9 +115,11 @@ export async function unmarkAttendanceAction(formData: FormData) {
   const studentId = String(formData.get('student_id') ?? '')
   if (!attendanceId) return
   await requireAdmin()
-  const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.from('class_attendance').delete().eq('id', attendanceId)
-  if (error) throw new Error(friendlyError(error, 'No se pudo quitar la asistencia.'))
+  try {
+    await db.delete(classAttendance).where(eq(classAttendance.id, attendanceId))
+  } catch (e) {
+    throw new Error(friendlyError(e, 'No se pudo quitar la asistencia.'))
+  }
   revalidatePath('/dashboard/alumnos')
   if (studentId) revalidatePath(`/dashboard/alumnos/${studentId}`)
 }
@@ -140,14 +136,16 @@ export async function addPaymentAction(formData: FormData) {
   const redirectTo = String(formData.get('redirect_to') ?? '/dashboard/alumnos')
   if (!studentId) return
   await requireAdmin()
-  const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.from('payments').insert({
-    student_id: studentId,
-    paid_at: paidAt,
-    amount: amountRaw ? Number(amountRaw) : null,
-    classes_qty: qtyRaw ? Number(qtyRaw) : null,
-  })
-  if (error) throw new Error(friendlyError(error, 'No se pudo registrar el pago.'))
+  try {
+    await db.insert(payments).values({
+      student_id: studentId,
+      paid_at: paidAt,
+      amount: amountRaw ? Number(amountRaw) : null,
+      classes_qty: qtyRaw ? Number(qtyRaw) : null,
+    })
+  } catch (e) {
+    throw new Error(friendlyError(e, 'No se pudo registrar el pago.'))
+  }
   revalidatePath('/dashboard/alumnos')
   revalidatePath(`/dashboard/alumnos/${studentId}`)
   redirect(redirectTo)
@@ -158,9 +156,11 @@ export async function deletePaymentAction(formData: FormData) {
   const studentId = String(formData.get('student_id') ?? '')
   if (!paymentId) return
   await requireAdmin()
-  const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.from('payments').delete().eq('id', paymentId)
-  if (error) throw new Error(friendlyError(error, 'No se pudo eliminar el pago.'))
+  try {
+    await db.delete(payments).where(eq(payments.id, paymentId))
+  } catch (e) {
+    throw new Error(friendlyError(e, 'No se pudo eliminar el pago.'))
+  }
   revalidatePath('/dashboard/alumnos')
   if (studentId) revalidatePath(`/dashboard/alumnos/${studentId}`)
 }
@@ -191,13 +191,7 @@ function slugifyForEmail(name: string) {
   return slug || 'alumno'
 }
 
-function isDuplicateEmailError(error: { code?: string; message?: string } | null) {
-  if (!error) return false
-  if (error.code === 'email_exists') return true
-  return /already.*registered|already exists/i.test(error.message ?? '')
-}
-
-/** Crea la cuenta de portal de un alumno: usuario en Supabase Auth + `email`/`user_id` en la fila del alumno.
+/** Crea la cuenta de portal de un alumno: usuario (rol `student`, contraseña temporal) + `email`/`user_id` en la fila del alumno.
  * El email es sintético (`nombre.apellido@tvproacademy.com.ar`, con un número al final si ya existe otro
  * alumno con el mismo nombre) — solo sirve de identificador de login, nunca se envía nada ahí. */
 export async function createStudentAccountAction(_prev: AccountState, formData: FormData): Promise<AccountState> {
@@ -207,34 +201,35 @@ export async function createStudentAccountAction(_prev: AccountState, formData: 
 
   await requireAdmin()
   const tempPassword = generateTempPassword()
-  const admin = createSupabaseAdminClient()
   const base = slugifyForEmail(name)
+  const ctx = await auth.$context
 
   let email = ''
   let userId: string | null = null
-  for (let attempt = 0; attempt < 20; attempt++) {
-    email = `${base}${attempt === 0 ? '' : attempt + 1}@tvproacademy.com.ar`
-    const { data, error } = await admin.auth.admin.createUser({
-      email,
-      password: tempPassword,
-      email_confirm: true,
-      // `app_metadata` (no `user_metadata`): solo el service role puede escribirla — un alumno
-      // no puede auto-escalarse a admin llamando updateUser() desde el cliente con su propio token.
-      app_metadata: { role: 'student', student_id: studentId, must_change_password: true },
-    })
-    if (!error && data.user) { userId = data.user.id; break }
-    if (!isDuplicateEmailError(error)) return { error: friendlyError(error, 'No se pudo crear el acceso.') }
-  }
-  if (!userId) return { error: 'No se pudo generar un usuario único para el acceso.' }
+  try {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      email = `${base}${attempt === 0 ? '' : attempt + 1}@tvproacademy.com.ar`
+      if (await ctx.internalAdapter.findUserByEmail(email, { includeAccounts: false })) continue
+      // `role` y `mustChangePassword` los escribe solo el servidor: un alumno no puede auto-escalarse a admin.
+      const created = await ctx.internalAdapter.createUser(
+        { email, name, emailVerified: true, role: 'student', mustChangePassword: true },
+        { method: 'email-password' },
+      )
+      await ctx.internalAdapter.linkAccount({
+        userId: created.id,
+        providerId: 'credential',
+        accountId: created.id,
+        password: await ctx.password.hash(tempPassword),
+      })
+      userId = created.id
+      break
+    }
+    if (!userId) return { error: 'No se pudo generar un usuario único para el acceso.' }
 
-  const supabase = await createSupabaseServerClient()
-  const { error: updateError } = await supabase
-    .from('students')
-    .update({ email, user_id: userId })
-    .eq('id', studentId)
-  if (updateError) {
-    await admin.auth.admin.deleteUser(userId)
-    return { error: friendlyError(updateError, 'No se pudo vincular el acceso al alumno.') }
+    await db.update(students).set({ email, user_id: userId }).where(eq(students.id, studentId))
+  } catch (e) {
+    if (userId) await db.delete(userTable).where(eq(userTable.id, userId)).catch(() => {})
+    return { error: friendlyError(e, 'No se pudo crear el acceso.') }
   }
 
   revalidatePath(`/dashboard/alumnos/${studentId}`)
@@ -244,22 +239,25 @@ export async function createStudentAccountAction(_prev: AccountState, formData: 
 /** Genera una contraseña temporal nueva para un alumno que ya tiene cuenta (ej: se olvidó la contraseña). */
 export async function resetStudentPasswordAction(_prev: AccountState, formData: FormData): Promise<AccountState> {
   const studentId = String(formData.get('student_id') ?? '')
-  const userId = String(formData.get('user_id') ?? '')
-  if (!studentId || !userId) return { error: 'Falta el alumno.' }
+  if (!studentId) return { error: 'Falta el alumno.' }
 
   await requireAdmin()
   const tempPassword = generateTempPassword()
-  const admin = createSupabaseAdminClient()
+  try {
+    // El usuario sale de la fila del alumno, nunca del formulario: un admin no puede resetear una cuenta ajena al alumno.
+    const [student] = await db.select({ user_id: students.user_id }).from(students).where(eq(students.id, studentId)).limit(1)
+    if (!student?.user_id) return { error: 'Este alumno todavía no tiene acceso.' }
+    const [existing] = await db.select({ id: userTable.id, email: userTable.email }).from(userTable).where(eq(userTable.id, student.user_id)).limit(1)
+    if (!existing) return { error: 'No se pudo encontrar la cuenta.' }
 
-  const { data: existing, error: getError } = await admin.auth.admin.getUserById(userId)
-  if (getError || !existing.user) return { error: friendlyError(getError, 'No se pudo encontrar la cuenta.') }
+    const ctx = await auth.$context
+    await ctx.internalAdapter.updatePassword(existing.id, await ctx.password.hash(tempPassword))
+    await db.update(userTable).set({ mustChangePassword: true }).where(eq(userTable.id, existing.id))
+    await db.delete(sessionTable).where(eq(sessionTable.userId, existing.id))
 
-  const { error } = await admin.auth.admin.updateUserById(userId, {
-    password: tempPassword,
-    app_metadata: { ...existing.user.app_metadata, must_change_password: true },
-  })
-  if (error) return { error: friendlyError(error, 'No se pudo regenerar la contraseña.') }
-
-  revalidatePath(`/dashboard/alumnos/${studentId}`)
-  return { tempPassword, email: existing.user.email ?? undefined }
+    revalidatePath(`/dashboard/alumnos/${studentId}`)
+    return { tempPassword, email: existing.email }
+  } catch (e) {
+    return { error: friendlyError(e, 'No se pudo regenerar la contraseña.') }
+  }
 }

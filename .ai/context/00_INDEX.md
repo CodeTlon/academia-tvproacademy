@@ -1,6 +1,6 @@
 # Índice — .ai/context/
 
-Generado 2026-09-18 mediante auditoría de context engineering (código + git + APIs de Vercel/
+Generado 2026-09-18 (actualizado 2026-10-15, v2.0.0) mediante auditoría de context engineering (código + git + APIs de Vercel/
 GitHub, verificado activamente, no copiado de documentación previa — no había ninguna). Si algo
 acá contradice lo que ves en el código, **el código gana**; actualizá este archivo, no al revés.
 
@@ -14,17 +14,20 @@ acá contradice lo que ves en el código, **el código gana**; actualizá este a
 | [CURRENT_STATE.md](CURRENT_STATE.md) | Snapshot de qué está deployado hoy y desde cuándo. Puede quedar desactualizado — confirmá con `git log`/`vercel ls` si pasó tiempo. |
 | [KNOWN_ISSUES.md](KNOWN_ISSUES.md) | Problemas reales con severidad explícita (ALTA/MEDIA/BAJA), evidencia y fix propuesto sin aplicar. Leer antes de tocar auth, deploy o dependencias. |
 | [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) | Preguntas que solo el usuario puede responder — no asumir una respuesta y seguir. |
+| [ENVIRONMENTS.md](ENVIRONMENTS.md) | dev / test / prod, variables (nombres), workflows y backups. |
+| [MIGRACION_SUPABASE.md](MIGRACION_SUPABASE.md) | Inventario, cómo se copian los datos y qué está verificado de la migración a Coolify. |
+| [PENDIENTES.md](PENDIENTES.md) | Lo que falta y es de Mateo (Coolify, token de Supabase, backup, corte). |
 
 ## Qué leer según la tarea
 
 | Tarea | Leé primero |
 |---|---|
 | Agregar/modificar una Server Action | ARCHITECTURE.md (patrón de auth) + CONVENTIONS.md |
-| Tocar `src/middleware.ts`, roles, o RLS | ARCHITECTURE.md + DECISIONS.md (historia `app_metadata`) + KNOWN_ISSUES.md |
+| Tocar `src/middleware.ts`, roles o guardas | ARCHITECTURE.md + DECISIONS.md + KNOWN_ISSUES.md |
 | Tocar asistencia/pagos/vencimientos de alumnos | DOMAIN.md |
 | Tocar contenido público (hero, nosotros, blog, servicios) | ARCHITECTURE.md → sección `site_settings` |
 | Cambiar dependencias o correr `npm audit fix` | KNOWN_ISSUES.md (severidad de cada vulnerabilidad ya clasificada) |
-| Deploy, variables de entorno, ambientes | ARCHITECTURE.md → "Cadena de deploy" — **leer antes de asumir que hay staging** |
+| Deploy, variables de entorno, ambientes | ENVIRONMENTS.md + PENDIENTES.md |
 | Cualquier tarea que implique correr algo localmente | AGENTS.md (warning de producción) antes que nada |
 
 ## Fase de RAG / subagente (gate de decisión, resuelto)
