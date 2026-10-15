@@ -1,39 +1,17 @@
 # CURRENT_STATE.md
 
-Snapshot al 2026-09-18. **Esto se desactualiza rápido — si pasó más de un par de semanas desde
-esta fecha, confirmá con `git log -5` y `vercel ls` antes de confiar en algo de acá.**
+Snapshot al 2026-10-15. Se desactualiza: confirmá con `git log -5` y `git branch -r`.
 
-## Último estado conocido de producción
+## Ramas
+- `main`: **v1.x en producción** (Vercel + Supabase, https://tvproacademy.com.ar). No se tocó.
+- `dev` y `test`: creadas el 2026-10-15 desde `main`. `dev` recibe la migración (v2.0.0).
+- `feature/dev2-coolify`: rama de trabajo de la migración.
 
-- Último commit en `main`: `a4cfe30` ("fix: migracion 010 tambien usa app_metadata (no
-  user_metadata), mismo criterio que 011") — 2026-09-03.
-- Deploy de producción correspondiente: `dpl_CJH4bjhKH1nduGLWJ9WSb8ukVqgq`, Ready, creado
-  2026-09-03T16:06:19, alias activo en `tvproacademy.com.ar` / `www.tvproacademy.com.ar`.
-- 14 días sin nuevos commits al momento de este snapshot — el trabajo más reciente fue
-  exclusivamente la tanda de fixes de seguridad `app_metadata` (ver `DECISIONS.md`), ya en
-  producción y funcionando (sin reportes de acceso indebido posteriores, según lo que se pudo
-  verificar en esta sesión — no se revisaron logs de Supabase Auth más allá de esto).
+## Qué hay en v2.0.0 (`dev`)
+Sitio, dashboard, blog, alumnos (asistencia, pagos, acceso al portal) y portal: mismo comportamiento, sobre Drizzle + Better Auth + archivos en volumen. Dockerfile, compose de Coolify, health, CI con Postgres, E2E en 3 viewports (25 pasaron en local, 2 saltados por diseño), fuentes autoalojadas, `npm audit` en 0 altas, scripts de migración de datos.
 
-## Qué está completo y en uso real
+## Qué falta
+Ver `PENDIENTES.md`: recursos de Coolify, ensayo con datos reales anonimizados en `test`, backup B2 con simulacro, corte y baja de Supabase/Vercel. La imagen Docker se probó en local contra Postgres real: migra al arrancar, `/api/health` 200, corre como usuario no root, 25 E2E pasan contra el contenedor (login con hash bcrypt incluido) y los archivos subidos sobreviven un reinicio.
 
-- Sitio público completo (home, nosotros, entrenamiento, blog con 5 artículos reales, contacto).
-- Dashboard admin: gestión de contenido (hero, nosotros, servicios, instalaciones, metodología,
-  negocio), blog (CRUD + editor Tiptap), alumnos (alta, edición, asistencia, pagos, alta/reset de
-  acceso al portal).
-- Portal de alumnos: vista de solo lectura del propio estado de cuenta.
-- Auth: login único, cambio de contraseña obligatorio en primer login, RLS + Server Actions +
-  middleware en las tres capas para todo lo anterior.
-
-## Qué NO está implementado (no es que esté roto, nunca se construyó)
-
-- Envío de email real (Resend está declarado, sin call site).
-- Ambiente de staging separado (dev local = prod, ver `KNOWN_ISSUES.md`).
-- Tests, lint, CI (ver `CONVENTIONS.md`/`KNOWN_ISSUES.md`).
-
-## Documentación desactualizada conocida
-
-`README.md` (raíz del repo) describe el proyecto como el "CodeTlon Demo Template" genérico
-("solo hay un archivo que tocar: `src/lib/demo-config.ts`") — ese archivo y ese patrón ya no
-existen, fueron reemplazados por `site_settings` + Supabase (ver `ARCHITECTURE.md`). No se
-reescribió como parte de esta tarea de context engineering (es código/documentación de producto,
-no `.ai/context/`) — queda como tarea pendiente si el usuario la pide.
+## No implementado (nunca se construyó)
+Envío de email (Resend se quitó del compose; sigue en `package.json` sin uso), ESLint.

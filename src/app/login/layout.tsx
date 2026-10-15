@@ -1,10 +1,16 @@
 import Image from 'next/image'
+import { redirect } from 'next/navigation'
+import { getUser, homeFor } from '@/lib/session'
 
-export default function LoginLayout({
+export default async function LoginLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // Ya autenticado: directo a lo suyo.
+  const user = await getUser()
+  if (user) redirect(homeFor(user))
+
   return (
     /* Cubre cualquier layout público con z-index alto */
     <div className="fixed inset-0 z-[100] lg:grid lg:grid-cols-2">
