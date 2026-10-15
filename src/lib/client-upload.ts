@@ -1,26 +1,25 @@
-import { createSupabaseBrowserClient } from './supabase'
-import { extractStoragePath } from './storage'
-
 /**
- * Sube directo al bucket desde el navegador (no vía Server Action) — para
- * video, el body de una Server Action en Vercel se corta en ~4.5MB, muy por
- * debajo de un MP4 real. El browser client comparte la cookie de sesión con
- * createSupabaseServerClient(), así que la policy "Authenticated can upload
- * media" (to authenticated) aplica igual.
+ * Sube un archivo al servidor (volumen de Coolify) con un POST directo a /api/upload, sin pasar por un
+ * Server Action: el límite de body de las acciones (20MB) es menor que el de video/PDF en upload-limits.ts.
+ * Solo funciona con sesión del dashboard.
  */
-export async function uploadDirectToStorage(file: File, folder: string): Promise<{ url?: string; error?: string }> {
-  const supabase = createSupabaseBrowserClient()
-  const ext = file.name.split('.').pop()?.toLowerCase() || 'bin'
-  const path = `${folder}/${crypto.randomUUID()}.${ext}`
-  const { error } = await supabase.storage.from('media').upload(path, file, { contentType: file.type, upsert: false })
-  if (error) return { error: error.message }
-  const { data } = supabase.storage.from('media').getPublicUrl(path)
-  return { url: data.publicUrl }
+export async function uploadDirectToStorage(
+  file: File,
+  folder: string,
+): Promise<{ url?: string; error?: string }> {
+  const contentType = file.type || 'application/octet-stream'
+  const res = await fetch(`/api/upload?folder=${encodeURIComponent(folder)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': contentType },
+    body: file,
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) return { error: data.error ?? 'Falló la subida del archivo.' }
+  return { url: data.url }
 }
 
-export async function deleteFromStorage(url: string) {
-  const path = extractStoragePath(url)
-  if (!path) return
-  const supabase = createSupabaseBrowserClient()
-  await supabase.storage.from('media').remove([path])
+/** Borra un archivo propio (/media/...) del volumen. Solo admin; ignora URLs externas. */
+export async function deleteFromStorage(url: string): Promise<void> {
+  const { deleteMediaAction } = await import('@/actions/media')
+  await deleteMediaAction(url)
 }

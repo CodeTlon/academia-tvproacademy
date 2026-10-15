@@ -1,17 +1,19 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { LogOut, KeyRound } from 'lucide-react'
-import { requireStudent, signOut } from '@/actions/auth'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { signOut } from '@/actions/auth'
+import { guardPage } from '@/lib/session'
+import { db } from '@/lib/db'
+import { students } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 export default async function PortalPanelLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const user = await requireStudent()
-  const supabase = await createSupabaseServerClient()
-  const { data: student } = await supabase.from('students').select('name').eq('user_id', user.id).single()
+  const user = await guardPage('portal')
+  const [student] = await db.select({ name: students.name }).from(students).where(eq(students.user_id, user.id)).limit(1)
 
   return (
     <div className="min-h-screen bg-zinc-100">

@@ -1,16 +1,17 @@
 import Link from 'next/link'
 import { Plus, Pencil, Eye, EyeOff } from 'lucide-react'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { desc } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { posts as postsTable } from '@/db/schema'
 import { deletePostAction } from '@/actions/posts'
 import PageHeader from '@/components/dashboard/PageHeader'
 import DeleteButton from '@/components/dashboard/DeleteButton'
 
 export default async function BlogListPage() {
-  const supabase = await createSupabaseServerClient()
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('id, title, category, published, created_at')
-    .order('created_at', { ascending: false })
+  const posts = await db
+    .select({ id: postsTable.id, title: postsTable.title, category: postsTable.category, published: postsTable.published, created_at: postsTable.created_at })
+    .from(postsTable)
+    .orderBy(desc(postsTable.created_at))
 
   return (
     <div className="max-w-4xl">

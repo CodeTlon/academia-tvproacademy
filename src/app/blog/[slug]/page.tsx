@@ -6,7 +6,9 @@ import { ArrowLeft } from 'lucide-react'
 import WhatsAppIcon from '@/components/icons/WhatsAppIcon'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { and, desc, eq, ne } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { posts as postsTable } from '@/db/schema'
 import { sanitizePostContent } from '@/lib/sanitize-html'
 import { getSiteSettings } from '@/lib/site-settings'
 import { focalImageProps } from '@/lib/image-focal'
@@ -29,24 +31,21 @@ function tldrFromExcerpt(excerpt: string | null): string[] {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createSupabaseServerClient()
-  const { data: post } = await supabase.from('posts').select('title, excerpt').eq('slug', slug).eq('published', true).single()
+  const [post] = await db.select({ title: postsTable.title, excerpt: postsTable.excerpt }).from(postsTable).where(and(eq(postsTable.slug, slug), eq(postsTable.published, true))).limit(1)
   if (!post) return {}
   return { title: `${post.title} | ${siteConfig.business.displayName}`, description: post.excerpt ?? undefined }
 }
 
 export default async function BlogArticle({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = await createSupabaseServerClient()
-  const { data: post } = await supabase.from('posts').select('*').eq('slug', slug).eq('published', true).single()
+  const [post] = await db.select().from(postsTable).where(and(eq(postsTable.slug, slug), eq(postsTable.published, true))).limit(1)
   if (!post) notFound()
 
-  const { data: related } = await supabase
-    .from('posts')
-    .select('slug, title, category')
-    .eq('published', true)
-    .neq('slug', slug)
-    .order('created_at', { ascending: false })
+  const related = await db
+    .select({ slug: postsTable.slug, title: postsTable.title, category: postsTable.category })
+    .from(postsTable)
+    .where(and(eq(postsTable.published, true), ne(postsTable.slug, slug)))
+    .orderBy(desc(postsTable.created_at))
     .limit(3)
 
   const { business } = await getSiteSettings()

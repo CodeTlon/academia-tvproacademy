@@ -14,3 +14,9 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Migracion y archivos locales
+/storage/
+scripts/migracion/out/
+scripts/migracion/.env.migracion
+tsconfig.tsbuildinfo

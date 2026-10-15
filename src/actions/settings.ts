@@ -1,9 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { db } from '@/lib/db'
+import { siteSettings } from '@/db/schema'
 import { friendlyError } from '@/lib/friendly-error'
-import { requireAdmin } from './auth'
+import { requireAdmin } from '@/lib/session'
 import type { SiteSettingsKey } from '@/lib/site-settings'
 
 export type SettingsState = { success?: boolean; error?: string } | undefined
@@ -58,12 +59,11 @@ export async function updateSiteSettings(
         ? parseFieldValue(entries[0][1])
         : Object.fromEntries(entries.map(([field, raw]) => [field, parseFieldValue(raw)]))
 
-    const supabase = await createSupabaseServerClient()
-    const { error } = await supabase
-      .from('site_settings')
-      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
-
-    if (error) return { error: friendlyError(error, 'No se pudo guardar. Intentá de nuevo.') }
+    const now = new Date().toISOString()
+    await db
+      .insert(siteSettings)
+      .values({ key, value, updated_at: now })
+      .onConflictDoUpdate({ target: siteSettings.key, set: { value, updated_at: now } })
 
     revalidatePath('/', 'layout')
     return { success: true }
