@@ -31,6 +31,10 @@ const FONT_MAP: Record<string, string> = {
   'Nunito': '--font-nunito',
 }
 
+// Todas las páginas leen la base (contenido editable, sesión) y el build corre SIN base: sin esto, Next intenta prerenderizarlas
+// y falla (o peor, congelaría el contenido de respaldo). Ver coolify-compose.md, "páginas con datos dinámicas".
+export const dynamic = 'force-dynamic'
+
 const title = `${siteConfig.business.displayName} | Entrená Como un Profesional`
 
 export const metadata: Metadata = {

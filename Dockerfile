@@ -15,7 +15,8 @@ ARG STORAGE_PUBLIC_URL
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_GA_ID
 ENV NEXT_TELEMETRY_DISABLED=1 STORAGE_PUBLIC_URL=$STORAGE_PUBLIC_URL NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
-RUN npm run build
+# Better Auth exige un secreto al evaluar las rutas en el build; este valor SOLO existe en esta capa (el runtime recibe el real del compose).
+RUN BETTER_AUTH_SECRET=build_only_placeholder_secret_value_not_used_at_runtime BETTER_AUTH_URL=http://localhost:3000 npm run build
 # El script de migraciones se empaqueta en un solo archivo (el standalone de Next no trae drizzle ni su migrador).
 RUN npx esbuild scripts/migrate.mts --bundle --platform=node --format=esm --external:pg-native --outfile=dist/migrate.mjs \
     --banner:js="import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);"
