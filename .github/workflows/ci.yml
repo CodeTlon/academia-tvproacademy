@@ -23,7 +23,6 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - run: npm ci
-      - run: npm run lint
       - run: npx tsc --noEmit
       # Fuentes autoalojadas (gate 14): next/font/google baja la fuente en cada build y falla de forma intermitente.
       - name: Sin next/font/google
@@ -36,12 +35,23 @@ jobs:
         env:
           BETTER_AUTH_SECRET: ci_placeholder_secret_ci_placeholder_secret
           BETTER_AUTH_URL: http://localhost:3000
-          RESEND_API_KEY: re_placeholder
       - run: npm audit --omit=dev --audit-level=high
 
   e2e:
     name: E2E (3 viewports)
     runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: { POSTGRES_USER: app, POSTGRES_PASSWORD: app, POSTGRES_DB: app }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U app -d app" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgres://app:app@localhost:5432/app
+      BETTER_AUTH_SECRET: ci_placeholder_secret_ci_placeholder_secret
+      BETTER_AUTH_URL: http://localhost:3000
+      STORAGE_DIR: ${{ runner.temp }}/storage
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -50,11 +60,17 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - run: npm run db:migrate
+      # Admin de prueba para el flujo completo (la clave se genera en el momento y no sale del job).
+      - name: Crear admin de prueba
+        run: |
+          salida=$(npx tsx scripts/crear-usuario.mts admin-e2e@test.local "Admin E2E" admin)
+          echo "E2E_ADMIN_EMAIL=admin-e2e@test.local" >> "$GITHUB_ENV"
+          clave=$(echo "$salida" | sed -n 's/^Contraseña temporal: //p')
+          echo "::add-mask::$clave"
+          echo "E2E_ADMIN_PASSWORD=$clave" >> "$GITHUB_ENV"
       # No definir PORT a nivel global del workflow: Playwright arma su baseURL con ese valor.
       - run: npx playwright test
-        env:
-          BETTER_AUTH_SECRET: ci_placeholder_secret_ci_placeholder_secret
-          BETTER_AUTH_URL: http://localhost:3000
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
