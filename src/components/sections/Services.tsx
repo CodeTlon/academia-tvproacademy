@@ -16,7 +16,7 @@ export default async function Services() {
       <div className="relative max-w-7xl mx-auto">
         <Reveal className="text-center mb-16">
           <h1 className="font-extrabold uppercase text-3xl md:text-5xl text-white mb-4">
-            Nuestra <span className="text-[#f5bf00]">Metodología</span>
+            Nuestra <span className="text-gold">Metodología</span>
           </h1>
           <p className="text-lg text-[#d2c5ab] max-w-2xl mx-auto">
             Ejercicios de alta intensidad diseñados para potenciar cada aspecto de tu juego bajo presión.
@@ -28,7 +28,7 @@ export default async function Services() {
             const Icon = resolveIcon(drill.icon)
             return (
               <Reveal key={drill.title} delay={i * 120}>
-                <div className="group bg-[#071424] border border-white/10 rounded-xl overflow-hidden hover:scale-[1.02] hover:border-[#f5bf00] transition-all duration-500 hover:shadow-[0_10px_40px_-10px_rgba(245,191,0,0.3)]">
+                <div className="group bg-[#071424] border border-white/10 rounded-xl overflow-hidden hover:scale-[1.02] hover:border-gold transition-all duration-500 hover:shadow-[0_10px_40px_-10px_rgba(245,191,0,0.3)]">
                   <div className="relative aspect-video overflow-hidden bg-[#0e1b2c]">
                     {drill.image && (() => {
                       const fp = focalImageProps(drill.image)
@@ -47,11 +47,11 @@ export default async function Services() {
                     <div className="absolute inset-0 bg-[#071424]/40 group-hover:bg-[#071424]/20 transition-colors" />
                   </div>
                   <div className="p-8">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 border border-[#f5bf00] text-[#f5bf00] text-xs font-bold uppercase tracking-wide rounded-full mb-4">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 border border-gold text-gold text-xs font-bold uppercase tracking-wide rounded-full mb-4">
                       <Icon size={14} />
                       {drill.tag}
                     </span>
-                    <h3 className="font-bold uppercase text-xl text-[#f5bf00] mb-2">{drill.title}</h3>
+                    <h3 className="font-bold uppercase text-xl text-gold mb-2">{drill.title}</h3>
                     <p className="text-sm text-[#d2c5ab] leading-relaxed">{drill.description}</p>
                   </div>
                 </div>
@@ -64,7 +64,7 @@ export default async function Services() {
           {steps.map((step, i) => (
             <Reveal key={step.title} delay={i * 120}>
               <div className="relative pl-16">
-                <span className="absolute left-0 top-0 flex items-center justify-center w-12 h-12 rounded-full border-2 border-[#f5bf00] text-[#f5bf00] font-black text-lg">
+                <span className="absolute left-0 top-0 flex items-center justify-center w-12 h-12 rounded-full border-2 border-gold text-gold font-black text-lg">
                   {i + 1}
                 </span>
                 <h3 className="font-bold uppercase text-lg text-white mb-2">{step.title}</h3>

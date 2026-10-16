@@ -14,12 +14,12 @@ export default async function InstalacionesContentPage() {
       </Link>
       <PageHeader title="Instalaciones y horarios" description="Sección de contacto (/contacto): qué ofrece el predio y cuándo se entrena." />
 
-      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm mb-6">
+      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-xs mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Instalaciones</h2>
         <FacilitiesForm items={settings.facilities} />
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-xs">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Horarios de entrenamiento</h2>
         <ScheduleForm items={settings.schedule} />
       </div>

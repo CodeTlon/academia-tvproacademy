@@ -1,6 +1,160 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-demo-bg: var(--demo-bg);
+  --color-demo-surface: var(--demo-surface);
+  --color-demo-surface-alt: var(--demo-surface-alt);
+  --color-demo-heading: var(--demo-heading);
+  --color-demo-text: var(--demo-text);
+  --color-demo-muted: var(--demo-muted);
+  --color-demo-border: var(--demo-border);
+  --color-demo-accent: var(--demo-accent);
+  --color-demo-on-accent: var(--demo-on-accent);
+  --color-demo-structural: var(--demo-structural);
+  --color-demo-on-structural: var(--demo-on-structural);
+
+  --color-gold: #f5bf00;
+  --color-gold-dark: #d9a600;
+
+  --color-on-gold: #241a00;
+
+  --font-demo: var(--demo-font), sans-serif;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility eyebrow {
+  /* Etiqueta "eyebrow" reutilizable (antes era un bloque inline repetido 10 veces) */
+  @apply text-sm font-semibold uppercase tracking-[0.3em] mb-3;
+  color: var(--brand-accent);
+}
+
+@utility section-title {
+  @apply text-3xl md:text-4xl font-bold mb-4;
+  color: var(--brand-heading);
+}
+
+@utility section-subtitle {
+  @apply text-lg max-w-2xl;
+  color: var(--brand-muted);
+}
+
+@utility section-pad {
+  @apply py-20 md:py-28;
+}
+
+@utility card {
+  /* Card temática: el tratamiento (borde / sombra / glass) lo decide
+     data-cards en <html>, seteado desde style.cards del config. */
+  @apply p-6 transition-all duration-200;
+  background-color: var(--brand-surface);
+  border-radius: var(--brand-radius-lg);
+  /* Tratamiento de superficies según style.cards ──────────────── */
+  [data-cards='shadow'] &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+  [data-cards='border'] & {
+    border: 1px solid var(--brand-border);
+  }
+  [data-cards='border'] &:hover {
+    border-color: var(--brand-accent);
+  }
+  [data-cards='glass'] & {
+    border: 1px solid var(--brand-border);
+    background-color: color-mix(in srgb, var(--brand-surface) 70%, transparent);
+    backdrop-filter: blur(12px);
+  }
+}
+
+@utility btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold transition-all duration-200;
+  background-color: var(--brand-accent);
+  color: var(--brand-on-accent);
+  border-radius: var(--brand-radius);
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+@utility btn-outline {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold border-2 transition-all duration-200;
+  border-color: var(--brand-accent);
+  color: var(--brand-accent);
+  border-radius: var(--brand-radius);
+  &:hover {
+    background-color: var(--brand-accent);
+    color: var(--brand-on-accent);
+  }
+}
+
+@utility prose-post {
+  /* HTML de artículos del blog (viene del editor Tiptap del dashboard) */
+  & > * + * {
+    @apply mt-6;
+  }
+  & h2 {
+    @apply text-2xl font-bold mt-2;
+    color: var(--brand-heading);
+  }
+  & ul {
+    @apply list-disc pl-6 space-y-2;
+  }
+  & ol {
+    @apply list-decimal pl-6 space-y-2;
+  }
+  & blockquote {
+    @apply pl-4 italic;
+    border-left: 3px solid var(--brand-accent);
+    color: var(--brand-muted);
+  }
+  & a {
+    color: var(--brand-accent);
+    text-decoration: underline;
+  }
+  & img {
+    @apply rounded-xl w-full;
+  }
+  & video {
+    @apply rounded-xl w-full;
+  }
+  & iframe {
+    @apply rounded-xl w-full border-0;
+    aspect-ratio: 16 / 9;
+    height: auto;
+  }
+}
+
+@utility reveal {
+  /* Scroll-reveal (lo dispara el componente <Reveal>) ─────────── */
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+  will-change: opacity, transform;
+}
+
+@utility reveal-in {
+  opacity: 1;
+  transform: none;
+}
 
 @layer base {
   :root {
@@ -48,93 +202,6 @@
     background-color: var(--brand-bg);
     color: var(--brand-text);
     font-family: var(--brand-font), sans-serif;
-  }
-}
-
-@layer components {
-  /* Etiqueta "eyebrow" reutilizable (antes era un bloque inline repetido 10 veces) */
-  .eyebrow {
-    @apply text-sm font-semibold uppercase tracking-[0.3em] mb-3;
-    color: var(--brand-accent);
-  }
-
-  .section-title {
-    @apply text-3xl md:text-4xl font-bold mb-4;
-    color: var(--brand-heading);
-  }
-  .section-subtitle {
-    @apply text-lg max-w-2xl;
-    color: var(--brand-muted);
-  }
-  .section-pad { @apply py-20 md:py-28; }
-
-  /* Card temática: el tratamiento (borde / sombra / glass) lo decide
-     data-cards en <html>, seteado desde style.cards del config. */
-  .card {
-    @apply p-6 transition-all duration-200;
-    background-color: var(--brand-surface);
-    border-radius: var(--brand-radius-lg);
-  }
-
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold transition-all duration-200;
-    background-color: var(--brand-accent);
-    color: var(--brand-on-accent);
-    border-radius: var(--brand-radius);
-  }
-  .btn-primary:hover { opacity: 0.9; }
-
-  .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold border-2 transition-all duration-200;
-    border-color: var(--brand-accent);
-    color: var(--brand-accent);
-    border-radius: var(--brand-radius);
-  }
-  .btn-outline:hover { background-color: var(--brand-accent); color: var(--brand-on-accent); }
-
-  /* HTML de artículos del blog (viene del editor Tiptap del dashboard) */
-  .prose-post > * + * { @apply mt-6; }
-  .prose-post h2 { @apply text-2xl font-bold mt-2; color: var(--brand-heading); }
-  .prose-post ul { @apply list-disc pl-6 space-y-2; }
-  .prose-post ol { @apply list-decimal pl-6 space-y-2; }
-  .prose-post blockquote {
-    @apply pl-4 italic;
-    border-left: 3px solid var(--brand-accent);
-    color: var(--brand-muted);
-  }
-  .prose-post a { color: var(--brand-accent); text-decoration: underline; }
-  .prose-post img, .prose-post video { @apply rounded-xl w-full; }
-  .prose-post iframe { @apply rounded-xl w-full border-0; aspect-ratio: 16 / 9; height: auto; }
-}
-
-@layer utilities {
-  /* Tratamiento de superficies según style.cards ──────────────── */
-  [data-cards='shadow'] .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  }
-  [data-cards='border'] .card {
-    border: 1px solid var(--brand-border);
-  }
-  [data-cards='border'] .card:hover {
-    border-color: var(--brand-accent);
-  }
-  [data-cards='glass'] .card {
-    border: 1px solid var(--brand-border);
-    background-color: color-mix(in srgb, var(--brand-surface) 70%, transparent);
-    backdrop-filter: blur(12px);
-  }
-
-  /* Scroll-reveal (lo dispara el componente <Reveal>) ─────────── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-    will-change: opacity, transform;
-  }
-  .reveal-in {
-    opacity: 1;
-    transform: none;
   }
 }
 
