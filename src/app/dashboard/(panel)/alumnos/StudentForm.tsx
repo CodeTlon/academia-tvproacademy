@@ -19,7 +19,7 @@ export default function StudentForm({ student }: { student?: Student }) {
     <form action={formAction} className="space-y-6">
       {state?.error && (
         <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-lg p-4">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
           <p className="text-red-700 text-sm">{state.error}</p>
         </div>
       )}

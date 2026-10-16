@@ -40,17 +40,17 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">
+      <div className="bg-white rounded-xl border border-zinc-200 shadow-xs p-5 mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Datos del alumno</h2>
         <StudentForm student={student} />
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">
+      <div className="bg-white rounded-xl border border-zinc-200 shadow-xs p-5 mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Acceso al portal</h2>
         <AccountForm student={student} />
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">
+      <div className="bg-white rounded-xl border border-zinc-200 shadow-xs p-5 mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Asistencia</h2>
         <form action={markAttendanceAction} className="flex items-end gap-2 mb-2">
           <input type="hidden" name="student_id" value={student.id} />
@@ -106,7 +106,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
         )}
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-zinc-200 shadow-xs p-5">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Pagos</h2>
         <form action={addPaymentAction} className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
           <input type="hidden" name="student_id" value={student.id} />

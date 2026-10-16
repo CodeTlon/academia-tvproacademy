@@ -45,7 +45,7 @@ export default function CambiarPasswordForm({ forced, backHref = '/dashboard' }:
 
         {state?.error && (
           <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <p className="text-red-700 text-sm">{state.error}</p>
           </div>
         )}
@@ -64,7 +64,7 @@ export default function CambiarPasswordForm({ forced, backHref = '/dashboard' }:
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors"
             />
             <PasswordStrength value={password} className="mt-3" />
           </div>
@@ -80,7 +80,7 @@ export default function CambiarPasswordForm({ forced, backHref = '/dashboard' }:
               required
               minLength={8}
               placeholder="••••••••"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors"
             />
           </div>
 

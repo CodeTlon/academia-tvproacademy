@@ -32,7 +32,7 @@ function CopyField({ label, value, ariaLabel }: { label: string; value: string; 
             setCopied(true)
             setTimeout(() => setCopied(false), 2000)
           }}
-          className="p-2.5 rounded-md border border-gold/40 bg-white text-on-gold hover:bg-gold/10 transition-colors flex-shrink-0"
+          className="p-2.5 rounded-md border border-gold/40 bg-white text-on-gold hover:bg-gold/10 transition-colors shrink-0"
           aria-label={ariaLabel}
         >
           {copied ? <Check size={16} /> : <Copy size={16} />}
@@ -132,7 +132,7 @@ export default function AccountForm({ student }: { student: Student }) {
         )}
         {resetState?.error && (
           <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-lg p-4">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <p className="text-red-700 text-sm">{resetState.error}</p>
           </div>
         )}
@@ -153,7 +153,7 @@ export default function AccountForm({ student }: { student: Student }) {
     <div className="space-y-4">
       {createState?.error && (
         <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-lg p-4">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
           <p className="text-red-700 text-sm">{createState.error}</p>
         </div>
       )}

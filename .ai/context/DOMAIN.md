@@ -47,7 +47,7 @@ que el código actual es el deseado solo porque es lo que hay hoy.
   call site en `src/`).
 - La contraseña temporal se muestra una sola vez en pantalla al admin, que se la pasa al alumno
   **fuera del sistema** (WhatsApp). `must_change_password: true` en `app_metadata` fuerza el
-  cambio en el primer login (gateado por `middleware.ts`).
+  cambio en el primer login (gateado por `proxy.ts`).
 - Al borrar un alumno con cuenta de portal (`deleteStudentAction`), se borra primero el usuario
   del usuario y después la fila — si no, el email sintético queda "tomado" para siempre y un
   alumno nuevo con el mismo nombre no puede recibir cuenta (bug real que ya pasó, según el

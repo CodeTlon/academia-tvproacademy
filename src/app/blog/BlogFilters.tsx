@@ -50,7 +50,7 @@ export default function BlogFilters({ posts }: { posts: Post[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar artículos..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-full text-sm bg-transparent outline-none focus:border-[#f5bf00] transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-full text-sm bg-transparent outline-hidden focus:border-gold transition-colors"
             style={{ border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}
           />
         </div>
@@ -110,7 +110,7 @@ export default function BlogFilters({ posts }: { posts: Post[] }) {
                     </div>
                   )
                 })()}
-                {post.category && <span className="eyebrow !mb-2 text-xs">{post.category}</span>}
+                {post.category && <span className="eyebrow mb-2! text-xs">{post.category}</span>}
                 <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--brand-heading)' }}>
                   {post.title}
                 </h2>

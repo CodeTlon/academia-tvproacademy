@@ -27,7 +27,7 @@ export default function DashboardHomePage() {
           <Link
             key={href}
             href={href}
-            className="group bg-white rounded-xl border border-zinc-200 p-5 shadow-sm hover:border-gold-dark transition-colors"
+            className="group bg-white rounded-xl border border-zinc-200 p-5 shadow-xs hover:border-gold-dark transition-colors"
           >
             <Icon size={22} className="text-gold-dark mb-3" />
             <p className="font-bold text-zinc-900 flex items-center gap-1.5">

@@ -16,11 +16,11 @@ Córdoba, Argentina). Reemplaza un cuaderno físico de asistencia y pagos. Detal
 
 ## Stack
 
-- **Next.js 15.5** (App Router, `output: 'standalone'`), React 18, TypeScript. Node 22.
+- **Next.js 16.4.2** (App Router, `output: 'standalone'`), React 19.3.1, TypeScript 6. Node 22. Versiones de la flota: `codetlon-cloud/.claude/modules/stack-versions.md`.
 - **Postgres + Drizzle ORM** (`src/db/schema.ts`, migraciones en `drizzle/`) + **Better Auth** (email y contraseña, sin registro público).
   Sin backend aparte: la lógica de servidor son Server Actions (`src/actions/*.ts`) y unos pocos route handlers
   (`api/auth`, `api/health`, `api/upload`, `media`).
-- Archivos en volumen (`STORAGE_DIR`), servidos por `/media/[...ruta]`. Tailwind, Tiptap, `isomorphic-dompurify`, `sharp`, Zod.
+- Archivos en volumen (`STORAGE_DIR`), servidos por `/media/[...ruta]`. Tailwind 4 (tokens en `@theme` de `src/app/globals.css`), Tiptap, `isomorphic-dompurify`, `sharp`, Zod.
 - Deploy: Coolify con `docker-compose.coolify.yml` (app + Postgres + volúmenes). `main` todavía despliega en Vercel hasta el corte.
 
 ## Comandos
@@ -36,7 +36,7 @@ npm run test:e2e           # Playwright, 3 viewports (el flujo admin/alumno pide
 npx tsx --env-file=.env.development.local scripts/crear-usuario.mts <email> <nombre> admin
 ```
 
-CI (`.github/workflows/ci.yml`): tsc, build, `npm audit`, E2E con Postgres. No hay ESLint ni tests unitarios.
+CI (`.github/workflows/ci.yml`): tsc, build, `npm audit`, E2E con Postgres. ESLint 10 existe (`npm run lint`, config plana, reglas nuevas de React como aviso); no hay tests unitarios.
 
 ## Convenciones críticas
 
@@ -44,7 +44,7 @@ CI (`.github/workflows/ci.yml`): tsc, build, `npm audit`, E2E con Postgres. No h
    los route handlers (`src/app/api/`) son solo para auth, health, subida de archivos y `/media`.
 2. **Toda Server Action que escribe datos empieza con `requireAdmin()` / `requireUser()` /
    `requireStudent()`** (de `src/lib/session.ts`), incluso si la ruta ya está protegida por
-   `guardPage()` del layout. No hay RLS: esta guarda ES la autorización. `src/middleware.ts` solo es un redirect optimista.
+   `guardPage()` del layout. No hay RLS: esta guarda ES la autorización. `src/proxy.ts` (antes `middleware.ts`, Next 16) solo es un redirect optimista.
 3. **El rol vive en `user.role` y `user.must_change_password`, y solo los escribe el servidor** (`input: false` en `src/lib/auth.ts`;
    se asignan con `internalAdapter` o con `db`). Nunca aceptes un rol que venga del cliente (fue una vulnerabilidad real en v1.x, ver `DECISIONS.md`).
 4. Todo HTML que venga del editor Tiptap se sanitiza con `sanitizePostContent`
