@@ -1,5 +1,11 @@
 # KNOWN_ISSUES.md
 
+## Vigente (2026-10-16)
+- `npm audit` completo conserva 5 altas de herramientas de desarrollo: `braces` <= 3.0.3 via `eslint-config-next` -> `fast-glob` -> `micromatch`. Sin version corregida publicada; no entra al runtime (`npm audit --omit=dev` = 0).
+- ESLint se incorporo el 2026-10-16: 7 avisos (`react-hooks/set-state-in-effect`). Todavia no esta en el CI.
+- Los scripts `test:db` y `test:storage` se quitaron: apuntaban a archivos inexistentes. No hay tests unitarios, solo E2E.
+- Con Tailwind 4 la home de escritorio difiere ~1 % en pixeles de la version anterior (sin cambio visible apreciable).
+
 Verificado en la sesión del 2026-10-15 (migración a backend propio).
 
 ## ALTA

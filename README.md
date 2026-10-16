@@ -6,7 +6,7 @@ Producción: https://tvproacademy.com.ar
 
 ## Stack
 
-Next.js 15.5 (App Router, `output: 'standalone'`), React 18, TypeScript, Tailwind. Backend propio: Postgres + Drizzle ORM + Better Auth (email y contraseña), archivos en un volumen servido por `/media`. Se despliega en Coolify con `docker-compose.coolify.yml` (app + Postgres + volumen). Sin Supabase ni Vercel desde la v2.0.0 (ver Changelog).
+Next.js 16.4.2 (App Router, `output: 'standalone'`), React 19.3.1, TypeScript 6, Tailwind 4 (tokens en `@theme`). Backend propio: Postgres + Drizzle ORM + Better Auth (email y contraseña), archivos en un volumen servido por `/media`. Se despliega en Coolify con `docker-compose.coolify.yml` (app + Postgres + volumen). Sin Supabase ni Vercel desde la v2.0.0 (ver Changelog).
 
 ## Desarrollo local
 
@@ -25,6 +25,7 @@ npm run dev                              # http://localhost:3000
 
 ```bash
 npx tsc --noEmit
+npm run lint            # ESLint 10 (config plana)
 npm run test:e2e        # E2E con Playwright (3 viewports); el flujo admin/alumno necesita E2E_ADMIN_EMAIL y E2E_ADMIN_PASSWORD
 ```
 
@@ -40,6 +41,7 @@ npm run test:e2e        # E2E con Playwright (3 viewports); el flujo admin/alumn
 
 | Versión | Cambio |
 |---|---|
+| 2.1.0 (en `dev`/`test`, sin llegar a `main`) | **Estandar de versiones de la flota** (`codetlon-cloud/.claude/modules/stack-versions.md`): Next 16.4.2, React 19.3.1, Tailwind 4.3.3 (config a `@theme`, PostCSS oficial, sin autoprefixer), TypeScript 6.0.3, ESLint 10.13.0 **nuevo** (`npm run lint`, config plana), `middleware.ts` pasa a `proxy.ts`, Better Auth 1.7.10, Playwright 1.64.1, `@types/node` 22, `tailwind-merge` 3, `lucide-react` 0.577. Se quitan `test:db` y `test:storage` (apuntaban a archivos que no existian). `npm audit --omit=dev` en 0; el audit completo conserva solo `braces` <= 3.0.3 (cadena de `eslint-config-next`, herramienta de lint, sin version corregida publicada; no entra a la imagen). Verificado: `tsc`, lint (0 errores, 7 avisos), E2E en 3 viewports (25 pasan y 2 se omiten por diseño: el flujo con datos corre solo en desktop), incluido el flujo admin a alumno, imagen Docker Alpine construida y comparacion visual (iguales salvo 1 % en la home de escritorio). |
 | 2.0.0 (en `dev`, sin llegar a `main`) | Migración a backend propio: Drizzle + Better Auth + archivos en volumen, Dockerfile y compose de Coolify, fuentes autoalojadas, E2E y CI con Postgres, scripts de migración de datos desde Supabase (`scripts/migracion/`). `main` sigue en Vercel + Supabase hasta el corte. |
 | 1.x | Sitio, dashboard, portal de alumnos y blog sobre Supabase + Vercel. |
 

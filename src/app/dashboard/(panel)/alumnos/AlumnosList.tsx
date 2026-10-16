@@ -59,11 +59,11 @@ export default function AlumnosList({ students }: { students: StudentStatus[] })
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-xs">
           <p className="text-sm text-zinc-500">Ningún alumno coincide con esos filtros.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-zinc-200 shadow-sm divide-y divide-zinc-100">
+        <div className="bg-white rounded-xl border border-zinc-200 shadow-xs divide-y divide-zinc-100">
           {filtered.map((s) => (
             <div key={s.id} className="flex flex-col gap-3 p-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
@@ -71,7 +71,7 @@ export default function AlumnosList({ students }: { students: StudentStatus[] })
                   <p className="font-bold text-zinc-900 flex items-center gap-2">
                     {s.name}
                     {!s.active && (
-                      <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-400 border border-zinc-200 rounded px-1.5 py-0.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-400 border border-zinc-200 rounded-sm px-1.5 py-0.5">
                         Inactivo
                       </span>
                     )}
@@ -81,7 +81,7 @@ export default function AlumnosList({ students }: { students: StudentStatus[] })
                   </p>
                 </div>
                 <span
-                  className={`self-start sm:self-auto flex-shrink-0 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full ${
+                  className={`self-start sm:self-auto shrink-0 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full ${
                     s.expired ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'
                   }`}
                 >

@@ -3,7 +3,7 @@ import { getSessionCookie } from 'better-auth/cookies'
 
 // Redirect OPTIMISTA por cookie: no es una barrera de seguridad. La sesión, el rol y la contraseña temporal
 // se validan de verdad en el servidor (guardPage en los layouts y requireAdmin/requireStudent en cada acción).
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const hasSession = Boolean(getSessionCookie(req))
   const { pathname } = req.nextUrl
   if (!hasSession && pathname !== '/login') {

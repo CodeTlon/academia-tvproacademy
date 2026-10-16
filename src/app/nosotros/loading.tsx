@@ -13,7 +13,7 @@ export default function Loading() {
           <Skeleton className="h-4 w-full mb-2 bg-white/10" />
           <Skeleton className="h-4 w-2/3 bg-white/10" />
         </div>
-        <Skeleton className="aspect-[4/5] w-full rounded-2xl bg-white/10" />
+        <Skeleton className="aspect-4/5 w-full rounded-2xl bg-white/10" />
       </div>
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         {Array.from({ length: 3 }).map((_, i) => (

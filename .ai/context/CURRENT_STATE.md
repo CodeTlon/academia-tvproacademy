@@ -1,5 +1,7 @@
 # CURRENT_STATE.md
 
+**Actualizacion 2026-10-16:** la rama `feature/dev2-estandar-2026` (integrada en `dev` y `test`) lleva el proyecto al estandar de versiones de la flota: Next 16.4.2, React 19.3.1, Tailwind 4.3.3, TypeScript 6.0.3, ESLint 10.13.0 (nuevo), `proxy.ts`. Verificado: `tsc`, lint (0 errores), build, E2E (25 pasan, 2 omitidos por diseño; 3 viewports, con el flujo admin a alumno), imagen Docker Alpine, `npm audit --omit=dev` en 0. **Sin verificar:** despliegue en Coolify (sin recursos), scripts de migracion contra Supabase real. `main` sigue en v1.x.
+
 Snapshot al 2026-10-15. Se desactualiza: confirmá con `git log -5` y `git branch -r`.
 
 ## Ramas

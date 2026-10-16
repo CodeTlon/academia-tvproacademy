@@ -71,9 +71,9 @@ function SidebarLink({
           : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
       }`}
     >
-      <Icon size={16} className="flex-shrink-0" />
+      <Icon size={16} className="shrink-0" />
       <span className="truncate">{label}</span>
-      {active && <ChevronRight size={14} className="ml-auto flex-shrink-0 opacity-60" />}
+      {active && <ChevronRight size={14} className="ml-auto shrink-0 opacity-60" />}
     </Link>
   )
 }
@@ -86,7 +86,7 @@ export default function PanelShell({
   const [navOpen, setNavOpen] = useState(false)
 
   return (
-    <div className="fixed inset-0 z-[100] flex bg-zinc-100 overflow-hidden">
+    <div className="fixed inset-0 z-100 flex bg-zinc-100 overflow-hidden">
       <Suspense fallback={null}>
         <SavedToast />
       </Suspense>
@@ -99,7 +99,7 @@ export default function PanelShell({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-20 w-72 max-w-[85vw] flex-shrink-0 bg-slate-900 flex flex-col overflow-hidden transition-transform duration-200 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-20 w-72 max-w-[85vw] shrink-0 bg-slate-900 flex flex-col overflow-hidden transition-transform duration-200 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 ${
           navOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
@@ -111,11 +111,11 @@ export default function PanelShell({
               alt=""
               width={36}
               height={36}
-              className="h-9 w-9 object-contain flex-shrink-0"
+              className="h-9 w-9 object-contain shrink-0"
               sizes="36px"
             />
             <span className="italic font-black uppercase tracking-tighter text-sm text-slate-100">
-              TVPRO<span className="text-[#f5bf00]">ACADEMY</span>
+              TVPRO<span className="text-gold">ACADEMY</span>
             </span>
           </Link>
           <button
@@ -155,7 +155,7 @@ export default function PanelShell({
             onClick={() => setNavOpen(false)}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all"
           >
-            <KeyRound size={16} className="flex-shrink-0" />
+            <KeyRound size={16} className="shrink-0" />
             Cambiar contraseña
           </Link>
           <form action={signOut}>
@@ -163,7 +163,7 @@ export default function PanelShell({
               type="submit"
               className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all"
             >
-              <LogOut size={16} className="flex-shrink-0" />
+              <LogOut size={16} className="shrink-0" />
               Cerrar sesión
             </button>
           </form>
@@ -172,7 +172,7 @@ export default function PanelShell({
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <header
-          className="h-14 flex-shrink-0 bg-white border-b border-zinc-200 flex items-center px-4 sm:px-6 gap-3"
+          className="h-14 shrink-0 bg-white border-b border-zinc-200 flex items-center px-4 sm:px-6 gap-3"
           style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(3.5rem + env(safe-area-inset-top))' }}
         >
           <button

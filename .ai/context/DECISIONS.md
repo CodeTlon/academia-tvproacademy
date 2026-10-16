@@ -60,3 +60,8 @@ Doctrina de la fábrica (v2.11+): sin backups ni disponibilidad controlada en Su
 
 ## Guardas de página en layouts, middleware solo optimista (DECISION)
 El middleware de Supabase validaba la sesión en el edge; Better Auth necesita la base, así que `src/middleware.ts` solo mira la cookie y el rol, la sesión y la contraseña temporal se validan en `guardPage()` (layouts server) y en cada acción. El layout del dashboard se partió en `layout.tsx` (server, guarda) y `PanelShell.tsx` (client, UI).
+
+## Estandar de versiones de la flota: Next 16 + React 19 + Tailwind 4 (2026-10-16)
+**Decision**: seguir el conjunto de `codetlon-cloud/.claude/modules/stack-versions.md` (versiones exactas) en `dev` y `test`.
+**Por que**: reducir vulnerabilidades (Tailwind 3 arrastraba `chokidar`/`braces`) y tener la flota en un solo conjunto.
+**Consecuencias**: `src/middleware.ts` pasa a `src/proxy.ts` (sigue siendo solo un redirect optimista); se agrega ESLint 10 con config plana; se retira `autoprefixer` y `tailwind.config.ts`; `tailwind-merge` sube a 3 (la 2.x no entiende clases de Tailwind 4).

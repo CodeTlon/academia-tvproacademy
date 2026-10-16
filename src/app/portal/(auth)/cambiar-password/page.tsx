@@ -18,7 +18,7 @@ export default async function PortalCambiarPasswordPage() {
           sizes="48px"
         />
         <span className="italic font-black uppercase tracking-tighter text-xl text-zinc-900">
-          TVPRO<span className="text-[#f5bf00]">ACADEMY</span>
+          TVPRO<span className="text-gold">ACADEMY</span>
         </span>
       </div>
       <CambiarPasswordForm forced={forced} backHref="/portal" />
