@@ -23,7 +23,7 @@ acá contradice lo que ves en el código, **el código gana**; actualizá este a
 | Tarea | Leé primero |
 |---|---|
 | Agregar/modificar una Server Action | ARCHITECTURE.md (patrón de auth) + CONVENTIONS.md |
-| Tocar `src/middleware.ts`, roles o guardas | ARCHITECTURE.md + DECISIONS.md + KNOWN_ISSUES.md |
+| Tocar `src/proxy.ts`, roles o guardas | ARCHITECTURE.md + DECISIONS.md + KNOWN_ISSUES.md |
 | Tocar asistencia/pagos/vencimientos de alumnos | DOMAIN.md |
 | Tocar contenido público (hero, nosotros, blog, servicios) | ARCHITECTURE.md → sección `site_settings` |
 | Cambiar dependencias o correr `npm audit fix` | KNOWN_ISSUES.md (severidad de cada vulnerabilidad ya clasificada) |

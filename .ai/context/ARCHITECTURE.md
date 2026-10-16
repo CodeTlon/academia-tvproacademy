@@ -4,8 +4,8 @@ Cada afirmación está etiquetada FACT (verificado contra código o ejecución r
 
 ## Stack (FACT, `package.json`)
 
-- Next.js 15.5 (App Router, `output: 'standalone'`), React 18, TypeScript 5.4, Tailwind 3.4.
-- Postgres 17 + **Drizzle ORM** (`src/db/schema.ts`, migraciones SQL en `drizzle/`) + **Better Auth** 1.7.7 (email y contraseña, sin registro público).
+- Next.js 16.4.2 (App Router, `output: 'standalone'`), React 19.3.1, TypeScript 6.0.3, Tailwind 4.3.3 (tokens en `@theme`).
+- Postgres 17 + **Drizzle ORM** (`src/db/schema.ts`, migraciones SQL en `drizzle/`) + **Better Auth** 1.7.10 (email y contraseña, sin registro público).
 - Archivos: volumen del servidor (`STORAGE_DIR`, `/data/storage` en el contenedor), servido por `/media/[...ruta]`.
 - Tiptap 3 (editor del blog), `isomorphic-dompurify`, `sharp`, `zod`, `slugify`, `motion`, `lucide-react`. Fuentes autoalojadas con `next/font/local` (`FONTS.md`).
 - Node 22. Sin Supabase ni Vercel en el código (`git grep supabase src` no devuelve código).
@@ -19,7 +19,7 @@ UI (Server/Client Component)
            -> Drizzle (src/lib/db.ts) sobre Postgres
 ```
 
-No hay RLS: la autorización vive en el servidor. Cada Server Action de escritura empieza con `requireAdmin()` (verificado en `students.ts`, `posts.ts`, `media.ts`, `settings.ts`). Las lecturas del panel están detrás de `guardPage()` en los layouts. `src/middleware.ts` solo hace un redirect optimista por cookie (no es una barrera de seguridad).
+No hay RLS: la autorización vive en el servidor. (`src/middleware.ts` se llama `src/proxy.ts` desde Next 16.) Cada Server Action de escritura empieza con `requireAdmin()` (verificado en `students.ts`, `posts.ts`, `media.ts`, `settings.ts`). Las lecturas del panel están detrás de `guardPage()` en los layouts. `src/middleware.ts` solo hace un redirect optimista por cookie (no es una barrera de seguridad).
 
 ## Auth y roles (FACT)
 
