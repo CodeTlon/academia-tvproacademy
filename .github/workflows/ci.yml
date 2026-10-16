@@ -51,7 +51,7 @@ jobs:
       DATABASE_URL: postgres://app:app@localhost:5432/app
       BETTER_AUTH_SECRET: ci_placeholder_secret_ci_placeholder_secret
       BETTER_AUTH_URL: http://localhost:3000
-      STORAGE_DIR: ${{ runner.temp }}/storage
+      STORAGE_DIR: /tmp/storage
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
