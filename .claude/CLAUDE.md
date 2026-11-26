@@ -6,7 +6,7 @@
 Proyecto en produccion real (tvproacademy.com.ar). `main` sigue en v1.x (Vercel + Supabase) hasta el corte: **no se toca `main`** sin OK de Mateo. Flujo: `feature/*` -> `dev` -> `test` (merge directo) -> PR a `main`.
 
 ## Stack vigente (2026-10-16)
-Next 16.4.2, React 19.3.1, TypeScript 6.0.3, Tailwind 4.3.3, ESLint 10.13.0, Zod 4.6.7, Better Auth 1.7.10, Drizzle, Postgres 17, Node 22. Fuente de versiones: `codetlon-cloud/.claude/modules/stack-versions.md`.
+Next 16.4.6, React 19.3.1, TypeScript 6.0.3, Tailwind 4.3.3, ESLint 10.13.0, Zod 4.6.7, Better Auth 1.7.10, Drizzle, Postgres 17, Node 22. Fuente de versiones: `codetlon-cloud/.claude/modules/stack-versions.md`.
 
 ## Quirks
 - `src/proxy.ts` (antes `middleware.ts`): solo redirect optimista; la autorizacion real es `require*()` en cada accion.
