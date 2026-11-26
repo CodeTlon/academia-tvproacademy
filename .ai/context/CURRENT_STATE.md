@@ -1,5 +1,7 @@
 # CURRENT_STATE.md
 
+**Actualización 2026-11-26 (hotfix de seguridad sobre `main`, rama `feature/dev1-hotfix-next-main`):** Next 15.5 → 16.4.6 y React 18 → 19 (advisories críticos de Next ≤16.3, entre ellos RCE en el optimizador de imágenes con SVG y envenenamiento de caché SSG/ISR), `npm audit fix` de postcss, sharp, undici, zod y dompurify. `src/middleware.ts` pasa a `src/proxy.ts` (convención de Next 16, misma lógica). Sigue en Vercel + Supabase: la migración a backend propio queda en `dev`/`test` (PR #1 abierto hasta el corte). Verificado: tsc, build sin avisos, `npm audit --omit=dev` en 0 y prueba con `next start` (`/`, `/login`, `/blog` 200; `/dashboard` y `/portal` redirigen a `/login`). **Problema previo en producción:** `/blog` muestra la lista vacía y cualquier `/blog/<slug>` responde 500, también con Next 15.5 (se revirtió el hotfix, PR #3, y siguió igual; se volvió a aplicar). No se reproduce en local: revisar los logs de Vercel y el estado del proyecto Supabase (tabla `posts`, RLS, variables del entorno Production).
+
 Snapshot al 2026-09-18. **Esto se desactualiza rápido — si pasó más de un par de semanas desde
 esta fecha, confirmá con `git log -5` y `vercel ls` antes de confiar en algo de acá.**
 
