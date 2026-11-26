@@ -49,7 +49,7 @@ Vercel — que ya falló en producción una vez por esto (ver `KNOWN_ISSUES.md`)
    no en `src/app/api/`.
 2. **Toda Server Action que escribe datos empieza con `requireAdmin()` / `requireUser()` /
    `requireStudent()`** (de `src/actions/auth.ts`), incluso si la ruta ya está protegida por
-   `src/middleware.ts` y aunque la tabla ya tenga RLS. Las tres capas leen el mismo claim y son
+   `src/proxy.ts` y aunque la tabla ya tenga RLS. Las tres capas leen el mismo claim y son
    deliberadas (defensa en profundidad) — no las trates como redundantes para "simplificar".
 3. **El rol de un usuario vive en `user.app_metadata.role`, NUNCA en `user_metadata`.**
    `user_metadata` lo puede reescribir el propio usuario logueado desde el cliente — usarlo para
