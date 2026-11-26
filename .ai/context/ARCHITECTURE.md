@@ -31,12 +31,12 @@ UI (Server/Client Component)
 No hay una segunda superficie de auth (API REST propia) que pueda desincronizarse de este
 patrón — todo el estado mutable pasa por el mismo camino. Esto es deliberado, ver `DECISIONS.md`.
 
-## Auth y roles (FACT — leído línea por línea en `src/proxy.ts` y las 4 archivos de
+## Auth y roles (FACT — leído línea por línea en `src/middleware.ts` y las 4 archivos de
 `src/actions/*.ts` que hacen escrituras)
 
 - Login único (`/login`) para admin y alumno — el rol se resuelve después de autenticar, leyendo
   `user.app_metadata.role` (`'student'` o ausente = admin).
-- `src/proxy.ts` (matcher: `/dashboard/:path*`, `/portal/:path*`, `/login`):
+- `src/middleware.ts` (matcher: `/dashboard/:path*`, `/portal/:path*`, `/login`):
   - Sin sesión en ruta protegida → redirect a `/login`.
   - Alumno pidiendo `/dashboard` → redirect a `/portal` (y viceversa).
   - `app_metadata.must_change_password === true` → fuerza a `/dashboard/cambiar-password` o
@@ -126,7 +126,7 @@ README)
   (`ejgdcorolzildmgqldoj.supabase.co`). No hay staging. Correr `npm run dev` local con
   `.env.local` pega contra la base de producción. Ver `KNOWN_ISSUES.md` (severidad ALTA).
 - Como no hay variables configuradas para `Preview`, un deploy Preview de Vercel (ej. al abrir
-  una PR) arrancaría con los fallbacks `?? 'placeholder'` de `proxy.ts`/
+  una PR) arrancaría con los fallbacks `?? 'placeholder'` de `middleware.ts`/
   `supabase-server.ts` — no puede autenticar contra Supabase real. (ASSUMPTION: no se probó
   abriendo una PR real, se infiere de la ausencia de env vars + el fallback en código.)
 - Hubo al menos un build roto que llegó a auto-deploy en producción: el deployment con estado
