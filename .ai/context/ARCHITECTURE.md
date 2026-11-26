@@ -4,7 +4,7 @@ Cada afirmación está etiquetada FACT (verificado contra código o ejecución r
 
 ## Stack (FACT, `package.json`)
 
-- Next.js 16.4.2 (App Router, `output: 'standalone'`), React 19.3.1, TypeScript 6.0.3, Tailwind 4.3.3 (tokens en `@theme`).
+- Next.js 16.4.6 (App Router, `output: 'standalone'`), React 19.3.1, TypeScript 6.0.3, Tailwind 4.3.3 (tokens en `@theme`).
 - Postgres 17 + **Drizzle ORM** (`src/db/schema.ts`, migraciones SQL en `drizzle/`) + **Better Auth** 1.7.10 (email y contraseña, sin registro público).
 - Archivos: volumen del servidor (`STORAGE_DIR`, `/data/storage` en el contenedor), servido por `/media/[...ruta]`.
 - Tiptap 3 (editor del blog), `isomorphic-dompurify`, `sharp`, `zod`, `slugify`, `motion`, `lucide-react`. Fuentes autoalojadas con `next/font/local` (`FONTS.md`).

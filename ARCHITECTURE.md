@@ -3,7 +3,7 @@
 Mapa para mantenimiento, vigente al 2026-10-16. El detalle fino esta en `.ai/context/` (empezar por `00_INDEX.md`). No releas el repo entero: busca tu tipo de cambio abajo.
 
 ## Stack
-Next.js 16.4.2 (App Router, `output: 'standalone'`) · React 19.3.1 · TypeScript 6 · Tailwind 4 (tokens en `@theme` de `src/app/globals.css`) · Postgres 17 + Drizzle ORM · Better Auth 1.7.10 · archivos en volumen (`STORAGE_DIR`, servidos por `/media`) · Tiptap 3 · Zod 4. Node 22. Se despliega en Coolify con `docker-compose.coolify.yml`.
+Next.js 16.4.6 (App Router, `output: 'standalone'`) · React 19.3.1 · TypeScript 6 · Tailwind 4 (tokens en `@theme` de `src/app/globals.css`) · Postgres 17 + Drizzle ORM · Better Auth 1.7.10 · archivos en volumen (`STORAGE_DIR`, servidos por `/media`) · Tiptap 3 · Zod 4. Node 22. Se despliega en Coolify con `docker-compose.coolify.yml`.
 
 ## Capas
 UI (Server/Client Component) -> Server Action (`src/actions/*.ts`) o route handler (`api/auth`, `api/health`, `api/upload`, `media`) -> `requireAdmin()` / `requireUser()` / `requireStudent()` (`src/lib/session.ts`) -> Drizzle (`src/lib/db.ts`) sobre Postgres. No hay RLS: esa guarda es la autorizacion. `src/proxy.ts` solo hace un redirect optimista por cookie.

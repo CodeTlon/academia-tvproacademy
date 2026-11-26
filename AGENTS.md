@@ -16,7 +16,7 @@ Córdoba, Argentina). Reemplaza un cuaderno físico de asistencia y pagos. Detal
 
 ## Stack
 
-- **Next.js 16.4.2** (App Router, `output: 'standalone'`), React 19.3.1, TypeScript 6. Node 22. Versiones de la flota: `codetlon-cloud/.claude/modules/stack-versions.md`.
+- **Next.js 16.4.6** (App Router, `output: 'standalone'`), React 19.3.1, TypeScript 6. Node 22. Versiones de la flota: `codetlon-cloud/.claude/modules/stack-versions.md`.
 - **Postgres + Drizzle ORM** (`src/db/schema.ts`, migraciones en `drizzle/`) + **Better Auth** (email y contraseña, sin registro público).
   Sin backend aparte: la lógica de servidor son Server Actions (`src/actions/*.ts`) y unos pocos route handlers
   (`api/auth`, `api/health`, `api/upload`, `media`).
