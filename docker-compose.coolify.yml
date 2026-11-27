@@ -42,6 +42,7 @@ services:
       # Migración desde Supabase al arrancar (scripts/migracion/en-contenedor.mjs). Vacías = no migra.
       MIGRAR_DESDE_SUPABASE: ${MIGRAR_DESDE_SUPABASE:-}
       MIGRAR_DATOS_REALES: ${MIGRAR_DATOS_REALES:-}
+      MIGRAR_REEMPLAZAR: ${MIGRAR_REEMPLAZAR:-}
       SUPABASE_DB_URL: ${SUPABASE_DB_URL:-}
       SUPABASE_URL: ${SUPABASE_URL:-}
     volumes:
