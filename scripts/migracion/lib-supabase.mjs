@@ -23,8 +23,30 @@ export function need(...claves) {
 }
 export { env }
 
-/** SELECT de solo lectura contra el proyecto de Supabase. Devuelve las filas. */
+/** SELECT de solo lectura contra el proyecto de Supabase. Devuelve las filas.
+ * Con SUPABASE_DB_URL (pooler de sesión de Supabase, IPv4, puerto 5432) va directo a Postgres: cada consulta corre en una
+ * transacción READ ONLY (el pooler ignora `default_transaction_read_only` en la conexión, por eso se fuerza por transacción).
+ * Las fechas vuelven como texto, igual que en la Management API. Si no, usa la Management API con el token `sbp_`. */
+let pgCliente
 export async function ro(sql) {
+  if (env.SUPABASE_DB_URL) {
+    if (!pgCliente) {
+      const { default: pg } = await import('pg')
+      const comoTexto = (v) => v
+      for (const oid of [1082, 1114, 1184]) pg.types.setTypeParser(oid, comoTexto)
+      pgCliente = new pg.Client({ connectionString: env.SUPABASE_DB_URL, ssl: { rejectUnauthorized: false } })
+      await pgCliente.connect()
+    }
+    await pgCliente.query('begin transaction read only')
+    try {
+      const { rows } = await pgCliente.query(sql)
+      await pgCliente.query('commit')
+      return rows
+    } catch (e) {
+      await pgCliente.query('rollback')
+      throw e
+    }
+  }
   need('SUPABASE_PROJECT_REF', 'SUPABASE_ACCESS_TOKEN')
   const r = await fetch(`https://api.supabase.com/v1/projects/${env.SUPABASE_PROJECT_REF}/database/query/read-only`, {
     method: 'POST',
@@ -34,4 +56,9 @@ export async function ro(sql) {
   const body = await r.json()
   if (!r.ok || !Array.isArray(body)) throw new Error(`Supabase: ${body?.message ?? r.status}`)
   return body
+}
+
+/** Cierra la conexión directa (si se abrió) para que el proceso termine. */
+export async function cerrar() {
+  if (pgCliente) await pgCliente.end()
 }

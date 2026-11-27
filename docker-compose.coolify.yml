@@ -39,6 +39,11 @@ services:
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
       STORAGE_DIR: /data/storage
       STORAGE_PUBLIC_URL: ${SERVICE_URL_APP}/media
+      # Migración desde Supabase al arrancar (scripts/migracion/en-contenedor.mjs). Vacías = no migra.
+      MIGRAR_DESDE_SUPABASE: ${MIGRAR_DESDE_SUPABASE:-}
+      MIGRAR_DATOS_REALES: ${MIGRAR_DATOS_REALES:-}
+      SUPABASE_DB_URL: ${SUPABASE_DB_URL:-}
+      SUPABASE_URL: ${SUPABASE_URL:-}
     volumes:
       - storage:/data/storage
     healthcheck:

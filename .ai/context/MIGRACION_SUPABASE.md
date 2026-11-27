@@ -12,6 +12,10 @@ Doctrina: `codetlon-cloud/.claude/modules/{coolify-compose,migracion-supabase}.m
 Código sin Supabase, Drizzle + Better Auth, storage en volumen, Dockerfile/compose/health/workflows, E2E, scripts de migración en `scripts/migracion/`. Falta todo lo que toca el entorno real (ver `PENDIENTES.md`).
 
 ## Cómo se copian los datos (solo lectura sobre Supabase)
+**Vía usada (2026-11-27): dentro del contenedor, sin entrar al servidor.** Con `MIGRAR_DESDE_SUPABASE=1` en las variables del recurso de Coolify, `docker-entrypoint.sh` corre `scripts/migracion/en-contenedor.mjs` antes de levantar la app. Solo actúa si la base nueva no tiene usuarios ni alumnos. Lee Supabase por el pooler de sesión (`SUPABASE_DB_URL`, IPv4, `aws-0-us-east-2.pooler.supabase.com:5432`, usuario `postgres.<ref>`), con cada consulta en una transacción `READ ONLY`. Arma el snapshot en `/tmp` (07, 09, 05, 08), aplica usuarios, datos y reescritura de URLs en una transacción, copia los archivos al volumen, verifica la paridad (10) y borra el snapshot. El resultado se ve en los logs de la app (`[migracion]`). `MIGRAR_DATOS_REALES=1` carga los alumnos sin anonimizar (solo prod). Después del import, borrar `MIGRAR_DESDE_SUPABASE` y `SUPABASE_DB_URL` del recurso.
+Probado en local (Docker con la imagen real, Postgres descartable): 83 asistencias, 18 pagos, 5 posts, 7 settings, 27 alumnos, 1 usuario (hash idéntico) y 2 archivos con sha256 idéntico; `PARIDAD OK`. El reinicio no reimporta. Login con un hash bcrypt `$2a$`: 200 (y 401 con contraseña incorrecta). `11-comparar-sitio` contra producción: igual salvo el banner de cookies (sin GA en local). El objeto `hero/test-1785516171608.txt` (11 bytes, subida de prueba sin referencias) se omite.
+
+Vía original, con token de la Management API:
 Necesita `scripts/migracion/.env.migracion` (gitignored, chmod 600) con `SUPABASE_PROJECT_REF`, `SUPABASE_URL` y `SUPABASE_ACCESS_TOKEN` (token `sbp_` de uso único, revocarlo al terminar). Pedírselo a Mateo: no se leen ni se imprimen secretos.
 
 ```
