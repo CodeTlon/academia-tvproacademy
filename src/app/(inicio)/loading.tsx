@@ -1,6 +1,8 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
-/** Skeleton de home: imita el hero (título + bullets + CTA) y la grilla de QuickLinks. */
+/** Skeleton de home: imita el hero (título + bullets + CTA) y la grilla de QuickLinks.
+ * Vive en el grupo `(inicio)` para no envolver al resto de las rutas: un loading.tsx en la
+ * raíz hacía que `notFound()` de `/blog/[slug]` respondiera 200 en vez de 404. */
 export default function Loading() {
   return (
     <div role="status" aria-label="Cargando" className="min-h-screen bg-[#071424] pt-32 pb-24 px-5 md:px-10">
