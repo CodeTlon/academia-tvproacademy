@@ -9,7 +9,7 @@
 // Cargar en el volumen:  tar -C out/storage -cf - . | docker exec -i <contenedor-app> tar -C /data/storage -xf -
 import { writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
-import { env, need, ro, out } from './lib-supabase.mjs'
+import { env, need, ro, out, cerrar } from './lib-supabase.mjs'
 
 need('SUPABASE_URL')
 const APPLY = process.argv.includes('--yes')
@@ -34,8 +34,25 @@ for (const o of objetos) {
 }
 // /media solo sirve estas extensiones (src/lib/storage.ts); un objeto con otra no se podría ver tras el corte.
 const SERVIBLES = new Set(['webp','jpg','jpeg','png','avif','gif','pdf','mp4','webm','mov'])
+// Si nada en la base lo referencia (p. ej. una subida de prueba) se omite con aviso; si está en uso, falla.
 const noServibles = objetos.filter((o) => !SERVIBLES.has(o.nuevo.split('.').pop().toLowerCase()))
-if (noServibles.length) { console.error(`Extensión no servible por /media: ${noServibles.map((o) => o.name).join(', ')}`); process.exit(1) }
+if (noServibles.length) {
+  const colsTexto = await ro(`select table_name, column_name, data_type from information_schema.columns
+    where table_schema='public' and data_type in ('text','character varying','jsonb')`)
+  const enUso = []
+  for (const o of noServibles) {
+    const patron = `'%${o.name.replace(/'/g, "''").replace(/[%_\\]/g, '\\$&')}%'`
+    let n = 0
+    for (const { table_name: t, column_name: c, data_type: ty } of colsTexto) {
+      const [{ c: k }] = await ro(`select count(*)::int as c from public."${t}" where "${c}"${ty === 'jsonb' ? '::text' : ''} like ${patron}`)
+      n += k
+    }
+    if (n) enUso.push(o.name)
+  }
+  if (enUso.length) { console.error(`Extensión no servible por /media y en uso: ${enUso.join(', ')}`); process.exit(1) }
+  console.log(`Omitidos (extensión no servible y sin referencias en la base): ${noServibles.map((o) => o.name).join(', ')}`)
+  for (const o of noServibles) objetos.splice(objetos.indexOf(o), 1)
+}
 const renombrados = objetos.filter((o) => o.nuevo !== o.name)
 console.log(`Renombrados: ${renombrados.length}${renombrados.length ? ' -> ' + renombrados.map((o) => `${o.name} => ${o.nuevo}`).join(' | ') : ''}`)
 
@@ -92,3 +109,4 @@ for (const o of objetos) {
 console.log(`Descargados ${ok}, ya existían ${salteados}, fallidos ${fallos.length}`)
 if (fallos.length) { writeFileSync(resolve(out, 'storage-fallos.txt'), fallos.join('\n')); console.error('Ver out/storage-fallos.txt'); process.exit(1) }
 console.log(`Listo en ${destino}`)
+await cerrar()

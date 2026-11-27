@@ -7,7 +7,7 @@
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import { resolve } from 'node:path'
-import { ro, out } from './lib-supabase.mjs'
+import { ro, out, cerrar } from './lib-supabase.mjs'
 
 const datos = resolve(out, 'data'); mkdirSync(datos, { recursive: true })
 const usuarios = await ro(`select u.id::text as id, u.email, u.email_confirmed_at, u.created_at, u.encrypted_password,
@@ -33,3 +33,4 @@ sql.push('commit;', '')
 writeFileSync(resolve(datos, 'import-usuarios.sql'), sql.join('\n'), { mode: 0o600 })
 console.log(`${usuarios.length} usuarios -> out/data/import-usuarios.sql (hash bcrypt conservado en ${usuarios.length - sinPassword}; sin contraseña utilizable: ${sinPassword})`)
 if (sinPassword) console.log('Los usuarios sin hash bcrypt (login social/magic link) deben usar "Olvidé mi contraseña".')
+await cerrar()

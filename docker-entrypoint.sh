@@ -6,4 +6,6 @@ set -e
 [ -n "$DATABASE_URL" ] || { echo "Falta DATABASE_URL"; exit 1; }
 # Aplica las migraciones pendientes (idempotente; si falla, no arranca) y levanta el servidor.
 node scripts/migrate.mjs
+# Migración desde Supabase: solo con MIGRAR_DESDE_SUPABASE=1 y la base vacía (ver scripts/migracion/en-contenedor.mjs).
+if [ "$MIGRAR_DESDE_SUPABASE" = "1" ]; then node scripts/migracion/en-contenedor.mjs; fi
 exec node server.js
