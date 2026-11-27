@@ -1,5 +1,15 @@
 # CURRENT_STATE.md
 
+**Corte a Coolify, 2026-11-27 (hecho):** producción corre en Coolify (`tvpro-prod`, rama `main`) con Postgres propio, Better Auth y archivos en volumen; ya no usa Supabase ni Vercel.
+- **Datos:** migrados dentro del contenedor (`scripts/migracion/en-contenedor.mjs`), con reimport `corte-2` justo antes del DNS. Paridad OK: 27 alumnos, 18 pagos, 83 asistencias, 5 posts, 7 settings, 1 usuario con su hash bcrypt y 2 archivos con sha256 idéntico.
+- **Aspecto:** comparado contra Vercel con el dominio real (8 páginas, desktop y mobile), con diferencias de píxeles de 0,1 % o menos; para eso se igualaron la Montserrat de Google y los line-height de Tailwind 3.
+- **DNS:** A de raíz y `www` a 51.91.253.54 en Cloudflare, sin proxy. Certificados de Let's Encrypt emitidos por Traefik; la primera emisión falló porque el recurso se desplegó antes del cambio de DNS, y se resolvió reiniciando la app.
+- **Test:** https://test.tvproacademy.com.ar, con noindex (`robots` disallow + `X-Robots-Tag`) fuera de producción.
+- **Vercel:** quedó sin deploys desde git (`vercel.json`).
+- **Supabase:** queda vivo como respaldo 1 a 2 semanas y después se da de baja.
+- **Sesiones:** el único usuario (admin) tiene que volver a iniciar sesión con su contraseña de siempre.
+- **Pendiente obligatorio:** backups a B2 con prueba de restauración (`docs/BACKUPS.md` de codetlon-cloud); necesita acceso al servidor de Coolify.
+
 **Actualizacion 2026-11-27:** `isomorphic-dompurify` → `sanitize-html`, misma lista blanca e iframes solo de YouTube; viene del fix de `main` (PR #7), donde jsdom no cargaba en Vercel y el blog daba 500. Verificado: 9 vectores de XSS, tsc, lint (7 avisos previos), build (2 avisos previos de `storage.ts`) y `npm audit --omit=dev` en 0. Produccion (`main`, Vercel + Supabase) tiene ademas Next 16.4.6 desde el hotfix #2/#4, y el 2026-11-27 se restauraron en Supabase los 5 articulos del seed de `posts`.
 
 **Actualizacion 2026-11-26:** Next 16.4.2 → 16.4.6 por advisories de seguridad (rama `feature/dev1-next-16-4-6`, promovida a `dev` y `test`; `main` sin tocar). Verificado: tsc, lint (7 avisos, los mismos que en `dev`) y build; `npm audit --omit=dev` en 0. E2E en la CI.
