@@ -11,7 +11,7 @@ porqué en `DECISIONS.md`).
   client con `service_role`). Postgres + Auth + Storage, todo en un solo proyecto Supabase.
 - Tailwind CSS 3.4. Tiptap 3 (editor de contenido del blog: `@tiptap/react`, `starter-kit`,
   extensions `image`/`link`/`youtube`/`placeholder`).
-- `isomorphic-dompurify` (sanitización HTML), `sharp` (reprocesamiento de imágenes), `zod`,
+- `sanitize-html` (sanitización HTML, sin jsdom), `sharp` (reprocesamiento de imágenes), `zod`,
   `slugify`, `motion` (animaciones), `lucide-react` (iconos), `resend` (declarado, **sin uso
   activo** — ver más abajo).
 - Node.js 24.x en Vercel (FACT — `vercel project inspect`).
