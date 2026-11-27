@@ -32,7 +32,7 @@ export default async function Hero() {
       <div className="relative z-10 w-full max-w-7xl mx-auto px-5 md:px-10">
       <div className="max-w-3xl">
         <Reveal>
-          <h1 className="font-black uppercase text-5xl md:text-7xl leading-[1.1] tracking-tight text-white drop-shadow-2xl mb-8">
+          <h1 className="font-black uppercase text-5xl md:text-7xl md:leading-[var(--text-7xl--line-height)] leading-[1.1] tracking-tight text-white drop-shadow-2xl mb-8">
             {hero.title} <br />
             <span className="text-gold italic">{hero.titleAccent}</span>
           </h1>
