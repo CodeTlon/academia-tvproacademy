@@ -3,8 +3,8 @@
 | Entorno | Rama | Dónde | Estado (2026-10-15) |
 |---|---|---|---|
 | dev | `dev` | local: `docker compose up -d` (Postgres) + `npm run dev` | listo; ya no apunta a la base de producción |
-| test | `test` | Coolify `tvpro-test` (mismo compose, base y volumen propios), https://tvpro-test.51.91.253.54.sslip.io | **creado 2026-11-27**, base vacía hasta el ensayo de import |
-| prod | `main` | hoy Vercel + Supabase (v1.x). Tras el corte: recurso de Coolify | **`main` sin tocar**: el corte lo decide y ejecuta Mateo |
+| test | `test` | Coolify `tvpro-test` (proyecto `TV Pro Academy`), https://test.tvproacademy.com.ar, base y volumen propios, alumnos anonimizados, noindex | activo desde 2026-11-27 |
+| prod | `main` | Coolify `tvpro-prod` (proyecto `TV Pro Academy`), https://tvproacademy.com.ar y www, DNS en Cloudflare (A 51.91.253.54, sin proxy) | **en producción desde 2026-11-27** (antes Vercel + Supabase) |
 
 ## Variables (solo nombres)
 `DATABASE_URL`, `BETTER_AUTH_SECRET` (distinto por entorno, >= 32 caracteres), `BETTER_AUTH_URL`, `STORAGE_DIR`, `NEXT_PUBLIC_SITE_URL` y `NEXT_PUBLIC_GA_ID` (estas dos entran en el build). En Coolify la contraseña de Postgres la genera la plataforma (`SERVICE_PASSWORD_POSTGRES`). No hay correo transaccional hoy (no se usa Resend).
