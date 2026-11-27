@@ -29,7 +29,7 @@ export default async function PortalHomePage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 mb-6">
+      <div className="bg-white rounded-xl border border-zinc-200 shadow-xs p-5 mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Clases tomadas</h2>
         {attendance.length === 0 ? (
           <p className="text-sm text-zinc-400">Sin clases registradas todavía.</p>
@@ -48,7 +48,7 @@ export default async function PortalHomePage() {
         )}
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-zinc-200 shadow-xs p-5">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Pagos</h2>
         {payments.length === 0 ? (
           <p className="text-sm text-zinc-400">Sin pagos registrados todavía.</p>

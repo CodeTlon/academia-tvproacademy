@@ -1,8 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
-/** Skeleton del índice del blog. Vive en el grupo `(lista)` para no envolver a
- * `/blog/[slug]`: con un loading.tsx encima, el artículo empieza a streamear antes
- * de `notFound()` y un slug inexistente respondía 200 en vez de 404. */
+/** Skeleton del blog (index y, como fallback, artículos vía el Suspense boundary
+ * más cercano en /blog/[slug] que no tiene loading.tsx propio). */
 export default function Loading() {
   return (
     <div role="status" aria-label="Cargando" className="min-h-screen bg-[#071424] pt-32 pb-24 px-5 md:px-10">

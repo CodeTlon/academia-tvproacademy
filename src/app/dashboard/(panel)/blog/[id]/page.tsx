@@ -1,14 +1,17 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { eq } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { posts as postsTable } from '@/db/schema'
 import PageHeader from '@/components/dashboard/PageHeader'
 import PostForm from '../PostForm'
 
 export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createSupabaseServerClient()
-  const { data: post } = await supabase.from('posts').select('*').eq('id', id).single()
+  // Un id que no es UUID haría fallar la consulta en Postgres: se trata como "no existe".
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) notFound()
+  const [post] = await db.select().from(postsTable).where(eq(postsTable.id, id)).limit(1)
   if (!post) notFound()
 
   return (

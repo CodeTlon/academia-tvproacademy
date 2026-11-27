@@ -1,11 +1,9 @@
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { getUser, homeFor, isStudent } from '@/lib/session'
 import NavbarClient from './NavbarClient'
 
 export default async function Navbar() {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const isStudent = user?.app_metadata?.role === 'student'
-  const panelHref = user ? (isStudent ? '/portal' : '/dashboard') : null
-  const panelLabel = user ? (isStudent ? 'Mi portal' : 'Mi dashboard') : null
+  const user = await getUser()
+  const panelHref = user ? homeFor(user) : null
+  const panelLabel = user ? (isStudent(user) ? 'Mi portal' : 'Mi dashboard') : null
   return <NavbarClient panelHref={panelHref} panelLabel={panelLabel} />
 }

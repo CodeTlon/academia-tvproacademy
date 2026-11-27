@@ -53,16 +53,16 @@ export default async function FAQ() {
         <Reveal className="text-center mb-14">
           <p className="eyebrow">Dudas frecuentes</p>
           <h2 id="faq-heading" className="font-extrabold uppercase text-3xl md:text-4xl text-white">
-            Preguntas <span className="text-[#f5bf00]">Frecuentes</span>
+            Preguntas <span className="text-gold">Frecuentes</span>
           </h2>
         </Reveal>
         <div className="space-y-4">
           {faqs.map((faq, i) => (
             <Reveal key={faq.question} delay={i * 80}>
-              <details className="group bg-[#071424] border border-white/10 rounded-xl p-6 open:border-[#f5bf00] transition-colors">
-                <summary className="flex items-center justify-between gap-4 font-bold text-white cursor-pointer list-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">
+              <details className="group bg-[#071424] border border-white/10 rounded-xl p-6 open:border-gold transition-colors">
+                <summary className="flex items-center justify-between gap-4 font-bold text-white cursor-pointer list-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md">
                   {faq.question}
-                  <span className="text-[#f5bf00] text-xl leading-none group-open:rotate-45 transition-transform">+</span>
+                  <span className="text-gold text-xl leading-none group-open:rotate-45 transition-transform">+</span>
                 </summary>
                 <p className="mt-4 text-sm text-[#d2c5ab] leading-relaxed">{faq.answer}</p>
               </details>

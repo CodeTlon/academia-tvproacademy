@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { desc, eq } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { posts as postsTable } from '@/db/schema'
 import { siteConfig } from '@/lib/site-config'
 import Reveal from '@/components/Reveal'
 import PublicExtras from '@/components/layout/PublicExtras'
@@ -13,12 +15,11 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogIndex() {
-  const supabase = await createSupabaseServerClient()
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('slug, title, excerpt, category, content, cover_image, created_at')
-    .eq('published', true)
-    .order('created_at', { ascending: false })
+  const posts = await db
+    .select({ slug: postsTable.slug, title: postsTable.title, excerpt: postsTable.excerpt, category: postsTable.category, content: postsTable.content, cover_image: postsTable.cover_image, created_at: postsTable.created_at })
+    .from(postsTable)
+    .where(eq(postsTable.published, true))
+    .orderBy(desc(postsTable.created_at))
 
   return (
     <>
@@ -33,7 +34,7 @@ export default async function BlogIndex() {
             </p>
           </Reveal>
 
-          <BlogFilters posts={posts ?? []} />
+          <BlogFilters posts={posts} />
         </div>
       </main>
       <PublicExtras />

@@ -1,8 +1,14 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase-server'
+import { eq, sql } from 'drizzle-orm'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { user as userTable } from '@/db/schema'
 import { friendlyError } from '@/lib/friendly-error'
+import { homeFor, requireUser } from '@/lib/session'
+
 
 /**
  * `clearEmail` le dice al form si conviene vaciar el campo email al fallar el
@@ -12,31 +18,10 @@ import { friendlyError } from '@/lib/friendly-error'
  */
 export type AuthState = { error?: string; clearEmail?: boolean } | undefined
 
-/**
- * ¿Existe un usuario con ese email en Supabase Auth? Requiere service_role.
- * Devuelve `null` si no se pudo determinar (sin service key, error de red, etc.)
- * para que quien llame elija el camino conservador.
- *
- * No hay tabla propia que espeje los emails de auth.users (`students` no guarda
- * email), así que se pagina el admin API. Son los usuarios del panel: un puñado.
- */
 async function emailExists(email: string): Promise<boolean | null> {
-  const target = email.toLowerCase()
-  const perPage = 1000
-  const maxPages = 10
-
   try {
-    const admin = createSupabaseAdminClient()
-    for (let page = 1; page <= maxPages; page++) {
-      const { data, error } = await admin.auth.admin.listUsers({ page, perPage })
-      if (error) {
-        console.error('emailExists error:', error.message)
-        return null
-      }
-      if (data.users.some((u) => u.email?.toLowerCase() === target)) return true
-      if (data.users.length < perPage) return false
-    }
-    return null
+    const rows = await db.select({ id: userTable.id }).from(userTable).where(sql`lower(${userTable.email}) = ${email.toLowerCase()}`).limit(1)
+    return rows.length > 0
   } catch (err) {
     console.error('emailExists error:', err)
     return null
@@ -44,54 +29,43 @@ async function emailExists(email: string): Promise<boolean | null> {
 }
 
 /**
- * Iniciar sesión con email y contraseña — sirve para admin y alumno por
- * igual. El rol recién se sabe después de autenticar (viene en los metadatos
- * del usuario), así que la redirección a `/dashboard` o `/portal` se resuelve
- * acá, no de antemano.
+ * Iniciar sesión con email y contraseña — sirve para admin y alumno por igual. El rol recién se sabe
+ * después de autenticar, así que la redirección a `/dashboard` o `/portal` se resuelve acá.
  */
 export async function login(prevState: unknown, formData: FormData): Promise<AuthState> {
-  const email    = String(formData.get('email') ?? '').trim()
+  const email = String(formData.get('email') ?? '').trim()
   const password = String(formData.get('password') ?? '')
-  const rawNext  = String(formData.get('next') ?? '')
+  const rawNext = String(formData.get('next') ?? '')
 
-  if (!email || !password) {
-    return { error: 'Completá todos los campos.' }
-  }
+  if (!email || !password) return { error: 'Completá todos los campos.' }
 
-  const supabase = await createSupabaseServerClient()
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-
-  if (error) {
-    console.error('login error:', error.message)
-    // Mismo mensaje exista o no el email; lo único que cambia es si el form
-    // limpia el campo (solo si el email directamente no existe).
+  let home: string
+  try {
+    const res = await auth.api.signInEmail({ body: { email, password }, headers: await headers() })
+    home = homeFor(res.user as { role?: string | null })
+  } catch (err) {
+    console.error('login error:', err instanceof Error ? err.message : err)
+    // Mismo mensaje exista o no el email; lo único que cambia es si el form limpia el campo.
     return {
       error: 'Credenciales incorrectas. Verificá tu email y contraseña.',
       clearEmail: (await emailExists(email)) === false,
     }
   }
 
-  const home = data.user?.app_metadata?.role === 'student' ? '/portal' : '/dashboard'
-  // Solo rutas internas del área que corresponde: nunca redirigir a un host externo,
-  // ni mandar a un alumno al panel de admin (o viceversa) vía `?next=`.
+  // Solo rutas internas del área que corresponde: nunca un host externo ni el panel de otro rol vía `?next=`.
   const next = rawNext.startsWith(home) && !rawNext.startsWith('//') ? rawNext : home
   redirect(next)
 }
 
-/**
- * Cerrar sesión. El login es único ahora, así que siempre vuelve a `/login`.
- */
+/** Cerrar sesión. El login es único, así que siempre vuelve a `/login`. */
 export async function signOut(): Promise<void> {
-  const supabase = await createSupabaseServerClient()
-  await supabase.auth.signOut()
+  await auth.api.signOut({ headers: await headers() })
   redirect('/login')
 }
 
 /**
- * Cambia la contraseña del usuario logueado (mismo form sirve para el gate
- * obligatorio del primer login y para el cambio voluntario, en el panel de
- * admin y en el portal de alumnos). Limpia `must_change_password` si estaba
- * en true. Redirige a `/portal` o `/dashboard` según el rol de la cuenta.
+ * Cambia la contraseña del usuario logueado (sirve para el gate obligatorio del primer login y para el cambio
+ * voluntario). Limpia `mustChangePassword` y redirige según el rol.
  */
 export async function changePassword(prevState: unknown, formData: FormData): Promise<AuthState> {
   const password = String(formData.get('password') ?? '')
@@ -101,45 +75,15 @@ export async function changePassword(prevState: unknown, formData: FormData): Pr
   if (password.length < 8) return { error: 'La contraseña debe tener al menos 8 caracteres.' }
   if (password !== confirmPassword) return { error: 'Las contraseñas no coinciden.' }
 
-  const supabase = await createSupabaseServerClient()
-  const { data, error } = await supabase.auth.updateUser({ password })
-
-  if (error) return { error: friendlyError(error, 'No se pudo cambiar la contraseña. Intentá de nuevo.') }
-
-  // `must_change_password` vive en `app_metadata` (ver nota de seguridad en `requireStudent`/
-  // `requireAdmin` más abajo) — solo el service role puede escribirla, así que limpiarla acá
-  // requiere el admin client aunque el usuario esté tocando su propia cuenta.
-  if (data.user) {
-    const admin = createSupabaseAdminClient()
-    await admin.auth.admin.updateUserById(data.user.id, {
-      app_metadata: { ...data.user.app_metadata, must_change_password: false },
-    })
+  let home: string
+  try {
+    const user = await requireUser()
+    const ctx = await auth.$context
+    await ctx.internalAdapter.updatePassword(user.id, await ctx.password.hash(password))
+    await db.update(userTable).set({ mustChangePassword: false }).where(eq(userTable.id, user.id))
+    home = homeFor(user)
+  } catch (e) {
+    return { error: friendlyError(e, 'No se pudo cambiar la contraseña. Intentá de nuevo.') }
   }
-
-  redirect(data.user?.app_metadata?.role === 'student' ? '/portal' : '/dashboard')
-}
-
-/** Lanza si no hay sesión — defensa en profundidad además del middleware, para usar al tope de cada Server Action. */
-export async function requireUser() {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('No autenticado')
-  return user
-}
-
-/** Igual que `requireUser`, pero además exige que la cuenta sea de alumno — defensa en profundidad para las lecturas del portal (la RLS ya acota los datos, esto evita que una cuenta admin entre a rutas del portal por error). */
-export async function requireStudent() {
-  const user = await requireUser()
-  if (user.app_metadata?.role !== 'student') throw new Error('No autorizado')
-  return user
-}
-
-/** Igual que `requireUser`, pero además excluye cuentas de alumno — defensa en profundidad
- * para las Server Actions del panel de admin (blog, contenido, media). La RLS (migración 010)
- * ya bloquea a un alumno a nivel de base, pero esto corta el flujo antes de llegar ahí, para
- * que el error sea claro y no dependa únicamente de que la policy esté bien aplicada. */
-export async function requireAdmin() {
-  const user = await requireUser()
-  if (user.app_metadata?.role === 'student') throw new Error('No autorizado')
-  return user
+  redirect(home)
 }

@@ -13,7 +13,7 @@ export default async function Contact() {
         <Reveal>
           <h1 className="font-extrabold uppercase text-3xl md:text-5xl text-white mb-6">
             Nuestras Instalaciones <br />
-            <span className="text-[#f5bf00]">Y Contacto</span>
+            <span className="text-gold">Y Contacto</span>
           </h1>
           <p className="text-lg text-[#d2c5ab] leading-relaxed mb-8">
             Si jugás en algún torneo y tu equipo necesita donde entrenar, comunicate con nosotros. Para que entrenes de la mejor manera.
@@ -21,21 +21,21 @@ export default async function Contact() {
           <ul className="space-y-3 mb-10">
             {facilities.map((item) => (
               <li key={item} className="flex items-center gap-3 text-[#d7e3fa] font-medium">
-                <Check size={20} className="text-[#f5bf00]" />
+                <Check size={20} className="text-gold" />
                 {item}
               </li>
             ))}
           </ul>
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <Clock size={20} className="text-[#f5bf00]" />
+              <Clock size={20} className="text-gold" />
               <span className="font-bold uppercase tracking-widest text-sm text-white">Horarios de Entrenamiento</span>
             </div>
             <ul className="space-y-1 pl-8">
               {schedule.map((slot) => (
                 <li key={slot.day} className="flex justify-between max-w-xs text-[#d2c5ab]">
                   <span>{slot.day}</span>
-                  <span className="text-[#f5bf00] font-semibold">{slot.hours}</span>
+                  <span className="text-gold font-semibold">{slot.hours}</span>
                 </li>
               ))}
             </ul>
@@ -46,17 +46,17 @@ export default async function Contact() {
           <h3 className="font-bold uppercase text-2xl text-white mb-6">Reservá tu turno</h3>
           <div className="space-y-4 mb-8">
             <div className="flex items-center gap-3 text-[#d2c5ab]">
-              <Phone size={20} className="text-[#f5bf00] shrink-0" />
+              <Phone size={20} className="text-gold shrink-0" />
               <span>{business.phone}</span>
             </div>
             <div className="flex items-center gap-3 text-[#d2c5ab]">
-              <MapPin size={20} className="text-[#f5bf00] shrink-0" />
+              <MapPin size={20} className="text-gold shrink-0" />
               <span>{business.address}</span>
             </div>
           </div>
           <a
             href={waLink(business.whatsapp, `Hola! Quiero reservar un turno en ${business.name}`)}
-            className="w-full inline-flex items-center justify-center gap-3 bg-[#f5bf00] text-[#241a00] font-bold uppercase tracking-wider px-8 py-4 rounded-full shadow-[0_0_20px_rgba(245,191,0,0.4)] hover:shadow-[0_0_30px_rgba(245,191,0,0.6)] transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
+            className="w-full inline-flex items-center justify-center gap-3 bg-gold text-on-gold font-bold uppercase tracking-wider px-8 py-4 rounded-full shadow-[0_0_20px_rgba(245,191,0,0.4)] hover:shadow-[0_0_30px_rgba(245,191,0,0.6)] transition-all active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
           >
             <WhatsAppIcon size={20} />
             Escribinos Ahora

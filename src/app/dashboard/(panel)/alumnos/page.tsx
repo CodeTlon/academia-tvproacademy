@@ -23,7 +23,7 @@ export default async function AlumnosListPage() {
       />
 
       {students.length === 0 ? (
-        <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-xs">
           <p className="text-sm text-zinc-500">Todavía no hay alumnos. Creá el primero con &quot;Nuevo alumno&quot;.</p>
         </div>
       ) : (

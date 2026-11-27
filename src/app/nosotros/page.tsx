@@ -19,9 +19,9 @@ export default function NosotrosPage() {
         <About />
         <div className="text-center py-16 px-5 bg-[#071424] border-t border-white/10">
           <p className="text-[#d2c5ab] mb-4">¿Querés ver cómo es la metodología de entrenamiento?</p>
-          <div className="flex items-center justify-center gap-6 text-sm font-bold uppercase tracking-wide text-[#f5bf00]">
-            <Link href="/entrenamiento" className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">Ver Entrenamiento</Link>
-            <Link href="/contacto" className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">Ir a Contacto</Link>
+          <div className="flex items-center justify-center gap-6 text-sm font-bold uppercase tracking-wide text-gold">
+            <Link href="/entrenamiento" className="hover:underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md">Ver Entrenamiento</Link>
+            <Link href="/contacto" className="hover:underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md">Ir a Contacto</Link>
           </div>
         </div>
       </main>

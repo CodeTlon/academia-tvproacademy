@@ -67,7 +67,7 @@ export default function CookieConsent() {
       onKeyDown={(e) => {
         if (e.key === 'Escape') decidir('denied')
       }}
-      className="fixed inset-x-0 bottom-0 z-[60] border-t border-white/10 bg-[#071424]/95 px-4 py-4 backdrop-blur-xl sm:px-6"
+      className="fixed inset-x-0 bottom-0 z-60 border-t border-white/10 bg-[#071424]/95 px-4 py-4 backdrop-blur-xl sm:px-6"
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-[#d2c5ab]">
@@ -77,7 +77,7 @@ export default function CookieConsent() {
           <button
             type="button"
             onClick={() => decidir('denied')}
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white/90 transition-colors hover:bg-white/10 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
+            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white/90 transition-colors hover:bg-white/10 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
           >
             Rechazar
           </button>
@@ -85,7 +85,7 @@ export default function CookieConsent() {
             ref={aceptarRef}
             type="button"
             onClick={() => decidir('granted')}
-            className="rounded-full bg-[#f5bf00] px-4 py-2 text-sm font-bold text-[#241a00] transition-opacity hover:opacity-90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
+            className="rounded-full bg-gold px-4 py-2 text-sm font-bold text-on-gold transition-opacity hover:opacity-90 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
           >
             Aceptar
           </button>

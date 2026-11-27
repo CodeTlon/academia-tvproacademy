@@ -54,3 +54,14 @@ que Supabase Auth exige pero nunca recibe nada. La contraseña temporal se muest
 pantalla al admin, que se la pasa al alumno por WhatsApp. Esto es coherente con que `resend`
 (declarado en `package.json`) no tenga ningún call site en `src/` — no es que el envío de mail
 esté roto, es que nunca se implementó ese flujo. Ver `OPEN_QUESTIONS.md`.
+
+## Salir de Supabase y Vercel a Coolify con backend propio (DECISION, 2026-10-15)
+Doctrina de la fábrica (v2.11+): sin backups ni disponibilidad controlada en Supabase free, y la app con base va a Coolify. Se eligió Drizzle (el esquema es chico y sin RLS) + Better Auth + archivos en volumen servido por `/media` (mismo diseño que gc2-entrenamiento, con todo público). Consecuencias: la autorización pasa de RLS a `requireAdmin()` / `guardPage()` en el servidor (ya existía como defensa en profundidad); los roles viven en la columna `user.role` (solo escribe el servidor), equivalente a `app_metadata`; las contraseñas bcrypt de Supabase se importan tal cual; los ids se conservan para que la migración de datos sea invisible.
+
+## Guardas de página en layouts, middleware solo optimista (DECISION)
+El middleware de Supabase validaba la sesión en el edge; Better Auth necesita la base, así que `src/middleware.ts` solo mira la cookie y el rol, la sesión y la contraseña temporal se validan en `guardPage()` (layouts server) y en cada acción. El layout del dashboard se partió en `layout.tsx` (server, guarda) y `PanelShell.tsx` (client, UI).
+
+## Estandar de versiones de la flota: Next 16 + React 19 + Tailwind 4 (2026-10-16)
+**Decision**: seguir el conjunto de `codetlon-cloud/.claude/modules/stack-versions.md` (versiones exactas) en `dev` y `test`.
+**Por que**: reducir vulnerabilidades (Tailwind 3 arrastraba `chokidar`/`braces`) y tener la flota en un solo conjunto.
+**Consecuencias**: `src/middleware.ts` pasa a `src/proxy.ts` (sigue siendo solo un redirect optimista); se agrega ESLint 10 con config plana; se retira `autoprefixer` y `tailwind.config.ts`; `tailwind-merge` sube a 3 (la 2.x no entiende clases de Tailwind 4).

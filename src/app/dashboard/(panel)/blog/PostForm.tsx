@@ -129,7 +129,7 @@ function ToolbarBtn({
       onClick={onClick}
       title={title}
       disabled={disabled}
-      className={`p-1.5 rounded transition-colors disabled:opacity-40 ${active ? 'bg-gold/20 text-gold-dark' : 'text-zinc-500 hover:text-zinc-900'}`}
+      className={`p-1.5 rounded-sm transition-colors disabled:opacity-40 ${active ? 'bg-gold/20 text-gold-dark' : 'text-zinc-500 hover:text-zinc-900'}`}
     >
       {children}
     </button>
@@ -228,12 +228,12 @@ function ContentEditor({ editor }: { editor: Editor | null }) {
           <LinkIcon size={15} />
         </ToolbarBtn>
 
-        <label className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-900" title="Subir e insertar imagen">
+        <label className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-900" title="Subir e insertar imagen">
           {busyImage ? <Loader2 size={14} className="animate-spin" /> : <ImageIcon size={14} />}
           <input type="file" accept="image/*" onChange={pickImage} disabled={busyImage} className="hidden" />
         </label>
 
-        <label className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-900" title={`Subir video propio (máx. ${Math.round(MAX_INLINE_VIDEO_BYTES / (1024 * 1024))}MB)`}>
+        <label className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-900" title={`Subir video propio (máx. ${Math.round(MAX_INLINE_VIDEO_BYTES / (1024 * 1024))}MB)`}>
           {busyVideo ? <Loader2 size={14} className="animate-spin" /> : <VideoIcon size={14} />}
           <input type="file" accept="video/mp4,video/quicktime,video/*" onChange={pickVideo} disabled={busyVideo} className="hidden" />
         </label>
@@ -253,13 +253,13 @@ function ContentEditor({ editor }: { editor: Editor | null }) {
             onChange={(e) => setYtInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), insertYoutube())}
             placeholder="Pegá el link de YouTube…"
-            className="flex-1 bg-white border border-zinc-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold/50"
+            className="flex-1 bg-white border border-zinc-200 rounded-md px-3 py-1.5 text-sm focus:outline-hidden focus:ring-2 focus:ring-gold/50"
             autoFocus
           />
-          <button type="button" onClick={insertYoutube} className="px-3 py-1.5 rounded-md text-xs font-bold bg-gold text-on-gold flex-shrink-0">
+          <button type="button" onClick={insertYoutube} className="px-3 py-1.5 rounded-md text-xs font-bold bg-gold text-on-gold shrink-0">
             Insertar
           </button>
-          <button type="button" onClick={() => { setShowYt(false); setYtInput('') }} className="px-2 py-1.5 rounded-md text-zinc-400 hover:text-zinc-700 border border-zinc-200 flex-shrink-0">
+          <button type="button" onClick={() => { setShowYt(false); setYtInput('') }} className="px-2 py-1.5 rounded-md text-zinc-400 hover:text-zinc-700 border border-zinc-200 shrink-0">
             <X size={14} />
           </button>
         </div>
@@ -267,7 +267,7 @@ function ContentEditor({ editor }: { editor: Editor | null }) {
 
       <EditorContent
         editor={editor}
-        className="border border-zinc-200 rounded-b-md px-3 py-2.5 min-h-[240px] text-sm text-zinc-900 overflow-hidden [&_.ProseMirror]:outline-none [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-zinc-400 [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none [&_.ProseMirror_iframe]:w-full [&_.ProseMirror_iframe]:max-w-full [&_.ProseMirror_iframe]:aspect-video [&_.ProseMirror_iframe]:h-auto [&_.ProseMirror_iframe]:rounded-lg [&_.ProseMirror_img]:max-w-full [&_.ProseMirror_video]:max-w-full"
+        className="border border-zinc-200 rounded-b-md px-3 py-2.5 min-h-[240px] text-sm text-zinc-900 overflow-hidden [&_.ProseMirror]:outline-hidden [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-zinc-400 [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none [&_.ProseMirror_iframe]:w-full [&_.ProseMirror_iframe]:max-w-full [&_.ProseMirror_iframe]:aspect-video [&_.ProseMirror_iframe]:h-auto [&_.ProseMirror_iframe]:rounded-lg [&_.ProseMirror_img]:max-w-full [&_.ProseMirror_video]:max-w-full"
       />
     </div>
   )

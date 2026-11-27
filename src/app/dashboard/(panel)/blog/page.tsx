@@ -1,16 +1,17 @@
 import Link from 'next/link'
 import { Plus, Pencil, Eye, EyeOff } from 'lucide-react'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { desc } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { posts as postsTable } from '@/db/schema'
 import { deletePostAction } from '@/actions/posts'
 import PageHeader from '@/components/dashboard/PageHeader'
 import DeleteButton from '@/components/dashboard/DeleteButton'
 
 export default async function BlogListPage() {
-  const supabase = await createSupabaseServerClient()
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('id, title, category, published, created_at')
-    .order('created_at', { ascending: false })
+  const posts = await db
+    .select({ id: postsTable.id, title: postsTable.title, category: postsTable.category, published: postsTable.published, created_at: postsTable.created_at })
+    .from(postsTable)
+    .orderBy(desc(postsTable.created_at))
 
   return (
     <div className="max-w-4xl">
@@ -28,11 +29,11 @@ export default async function BlogListPage() {
       />
 
       {!posts || posts.length === 0 ? (
-        <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-xs">
           <p className="text-sm text-zinc-500">Todavía no hay artículos. Creá el primero con &quot;Nuevo artículo&quot;.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-zinc-200 shadow-sm divide-y divide-zinc-100">
+        <div className="bg-white rounded-xl border border-zinc-200 shadow-xs divide-y divide-zinc-100">
           {posts.map((post) => (
             <div key={post.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4">
               <div className="flex-1 min-w-0">
@@ -45,7 +46,7 @@ export default async function BlogListPage() {
                   </span>
                 </p>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 <Link
                   href={`/dashboard/blog/${post.id}`}
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-zinc-900 border border-zinc-200 px-3 py-2 rounded-md transition-colors"

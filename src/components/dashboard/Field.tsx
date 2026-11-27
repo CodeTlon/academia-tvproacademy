@@ -11,7 +11,7 @@ import FocalPicker from '@/components/dashboard/FocalPicker'
 
 export const fieldLabel = 'block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5'
 export const fieldInput =
-  'w-full bg-white border border-zinc-200 rounded-md px-3 py-2.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors'
+  'w-full bg-white border border-zinc-200 rounded-md px-3 py-2.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-gold/50 focus:border-gold-dark transition-colors'
 
 export function TextField({
   label,
@@ -99,7 +99,7 @@ export function Checkbox({
   return (
     <div>
       <label className="flex items-center gap-2.5 cursor-pointer select-none">
-        <input type="checkbox" name={name} defaultChecked={defaultChecked} className="w-4 h-4 rounded accent-gold" />
+        <input type="checkbox" name={name} defaultChecked={defaultChecked} className="w-4 h-4 rounded-sm accent-gold" />
         <span className="text-sm font-bold text-zinc-700">{label}</span>
       </label>
       {hint && <p className="text-zinc-400 text-xs mt-1.5 ml-6">{hint}</p>}
@@ -205,7 +205,7 @@ export function ImageUpload({
       {!controlled && <input type="hidden" name={name} value={committedUrl} />}
       <div className={`flex gap-4 ${compact ? 'items-center' : 'items-start'}`}>
         <div
-          className={`flex-shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 overflow-hidden flex items-center justify-center ${
+          className={`shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 overflow-hidden flex items-center justify-center ${
             compact ? 'w-24 h-24' : 'w-40 h-40'
           }`}
         >
@@ -515,7 +515,7 @@ export function ListField({
             <button
               type="button"
               onClick={() => setItems(items.filter((_, idx) => idx !== i))}
-              className="mt-0.5 px-3 py-2.5 rounded-md text-zinc-400 hover:text-red-500 border border-zinc-200 bg-white transition-colors flex-shrink-0"
+              className="mt-0.5 px-3 py-2.5 rounded-md text-zinc-400 hover:text-red-500 border border-zinc-200 bg-white transition-colors shrink-0"
               aria-label="Quitar"
             >
               <Trash2 size={14} />

@@ -14,12 +14,12 @@ export default async function MetodologiaContentPage() {
       </Link>
       <PageHeader title="Metodología" description="Drills de entrenamiento y pasos del proceso (/entrenamiento)." />
 
-      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm mb-6">
+      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-xs mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Drills</h2>
         <ServicesForm items={settings.services} />
       </div>
 
-      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-xs">
         <h2 className="text-sm font-bold text-zinc-900 mb-4">Cómo trabajamos</h2>
         <ProcessForm items={settings.process} />
       </div>

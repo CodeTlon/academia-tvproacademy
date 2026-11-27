@@ -1,8 +1,8 @@
 /**
- * Traduce errores crudos de Supabase/Postgres (códigos, mensajes en inglés)
+* Traduce errores crudos de Postgres (códigos, mensajes en inglés)
  * a un texto en castellano apto para mostrar al usuario del dashboard.
  * Usar en TODO catch/`if (error)` de un server action antes de meterlo en `state.error`
- * — nunca exponer `error.message` de Supabase directo a la UI.
+ * — nunca exponer `error.message` crudo directo a la UI.
  */
 
 const PG_CODE_MESSAGES: Record<string, string> = {

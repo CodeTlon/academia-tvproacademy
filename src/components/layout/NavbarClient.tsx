@@ -22,7 +22,7 @@ export default function NavbarClient({ panelHref, panelLabel }: { panelHref: str
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center gap-1 group">
             <span className="italic font-black uppercase tracking-tighter text-xl text-white">
-              TVPRO<span className="text-[#f5bf00]">ACADEMY</span>
+              TVPRO<span className="text-gold">ACADEMY</span>
             </span>
             <Image src="/images/logo-mark.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain" priority />
           </Link>
@@ -32,7 +32,7 @@ export default function NavbarClient({ panelHref, panelLabel }: { panelHref: str
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#d2c5ab] hover:text-[#f5bf00] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md"
+                className="text-[#d2c5ab] hover:text-gold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md"
               >
                 {link.label}
               </Link>
@@ -42,12 +42,12 @@ export default function NavbarClient({ panelHref, panelLabel }: { panelHref: str
           <div className="flex items-center gap-4">
             <Link
               href={panelHref ?? '/login'}
-              className="hidden lg:inline-flex items-center justify-center border-2 border-[#f5bf00] text-[#f5bf00] text-sm font-bold uppercase tracking-wider px-5 py-3 rounded-full hover:bg-[#f5bf00] hover:text-[#241a00] transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
+              className="hidden lg:inline-flex items-center justify-center border-2 border-gold text-gold text-sm font-bold uppercase tracking-wider px-5 py-3 rounded-full hover:bg-gold hover:text-on-gold transition-colors active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]"
             >
               {panelLabel ?? 'Portal alumnos'}
             </Link>
             <button
-              className="lg:hidden text-white p-2 rounded-md transition-colors hover:text-[#f5bf00] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00]"
+              className="lg:hidden text-white p-2 rounded-md transition-colors hover:text-gold active:scale-95 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold"
               onClick={() => setOpen(!open)}
               aria-label="Menú"
             >
@@ -75,7 +75,7 @@ export default function NavbarClient({ panelHref, panelLabel }: { panelHref: str
           ))}
           <Link
             href={panelHref ?? '/login'}
-            className="mt-2 inline-flex items-center justify-center border-2 border-[#f5bf00] text-[#f5bf00] text-sm font-bold uppercase tracking-wider px-6 py-3 rounded-full transition-colors hover:bg-[#f5bf00] hover:text-[#241a00] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00]"
+            className="mt-2 inline-flex items-center justify-center border-2 border-gold text-gold text-sm font-bold uppercase tracking-wider px-6 py-3 rounded-full transition-colors hover:bg-gold hover:text-on-gold active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold"
             onClick={() => setOpen(false)}
           >
             {panelLabel ?? 'Portal alumnos'}

@@ -16,13 +16,13 @@ export default async function Footer() {
 
   return (
     <footer className="w-full bg-[#030f1e] border-t border-white/10 relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-[#f5bf00]/60 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-linear-to-r from-transparent via-gold/60 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-5 md:px-10 py-16 grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
           <Link href="/" className="inline-flex items-center gap-1">
             <span className="italic font-black uppercase tracking-tighter text-xl text-white">
-              TVPRO<span className="text-[#f5bf00]">ACADEMY</span>
+              TVPRO<span className="text-gold">ACADEMY</span>
             </span>
             <Image src="/images/logo-mark.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain" />
           </Link>
@@ -32,26 +32,26 @@ export default async function Footer() {
         </div>
 
         <nav className="flex flex-col gap-3">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#f5bf00] mb-1">Navegación</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-gold mb-1">Navegación</span>
           {links.map((link) => (
-            <Link key={link.href} href={link.href} className="text-sm text-[#a9b7cc] hover:text-[#f5bf00] transition-colors w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">
+            <Link key={link.href} href={link.href} className="text-sm text-[#a9b7cc] hover:text-gold transition-colors w-fit focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md">
               {link.label}
             </Link>
           ))}
         </nav>
 
         <div className="flex flex-col gap-3">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#f5bf00] mb-1">Contacto</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-gold mb-1">Contacto</span>
           <div className="flex items-start gap-2 text-sm text-[#a9b7cc]">
-            <MapPin size={16} className="mt-0.5 flex-shrink-0 text-[#f5bf00]" />
+            <MapPin size={16} className="mt-0.5 shrink-0 text-gold" />
             {business.address}
           </div>
-          <a href={`tel:${business.phone}`} className="flex items-center gap-2 text-sm text-[#a9b7cc] hover:text-[#f5bf00] transition-colors w-fit">
-            <Phone size={16} className="flex-shrink-0 text-[#f5bf00]" />
+          <a href={`tel:${business.phone}`} className="flex items-center gap-2 text-sm text-[#a9b7cc] hover:text-gold transition-colors w-fit">
+            <Phone size={16} className="shrink-0 text-gold" />
             {business.phone}
           </a>
-          <a href={`mailto:${business.email}`} className="flex items-center gap-2 text-sm text-[#a9b7cc] hover:text-[#f5bf00] transition-colors w-fit">
-            <Mail size={16} className="flex-shrink-0 text-[#f5bf00]" />
+          <a href={`mailto:${business.email}`} className="flex items-center gap-2 text-sm text-[#a9b7cc] hover:text-gold transition-colors w-fit">
+            <Mail size={16} className="shrink-0 text-gold" />
             {business.email}
           </a>
         </div>
@@ -64,7 +64,7 @@ export default async function Footer() {
             href="https://codetlon.com.ar"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-[#f5bf00] transition-colors"
+            className="hover:text-gold transition-colors"
           >
             Diseño y desarrollo por CodeTlon
           </a>

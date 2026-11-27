@@ -6,7 +6,9 @@ import { ArrowLeft } from 'lucide-react'
 import WhatsAppIcon from '@/components/icons/WhatsAppIcon'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { and, desc, eq, ne } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { posts as postsTable } from '@/db/schema'
 import { sanitizePostContent } from '@/lib/sanitize-html'
 import { getSiteSettings } from '@/lib/site-settings'
 import { focalImageProps } from '@/lib/image-focal'
@@ -29,24 +31,21 @@ function tldrFromExcerpt(excerpt: string | null): string[] {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createSupabaseServerClient()
-  const { data: post } = await supabase.from('posts').select('title, excerpt').eq('slug', slug).eq('published', true).single()
+  const [post] = await db.select({ title: postsTable.title, excerpt: postsTable.excerpt }).from(postsTable).where(and(eq(postsTable.slug, slug), eq(postsTable.published, true))).limit(1)
   if (!post) return {}
   return { title: `${post.title} | ${siteConfig.business.displayName}`, description: post.excerpt ?? undefined }
 }
 
 export default async function BlogArticle({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = await createSupabaseServerClient()
-  const { data: post } = await supabase.from('posts').select('*').eq('slug', slug).eq('published', true).single()
+  const [post] = await db.select().from(postsTable).where(and(eq(postsTable.slug, slug), eq(postsTable.published, true))).limit(1)
   if (!post) notFound()
 
-  const { data: related } = await supabase
-    .from('posts')
-    .select('slug, title, category')
-    .eq('published', true)
-    .neq('slug', slug)
-    .order('created_at', { ascending: false })
+  const related = await db
+    .select({ slug: postsTable.slug, title: postsTable.title, category: postsTable.category })
+    .from(postsTable)
+    .where(and(eq(postsTable.published, true), ne(postsTable.slug, slug)))
+    .orderBy(desc(postsTable.created_at))
     .limit(3)
 
   const { business } = await getSiteSettings()
@@ -94,17 +93,17 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
 
           <div className="card mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="font-semibold" style={{ color: 'var(--brand-heading)' }}>¿Querés entrenar con nosotros?</p>
-            <a href={waLink(business.whatsapp, `Hola! Leí el artículo "${post.title}" y quiero más info`)} className="btn-primary active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]">
+            <a href={waLink(business.whatsapp, `Hola! Leí el artículo "${post.title}" y quiero más info`)} className="btn-primary active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#071424]">
               <WhatsAppIcon size={18} />
               Escribinos
             </a>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-sm font-semibold">
-            <Link href="/entrenamiento" className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md" style={{ color: 'var(--brand-accent)' }}>
+            <Link href="/entrenamiento" className="hover:underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md" style={{ color: 'var(--brand-accent)' }}>
               Ver metodología de entrenamiento
             </Link>
-            <Link href="/contacto" className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md" style={{ color: 'var(--brand-accent)' }}>
+            <Link href="/contacto" className="hover:underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md" style={{ color: 'var(--brand-accent)' }}>
               Reservar un turno
             </Link>
           </div>
@@ -115,8 +114,8 @@ export default async function BlogArticle({ params }: { params: Promise<{ slug: 
             <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--brand-heading)' }}>Más artículos</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {related.map((r) => (
-                <Link key={r.slug} href={`/blog/${r.slug}`} className="card block hover:scale-[1.02] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00]">
-                  {r.category && <span className="eyebrow !mb-2 text-xs">{r.category}</span>}
+                <Link key={r.slug} href={`/blog/${r.slug}`} className="card block hover:scale-[1.02] transition-transform focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold">
+                  {r.category && <span className="eyebrow mb-2! text-xs">{r.category}</span>}
                   <h3 className="font-bold" style={{ color: 'var(--brand-heading)' }}>{r.title}</h3>
                 </Link>
               ))}

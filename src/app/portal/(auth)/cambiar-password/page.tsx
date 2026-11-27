@@ -1,11 +1,10 @@
 import Image from 'next/image'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { guardPage } from '@/lib/session'
 import CambiarPasswordForm from '@/app/dashboard/(auth)/cambiar-password/CambiarPasswordForm'
 
 export default async function PortalCambiarPasswordPage() {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const forced = Boolean(user?.app_metadata?.must_change_password)
+  const user = await guardPage('portal', { allowForced: true })
+  const forced = user.mustChangePassword
 
   return (
     <div className="w-full max-w-sm">
@@ -19,7 +18,7 @@ export default async function PortalCambiarPasswordPage() {
           sizes="48px"
         />
         <span className="italic font-black uppercase tracking-tighter text-xl text-zinc-900">
-          TVPRO<span className="text-[#f5bf00]">ACADEMY</span>
+          TVPRO<span className="text-gold">ACADEMY</span>
         </span>
       </div>
       <CambiarPasswordForm forced={forced} backHref="/portal" />

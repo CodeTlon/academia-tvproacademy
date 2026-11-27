@@ -1,41 +1,23 @@
 # CURRENT_STATE.md
 
-**Actualización 2026-11-26 (hotfix de seguridad sobre `main`, rama `feature/dev1-hotfix-next-main`):** Next 15.5 → 16.4.6 y React 18 → 19 (advisories críticos de Next ≤16.3, entre ellos RCE en el optimizador de imágenes con SVG y envenenamiento de caché SSG/ISR), `npm audit fix` de postcss, sharp, undici, zod y dompurify. `src/middleware.ts` pasa a `src/proxy.ts` (convención de Next 16, misma lógica). Sigue en Vercel + Supabase: la migración a backend propio queda en `dev`/`test` (PR #1 abierto hasta el corte). Verificado: tsc, build sin avisos, `npm audit --omit=dev` en 0 y prueba con `next start` (`/`, `/login`, `/blog` 200; `/dashboard` y `/portal` redirigen a `/login`). **Problema previo en producción:** `/blog` muestra la lista vacía y cualquier `/blog/<slug>` responde 500, también con Next 15.5 (se revirtió el hotfix, PR #3, y siguió igual; se volvió a aplicar). Causa (2026-11-26): la tabla `posts` de Supabase está **vacía** (los 5 artículos del seed de `supabase/migrations/002_posts.sql` se borraron; el resto de las tablas tiene datos: 27 alumnos, 18 pagos, 83 asistencias). Por eso `/blog` no muestra artículos. Aparte, en Vercel un slug inexistente da 500 en vez de 404 (en local da 200 con la página de no encontrado); no se pudo ver el log. Restaurados el 2026-11-27 con el seed (REST de Supabase, `on_conflict=slug`, ignorando duplicados). **Causa del 500 en `/blog/<slug>`:** `isomorphic-dompurify` carga jsdom 29, que requiere Node ^20.19 / ^22.13; con el Node viejo de Vercel corta al importar el módulo (`ERR_REQUIRE_ESM` de `@exodus/bytes`), por eso fallaba cualquier slug. Se fija `"engines": { "node": "22.x" }` en `package.json`. Con Node 22 siguió el 500, así que se reemplazó `isomorphic-dompurify` por `sanitize-html` (misma lista blanca, iframes solo de YouTube): Next deja jsdom fuera del bundle y no cargaba en la función de Vercel, mientras que `sanitize-html` se bundlea. Verificado con 9 vectores de XSS y con el contenido real de los 5 artículos, que sale idéntico. Además, los `loading.tsx` de la raíz y de `/blog` pasaron a los grupos `(inicio)` y `blog/(lista)`. Envolvían a `/blog/[slug]`, y por eso un slug inexistente respondía 200 en vez de 404.
+**Actualizacion 2026-11-27:** `isomorphic-dompurify` → `sanitize-html`, misma lista blanca e iframes solo de YouTube; viene del fix de `main` (PR #7), donde jsdom no cargaba en Vercel y el blog daba 500. Verificado: 9 vectores de XSS, tsc, lint (7 avisos previos), build (2 avisos previos de `storage.ts`) y `npm audit --omit=dev` en 0. Produccion (`main`, Vercel + Supabase) tiene ademas Next 16.4.6 desde el hotfix #2/#4, y el 2026-11-27 se restauraron en Supabase los 5 articulos del seed de `posts`.
 
-Snapshot al 2026-09-18. **Esto se desactualiza rápido — si pasó más de un par de semanas desde
-esta fecha, confirmá con `git log -5` y `vercel ls` antes de confiar en algo de acá.**
+**Actualizacion 2026-11-26:** Next 16.4.2 → 16.4.6 por advisories de seguridad (rama `feature/dev1-next-16-4-6`, promovida a `dev` y `test`; `main` sin tocar). Verificado: tsc, lint (7 avisos, los mismos que en `dev`) y build; `npm audit --omit=dev` en 0. E2E en la CI.
 
-## Último estado conocido de producción
+**Actualizacion 2026-10-16:** la rama `feature/dev2-estandar-2026` (integrada en `dev` y `test`) lleva el proyecto al estandar de versiones de la flota: Next 16.4.2, React 19.3.1, Tailwind 4.3.3, TypeScript 6.0.3, ESLint 10.13.0 (nuevo), `proxy.ts`. Verificado: `tsc`, lint (0 errores), build, E2E (25 pasan, 2 omitidos por diseño; 3 viewports, con el flujo admin a alumno), imagen Docker Alpine, `npm audit --omit=dev` en 0. **Sin verificar:** despliegue en Coolify (sin recursos), scripts de migracion contra Supabase real. `main` sigue en v1.x.
 
-- Último commit en `main`: `a4cfe30` ("fix: migracion 010 tambien usa app_metadata (no
-  user_metadata), mismo criterio que 011") — 2026-09-03.
-- Deploy de producción correspondiente: `dpl_CJH4bjhKH1nduGLWJ9WSb8ukVqgq`, Ready, creado
-  2026-09-03T16:06:19, alias activo en `tvproacademy.com.ar` / `www.tvproacademy.com.ar`.
-- 14 días sin nuevos commits al momento de este snapshot — el trabajo más reciente fue
-  exclusivamente la tanda de fixes de seguridad `app_metadata` (ver `DECISIONS.md`), ya en
-  producción y funcionando (sin reportes de acceso indebido posteriores, según lo que se pudo
-  verificar en esta sesión — no se revisaron logs de Supabase Auth más allá de esto).
+Snapshot al 2026-10-15. Se desactualiza: confirmá con `git log -5` y `git branch -r`.
 
-## Qué está completo y en uso real
+## Ramas
+- `main`: **v1.x en producción** (Vercel + Supabase, https://tvproacademy.com.ar). No se tocó.
+- `dev` y `test`: creadas el 2026-10-15 desde `main`. `dev` recibe la migración (v2.0.0).
+- `feature/dev2-coolify`: rama de trabajo de la migración.
 
-- Sitio público completo (home, nosotros, entrenamiento, blog con 5 artículos reales, contacto).
-- Dashboard admin: gestión de contenido (hero, nosotros, servicios, instalaciones, metodología,
-  negocio), blog (CRUD + editor Tiptap), alumnos (alta, edición, asistencia, pagos, alta/reset de
-  acceso al portal).
-- Portal de alumnos: vista de solo lectura del propio estado de cuenta.
-- Auth: login único, cambio de contraseña obligatorio en primer login, RLS + Server Actions +
-  middleware en las tres capas para todo lo anterior.
+## Qué hay en v2.0.0 (`dev`)
+Sitio, dashboard, blog, alumnos (asistencia, pagos, acceso al portal) y portal: mismo comportamiento, sobre Drizzle + Better Auth + archivos en volumen. Dockerfile, compose de Coolify, health, CI con Postgres, E2E en 3 viewports (25 pasaron en local, 2 saltados por diseño), fuentes autoalojadas, `npm audit` en 0 altas, scripts de migración de datos.
 
-## Qué NO está implementado (no es que esté roto, nunca se construyó)
+## Qué falta
+Ver `PENDIENTES.md`: recursos de Coolify, ensayo con datos reales anonimizados en `test`, backup B2 con simulacro, corte y baja de Supabase/Vercel. La imagen Docker se probó en local contra Postgres real: migra al arrancar, `/api/health` 200, corre como usuario no root, 25 E2E pasan contra el contenedor (login con hash bcrypt incluido) y los archivos subidos sobreviven un reinicio.
 
-- Envío de email real (Resend está declarado, sin call site).
-- Ambiente de staging separado (dev local = prod, ver `KNOWN_ISSUES.md`).
-- Tests, lint, CI (ver `CONVENTIONS.md`/`KNOWN_ISSUES.md`).
-
-## Documentación desactualizada conocida
-
-`README.md` (raíz del repo) describe el proyecto como el "CodeTlon Demo Template" genérico
-("solo hay un archivo que tocar: `src/lib/demo-config.ts`") — ese archivo y ese patrón ya no
-existen, fueron reemplazados por `site_settings` + Supabase (ver `ARCHITECTURE.md`). No se
-reescribió como parte de esta tarea de context engineering (es código/documentación de producto,
-no `.ai/context/`) — queda como tarea pendiente si el usuario la pide.
+## No implementado (nunca se construyó)
+Envío de email (Resend se quitó del compose; sigue en `package.json` sin uso), ESLint.

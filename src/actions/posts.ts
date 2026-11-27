@@ -3,10 +3,12 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import slugify from 'slugify'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { and, eq, ne } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { posts } from '@/db/schema'
 import { friendlyError } from '@/lib/friendly-error'
 import { sanitizePostContent } from '@/lib/sanitize-html'
-import { requireAdmin } from './auth'
+import { requireAdmin } from '@/lib/session'
 
 export type PostState = { error?: string } | undefined
 
@@ -24,17 +26,12 @@ function parseForm(formData: FormData) {
   }
 }
 
-async function uniqueSlug(
-  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
-  base: string,
-  excludeId?: string,
-) {
+async function uniqueSlug(base: string, excludeId?: string) {
   let slug = base
   let n = 2
   while (true) {
-    const { data } = await supabase.from('posts').select('id').eq('slug', slug).limit(1)
-    if (!data || data.length === 0) return slug
-    if (excludeId && data[0].id === excludeId) return slug
+    const rows = await db.select({ id: posts.id }).from(posts).where(excludeId ? and(eq(posts.slug, slug), ne(posts.id, excludeId)) : eq(posts.slug, slug)).limit(1)
+    if (rows.length === 0) return slug
     slug = `${base}-${n++}`
   }
 }
@@ -45,11 +42,8 @@ export async function createPostAction(_prev: PostState, formData: FormData): Pr
     const data = parseForm(formData)
     if (!data.title) return { error: 'El título es obligatorio.' }
 
-    const supabase = await createSupabaseServerClient()
-    const slug = await uniqueSlug(supabase, slugify(data.title, { lower: true, strict: true }))
-
-    const { error } = await supabase.from('posts').insert({ ...data, slug })
-    if (error) return { error: friendlyError(error, 'No se pudo crear el artículo.') }
+    const slug = await uniqueSlug(slugify(data.title, { lower: true, strict: true }))
+    await db.insert(posts).values({ ...data, slug })
 
     revalidatePath('/blog')
   } catch (e) {
@@ -64,18 +58,13 @@ export async function updatePostAction(id: string, _prev: PostState, formData: F
     const data = parseForm(formData)
     if (!data.title) return { error: 'El título es obligatorio.' }
 
-    const supabase = await createSupabaseServerClient()
-    const { data: existing } = await supabase.from('posts').select('slug, title').eq('id', id).single()
-    let slug = existing?.slug
-    if (existing && existing.title !== data.title) {
-      slug = await uniqueSlug(supabase, slugify(data.title, { lower: true, strict: true }), id)
+    const [existing] = await db.select({ slug: posts.slug, title: posts.title }).from(posts).where(eq(posts.id, id)).limit(1)
+    if (!existing) return { error: 'No se encontró el artículo.' }
+    let slug = existing.slug
+    if (existing.title !== data.title) {
+      slug = await uniqueSlug(slugify(data.title, { lower: true, strict: true }), id)
     }
-
-    const { error } = await supabase
-      .from('posts')
-      .update({ ...data, slug, updated_at: new Date().toISOString() })
-      .eq('id', id)
-    if (error) return { error: friendlyError(error, 'No se pudo guardar el artículo.') }
+    await db.update(posts).set({ ...data, slug, updated_at: new Date().toISOString() }).where(eq(posts.id, id))
 
     revalidatePath('/blog')
     if (slug) revalidatePath(`/blog/${slug}`)
@@ -89,9 +78,11 @@ export async function deletePostAction(formData: FormData) {
   const id = String(formData.get('id') ?? '')
   if (!id) return
   await requireAdmin()
-  const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.from('posts').delete().eq('id', id)
-  if (error) throw new Error(friendlyError(error, 'No se pudo eliminar el artículo.'))
+  try {
+    await db.delete(posts).where(eq(posts.id, id))
+  } catch (e) {
+    throw new Error(friendlyError(e, 'No se pudo eliminar el artículo.'))
+  }
   revalidatePath('/blog')
   redirect('/dashboard/blog?saved=deleted')
 }

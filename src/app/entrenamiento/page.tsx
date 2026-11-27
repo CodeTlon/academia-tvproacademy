@@ -21,7 +21,7 @@ export default function EntrenamientoPage() {
       <main className="pt-32 pb-4 px-5 md:px-10">
         <div className="max-w-3xl mx-auto mb-6">
           <p className="eyebrow">Metodología</p>
-          <p className="section-title !text-white">Así entrenamos en TVPRO ACADEMY</p>
+          <p className="section-title text-white!">Así entrenamos en TVPRO ACADEMY</p>
           <p className="text-lg text-[#d2c5ab] leading-relaxed mb-6">
             Si buscás un entrenamiento de fútbol en Córdoba enfocado en dar el salto de calidad —no clases genéricas—,
             así es como trabajamos: drills de alta intensidad en footwork, control de balón y toma de decisiones,
@@ -29,7 +29,7 @@ export default function EntrenamientoPage() {
           </p>
           <a
             href={`https://wa.me/${siteConfig.business.whatsapp}`}
-            className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-[#f5bf00] hover:gap-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md"
+            className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gold hover:gap-3 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md"
           >
             Reservá tu turno
             <ArrowRight size={16} />
@@ -50,9 +50,9 @@ export default function EntrenamientoPage() {
       <FAQ />
       <div className="text-center py-16 px-5 bg-[#030f1e] border-t border-white/10">
         <p className="text-[#d2c5ab] mb-4">¿Querés conocer al fundador o coordinar tu turno?</p>
-        <div className="flex items-center justify-center gap-6 text-sm font-bold uppercase tracking-wide text-[#f5bf00]">
-          <Link href="/nosotros" className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">Conocé Nosotros</Link>
-          <Link href="/contacto" className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">Ir a Contacto</Link>
+        <div className="flex items-center justify-center gap-6 text-sm font-bold uppercase tracking-wide text-gold">
+          <Link href="/nosotros" className="hover:underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md">Conocé Nosotros</Link>
+          <Link href="/contacto" className="hover:underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md">Ir a Contacto</Link>
         </div>
       </div>
       <PublicExtras />

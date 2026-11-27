@@ -19,9 +19,9 @@ export default function ContactoPage() {
         <Contact />
         <div className="text-center py-16 px-5 bg-[#071424] border-t border-white/10">
           <p className="text-[#d2c5ab] mb-4">¿Todavía no conocés nuestra metodología de entrenamiento?</p>
-          <div className="flex items-center justify-center gap-6 text-sm font-bold uppercase tracking-wide text-[#f5bf00]">
-            <Link href="/entrenamiento" className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">Ver Entrenamiento</Link>
-            <Link href="/nosotros" className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5bf00] rounded-md">Conocé Nosotros</Link>
+          <div className="flex items-center justify-center gap-6 text-sm font-bold uppercase tracking-wide text-gold">
+            <Link href="/entrenamiento" className="hover:underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md">Ver Entrenamiento</Link>
+            <Link href="/nosotros" className="hover:underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gold rounded-md">Conocé Nosotros</Link>
           </div>
         </div>
       </main>

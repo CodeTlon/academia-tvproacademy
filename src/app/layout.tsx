@@ -1,22 +1,22 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display, Montserrat, Roboto, Lato, Open_Sans, Poppins, Raleway, Oswald, Nunito } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import { siteConfig } from '@/lib/site-config'
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
 import CookieConsent from '@/components/analytics/CookieConsent'
 import { JsonLd } from '@/components/seo/JsonLd'
 
-// Fuentes pre-cargadas disponibles para el sitio
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
-const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat' })
-const roboto = Roboto({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-roboto' })
-const lato = Lato({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-lato' })
-const openSans = Open_Sans({ subsets: ['latin'], variable: '--font-opensans' })
-const poppins = Poppins({ subsets: ['latin'], weight: ['400', '600', '700'], variable: '--font-poppins' })
-const raleway = Raleway({ subsets: ['latin'], variable: '--font-raleway' })
-const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald' })
-const nunito = Nunito({ subsets: ['latin'], variable: '--font-nunito' })
+// Fuentes disponibles para el sitio, autoalojadas (woff2 latin en src/app/fonts, ver FONTS.md): el build no depende de Google Fonts.
+const inter = localFont({ src: './fonts/inter-latin-wght-normal.woff2', weight: '100 900', variable: '--font-inter', display: 'swap' })
+const playfair = localFont({ src: './fonts/playfair-display-latin-wght-normal.woff2', weight: '100 900', variable: '--font-playfair', display: 'swap' })
+const montserrat = localFont({ src: './fonts/montserrat-latin-wght-normal.woff2', weight: '100 900', variable: '--font-montserrat', display: 'swap' })
+const roboto = localFont({ src: [{ path: './fonts/roboto-latin-400-normal.woff2', weight: '400', style: 'normal' }, { path: './fonts/roboto-latin-700-normal.woff2', weight: '700', style: 'normal' }], variable: '--font-roboto', display: 'swap' })
+const lato = localFont({ src: [{ path: './fonts/lato-latin-400-normal.woff2', weight: '400', style: 'normal' }, { path: './fonts/lato-latin-700-normal.woff2', weight: '700', style: 'normal' }], variable: '--font-lato', display: 'swap' })
+const openSans = localFont({ src: './fonts/open-sans-latin-wght-normal.woff2', weight: '100 900', variable: '--font-opensans', display: 'swap' })
+const poppins = localFont({ src: [{ path: './fonts/poppins-latin-400-normal.woff2', weight: '400', style: 'normal' }, { path: './fonts/poppins-latin-600-normal.woff2', weight: '600', style: 'normal' }, { path: './fonts/poppins-latin-700-normal.woff2', weight: '700', style: 'normal' }], variable: '--font-poppins', display: 'swap' })
+const raleway = localFont({ src: './fonts/raleway-latin-wght-normal.woff2', weight: '100 900', variable: '--font-raleway', display: 'swap' })
+const oswald = localFont({ src: './fonts/oswald-latin-wght-normal.woff2', weight: '100 900', variable: '--font-oswald', display: 'swap' })
+const nunito = localFont({ src: './fonts/nunito-latin-wght-normal.woff2', weight: '100 900', variable: '--font-nunito', display: 'swap' })
 
 const FONT_MAP: Record<string, string> = {
   'Inter': '--font-inter',
@@ -31,11 +31,15 @@ const FONT_MAP: Record<string, string> = {
   'Nunito': '--font-nunito',
 }
 
+// Todas las páginas leen la base (contenido editable, sesión) y el build corre SIN base: sin esto, Next intenta prerenderizarlas
+// y falla (o peor, congelaría el contenido de respaldo). Ver coolify-compose.md, "páginas con datos dinámicas".
+export const dynamic = 'force-dynamic'
+
 const title = `${siteConfig.business.displayName} | Entrená Como un Profesional`
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tvproacademy.com.ar',
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://tvproacademy.com.ar',
   ),
   title,
   description: siteConfig.business.tagline,
@@ -72,7 +76,7 @@ const schemaOrg = {
   name: siteConfig.business.displayName,
   alternateName: siteConfig.business.name,
   description: siteConfig.business.tagline,
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tvproacademy.com.ar',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tvproacademy.com.ar',
   image: '/images/og-image.jpg',
   telephone: siteConfig.business.phone,
   email: siteConfig.business.email,
