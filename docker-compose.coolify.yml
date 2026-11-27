@@ -88,6 +88,66 @@ services:
   #       done
   # (y en `app.environment`: CRON_SECRET: ${SERVICE_PASSWORD_CRON})
 
+  # Backup diario a Backblaze B2 desde el propio compose (sin cron en el servidor). Mismo formato que
+  # templates/scripts/backup-coolify.sh: b2:<bucket>/prod/<proyecto>/{postgres,files}/<AAAA-MM-DD>/<proyecto>_prod_*_<TS>.{dump,tar.gz} + .sha256
+  # Se activa solo si el recurso de Coolify tiene B2_KEY_ID, B2_APP_KEY y BACKUP_PROJECT (test queda sin backup).
+  # Hora en UTC (BACKUP_HORA_UTC, HH:MM). BACKUP_AL_ARRANCAR=1 hace uno apenas arranca (para probar).
+  # El resultado se lee en los logs del servicio `backup` (líneas [backup]). La retención la aplica el bucket.
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGUSER: app
+      PGPASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+      PGDATABASE: app
+      BACKUP_PROJECT: ${BACKUP_PROJECT:-}
+      BACKUP_HORA_UTC: ${BACKUP_HORA_UTC:-07:00}
+      BACKUP_AL_ARRANCAR: ${BACKUP_AL_ARRANCAR:-}
+      B2_BUCKET: ${B2_BUCKET:-backups-codetlon}
+      RCLONE_CONFIG_B2_TYPE: b2
+      RCLONE_CONFIG_B2_ACCOUNT: ${B2_KEY_ID:-}
+      RCLONE_CONFIG_B2_KEY: ${B2_APP_KEY:-}
+    volumes:
+      - storage:/data/storage:ro
+    command:
+      - sh
+      - -c
+      - |
+        set -u
+        if [ -z "$$RCLONE_CONFIG_B2_ACCOUNT" ] || [ -z "$$RCLONE_CONFIG_B2_KEY" ] || [ -z "$$BACKUP_PROJECT" ]; then
+          echo "[backup] sin B2_KEY_ID/B2_APP_KEY/BACKUP_PROJECT: backups desactivados en este entorno"; exec sleep 2147483647
+        fi
+        until command -v rclone >/dev/null 2>&1; do
+          apk add --no-cache rclone >/dev/null 2>&1 || { echo "[backup] no pude instalar rclone; reintento en 5 min"; sleep 300; }
+        done
+        mkdir -p /root/.config/rclone && touch /root/.config/rclone/rclone.conf
+        respaldar() {
+          TS=$$(date -u +%Y%m%dT%H%M%SZ); DIA=$$(date -u +%Y-%m-%d); D=/tmp/backup; rm -rf $$D; mkdir -p $$D
+          BASE="b2:$$B2_BUCKET/prod/$$BACKUP_PROJECT"
+          DUMP="$${BACKUP_PROJECT}_prod_postgres_$$TS.dump"; TARF="$${BACKUP_PROJECT}_prod_files_$$TS.tar.gz"
+          pg_dump -Fc -f "$$D/$$DUMP" && [ -s "$$D/$$DUMP" ] || { echo "[backup] FALLÓ: pg_dump vacío o con error"; return 1; }
+          (cd $$D && sha256sum "$$DUMP" > "$$DUMP.sha256")
+          tar czf "$$D/$$TARF" -C /data/storage . && [ -s "$$D/$$TARF" ] || { echo "[backup] FALLÓ: tar de archivos"; return 1; }
+          (cd $$D && sha256sum "$$TARF" > "$$TARF.sha256")
+          for f in "$$DUMP" "$$DUMP.sha256"; do rclone copyto --retries 5 "$$D/$$f" "$$BASE/postgres/$$DIA/$$f" || { echo "[backup] FALLÓ: subida de $$f"; return 1; }; done
+          for f in "$$TARF" "$$TARF.sha256"; do rclone copyto --retries 5 "$$D/$$f" "$$BASE/files/$$DIA/$$f" || { echo "[backup] FALLÓ: subida de $$f"; return 1; }; done
+          echo "[backup] OK $$TS dump=$$(wc -c < $$D/$$DUMP)B archivos=$$(wc -c < $$D/$$TARF)B -> $$BASE/{postgres,files}/$$DIA/"
+          rm -rf $$D
+        }
+        if [ "$${BACKUP_AL_ARRANCAR:-}" = "1" ]; then respaldar || true; fi
+        H=$${BACKUP_HORA_UTC%%:*}; M=$${BACKUP_HORA_UTC##*:}; OBJ=$$(( $${H#0} * 3600 + $${M#0} * 60 ))
+        echo "[backup] activo: $$BACKUP_PROJECT todos los días a las $$BACKUP_HORA_UTC UTC"
+        while true; do
+          set -- $$(date -u '+%H %M %S'); h=$${1#0}; m=$${2#0}; s=$${3#0}; AHORA=$$(( h * 3600 + m * 60 + s ))
+          ESPERA=$$(( (OBJ - AHORA + 86400) % 86400 )); [ $$ESPERA -lt 60 ] && ESPERA=$$(( ESPERA + 86400 ))
+          sleep $$ESPERA
+          respaldar || echo "[backup] el backup de hoy falló (ver líneas anteriores)"
+        done
+
 volumes:
   pgdata:
   storage:

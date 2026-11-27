@@ -16,3 +16,7 @@
 
 ## Backups
 Scripts copiados en `scripts/backup/` (de la fábrica; sin probar contra B2 real). Falta (obligatorio antes de cargar datos reales): cron en el VPS, `FILES_MODE=volume` y simulacro de restauración fechado. Ver `docs/BACKUPS.md` en `codetlon-cloud`.
+
+## Backups
+
+Desde 2026-11-27 el servicio `backup` del `docker-compose.coolify.yml` hace cada día `pg_dump -Fc` de la base y un tar.gz del volumen `storage`, con `.sha256`, y los sube a `b2:backups-codetlon/prod/<BACKUP_PROJECT>/{postgres,files}/<AAAA-MM-DD>/` (mismo formato que `backup-coolify.sh` de codetlon-cloud). Se activa solo con las variables del recurso `B2_KEY_ID`, `B2_APP_KEY` y `BACKUP_PROJECT` (en test quedan vacías y no respalda); la hora va en `BACKUP_HORA_UTC`. El resultado se ve en los logs del servicio `backup` (líneas `[backup]`). La retención la aplica el bucket.
