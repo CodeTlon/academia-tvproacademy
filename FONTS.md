@@ -4,6 +4,7 @@ Las fuentes están **en el repo** (`src/app/fonts/`, archivos `woff2` del subset
 
 - **En uso:** las diez familias que ofrece el dashboard como tipografía del sitio: Inter, Playfair Display, Montserrat, Open Sans, Raleway, Oswald y Nunito (variables); Roboto, Lato y Poppins (estáticas: 400/700, 400/700 y 400/600/700). Declaradas en `src/app/layout.tsx`; la activa hoy es Montserrat (`site-config.ts`).
 - **Origen:** paquetes `@fontsource` / `@fontsource-variable` de npm, que redistribuyen las fuentes de Google Fonts.
+- **Montserrat (la activa):** el archivo es el mismo que servía Google Fonts en producción (subset latin, sin hinting), copiado el 2026-11-27. El de `@fontsource-variable` trae hinting y Chrome lo dibuja unos píxeles más angosto en mayúsculas chicas (los filtros del blog se acomodaban distinto); con este, el sitio en Coolify se ve igual que en Vercel.
 - **Licencia:** SIL Open Font License 1.1 (uso comercial y redistribución permitidos).
 
 ## Cómo agregar o cambiar una fuente
