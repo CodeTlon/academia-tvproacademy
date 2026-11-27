@@ -20,7 +20,7 @@ Córdoba, Argentina). Reemplaza un cuaderno físico de asistencia y pagos. Detal
 - **Postgres + Drizzle ORM** (`src/db/schema.ts`, migraciones en `drizzle/`) + **Better Auth** (email y contraseña, sin registro público).
   Sin backend aparte: la lógica de servidor son Server Actions (`src/actions/*.ts`) y unos pocos route handlers
   (`api/auth`, `api/health`, `api/upload`, `media`).
-- Archivos en volumen (`STORAGE_DIR`), servidos por `/media/[...ruta]`. Tailwind 4 (tokens en `@theme` de `src/app/globals.css`), Tiptap, `isomorphic-dompurify`, `sharp`, Zod.
+- Archivos en volumen (`STORAGE_DIR`), servidos por `/media/[...ruta]`. Tailwind 4 (tokens en `@theme` de `src/app/globals.css`), Tiptap, `sanitize-html` (sin jsdom), `sharp`, Zod.
 - Deploy: Coolify con `docker-compose.coolify.yml` (app + Postgres + volúmenes). `main` todavía despliega en Vercel hasta el corte.
 
 ## Comandos
