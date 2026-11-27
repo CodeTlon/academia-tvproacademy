@@ -8,6 +8,9 @@
 //   4. Verifica la paridad (10) y que no queden URLs de Supabase. Borra el snapshot (tiene datos personales).
 // Variables: MIGRAR_DESDE_SUPABASE=1, SUPABASE_DB_URL, SUPABASE_URL, DATABASE_URL, STORAGE_DIR.
 //   MIGRAR_DATOS_REALES=1 carga los alumnos tal cual (solo producción); sin ella se anonimizan nombre y teléfono.
+//   MIGRAR_REEMPLAZAR=<etiqueta> vacía la base (datos, usuarios y sesiones) y vuelve a importar, UNA sola vez por etiqueta:
+//   sirve para re-sincronizar justo antes del corte de DNS. Cada import queda registrado en la tabla `_migracion_supabase`,
+//   así un reinicio con la misma etiqueta no vuelve a borrar nada.
 // Nunca imprime datos: solo conteos y nombres de tabla. Si algo falla, sale con código 1 y la app no arranca.
 import { execFileSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, rmSync, cpSync, existsSync } from 'node:fs'
@@ -26,8 +29,17 @@ for (const [k, v] of Object.entries({ DATABASE_URL, STORAGE_DIR, SUPABASE_DB_URL
 const destino = new pg.Client({ connectionString: DATABASE_URL })
 await destino.connect()
 const contar = async (tabla) => (await destino.query(`select count(*)::int as n from ${tabla}`)).rows[0].n
+await destino.query('create table if not exists _migracion_supabase (etiqueta text primary key, hecho_en timestamptz not null default now(), datos_reales boolean not null)')
+const REEMPLAZAR = (process.env.MIGRAR_REEMPLAZAR ?? '').trim()
+const etiqueta = REEMPLAZAR || 'inicial'
+const yaHecha = (await destino.query('select 1 from _migracion_supabase where etiqueta = $1', [etiqueta])).rowCount > 0
 const yaTieneDatos = (await contar('"user"')) + (await contar('public.students'))
-if (yaTieneDatos) {
+if (REEMPLAZAR && yaHecha) {
+  console.log(`[migracion] El reemplazo "${etiqueta}" ya se hizo: no se importa nada.`)
+  await destino.end()
+  process.exit(0)
+}
+if (yaTieneDatos && !REEMPLAZAR) {
   console.log(`[migracion] La base ya tiene datos (${yaTieneDatos} usuarios/alumnos): no se importa nada.`)
   await destino.end()
   process.exit(0)
@@ -47,9 +59,14 @@ try {
   const sinTx = (f) => readFileSync(resolve(snap, f), 'utf8').replace(/^\s*begin;\s*$/gm, '').replace(/^\s*commit;\s*$/gm, '')
   await destino.query('begin')
   try {
+    if (REEMPLAZAR) {
+      await destino.query('truncate table public.payments, public.class_attendance, public.students, public.posts, public.site_settings, session, account, verification, "user" cascade')
+      console.log(`[migracion] Reemplazo "${etiqueta}": base vaciada dentro de la transacción`)
+    }
     await destino.query(sinTx('data/import-usuarios.sql'))
     await destino.query(sinTx(REAL ? 'data/import-real.sql' : 'data/import.sql'))
     await destino.query(sinTx('reescribir-urls.sql'))
+    await destino.query('insert into _migracion_supabase (etiqueta, datos_reales) values ($1, $2) on conflict (etiqueta) do update set hecho_en = now(), datos_reales = excluded.datos_reales', [etiqueta, REAL])
     await destino.query('commit')
   } catch (e) {
     await destino.query('rollback')
