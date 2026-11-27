@@ -22,7 +22,7 @@ export default function NotFound() {
             <Dumbbell size={28} />
           </div>
           <p className="eyebrow">Error 404</p>
-          <h1 className="font-black uppercase text-4xl md:text-6xl leading-[1.1] text-white mb-6">
+          <h1 className="font-black uppercase text-4xl md:text-6xl md:leading-[var(--text-6xl--line-height)] leading-[1.1] text-white mb-6">
             Esta jugada <br />
             <span className="text-gold italic">no está en la cancha</span>
           </h1>
