@@ -1,4 +1,4 @@
-import DOMPurify from 'isomorphic-dompurify'
+import sanitizeHtml from 'sanitize-html'
 
 /**
  * Sanitiza el HTML que produce el editor Tiptap del blog (PostForm.tsx) antes de guardarlo
@@ -13,7 +13,10 @@ import DOMPurify from 'isomorphic-dompurify'
  * - @tiptap/extension-youtube: <div data-youtube-video><iframe src width height …></div>.
  * - Nodo custom `InlineVideo` (PostForm.tsx): <video controls style src>.
  *
- * `iframe` no está en el set por defecto de DOMPurify (a propósito, es el vector de XSS/
+ * Usa `sanitize-html` (htmlparser2, sin DOM). Antes era `isomorphic-dompurify`, pero su jsdom
+ * no cargaba en las funciones de Vercel y cualquier página del blog daba 500.
+ *
+ * `iframe` no está en el set por defecto (a propósito, es el vector de XSS/
  * clickjacking más directo) — se habilita acá solo para esto, y el hook de abajo lo borra
  * si el `src` no apunta a youtube.com/youtube-nocookie.com, para que no sirva de forma
  * genérica para embeber cualquier URL.
@@ -26,37 +29,25 @@ const ALLOWED_TAGS = [
   'a', 'img', 'video', 'iframe', 'div',
 ]
 
-const ALLOWED_ATTR = [
-  'href', 'target', 'rel', // a
-  'src', 'alt', 'title', // img / video / iframe
-  'controls', 'style', // video
-  'width', 'height', 'allow', 'allowfullscreen', 'frameborder', 'loading', // iframe
-  'data-youtube-video', // div wrapper del embed de youtube
-]
+const ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions['allowedAttributes'] = {
+  a: ['href', 'target', 'rel', 'title'],
+  img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+  video: ['src', 'controls', 'style', 'title', 'width', 'height'],
+  iframe: ['src', 'title', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder', 'loading'],
+  div: ['data-youtube-video'],
+}
 
 const YOUTUBE_IFRAME_SRC = /^https:\/\/(www\.)?(youtube(-nocookie)?\.com)\/embed\//
 
-let hookInstalled = false
-
-function ensureIframeDomainHook() {
-  if (hookInstalled) return
-  hookInstalled = true
-  DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-    if (node.tagName === 'IFRAME') {
-      const src = node.getAttribute('src') ?? ''
-      if (!YOUTUBE_IFRAME_SRC.test(src)) {
-        node.remove()
-      }
-    }
-  })
-}
-
 export function sanitizePostContent(html: string): string {
   if (!html) return ''
-  ensureIframeDomainHook()
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR,
-    ALLOW_DATA_ATTR: false,
+  return sanitizeHtml(html, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: ALLOWED_ATTRIBUTES,
+    allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+    allowProtocolRelative: false,
+    // Un iframe que no sea un embed de YouTube se borra entero (no solo su src).
+    exclusiveFilter: (frame) =>
+      frame.tag === 'iframe' && !YOUTUBE_IFRAME_SRC.test(frame.attribs.src ?? ''),
   })
 }

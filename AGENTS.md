@@ -23,7 +23,7 @@ Córdoba, Argentina). Reemplaza un cuaderno físico de asistencia y pagos. Detal
 - **Supabase**: Postgres + Auth + Storage. Sin backend propio — toda la lógica de servidor vive
   en Server Actions (`src/actions/*.ts`) que llaman directo a Supabase. **No hay API routes**
   (`src/app/api/` no existe).
-- Tailwind CSS. Tiptap (editor de contenido del blog). `isomorphic-dompurify` (sanitizar HTML
+- Tailwind CSS. Tiptap (editor de contenido del blog). `sanitize-html` (sanitizar HTML, sin jsdom;
   del blog). `sharp` (reprocesar imágenes subidas). Zod. Resend está en `package.json` pero no
   tiene ningún call site en `src/` — dependencia sin uso activo hoy.
 - Deploy: Vercel, auto-deploy en push a `main` (integración Git, no manual). Ver
