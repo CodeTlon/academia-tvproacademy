@@ -31,6 +31,17 @@ const securityHeaders = [
   },
 ]
 
+// Solo el dominio de producción se indexa: test (test.tvproacademy.com.ar) y cualquier otro entorno mandan noindex.
+// NEXT_PUBLIC_SITE_URL entra en el build, así que cada imagen sabe en qué entorno corre.
+const esProduccion = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? '').hostname === 'tvproacademy.com.ar'
+  } catch {
+    return false
+  }
+})()
+const headersDelEntorno = esProduccion ? securityHeaders : [...securityHeaders, { key: 'X-Robots-Tag', value: 'noindex, nofollow' }]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Imagen mínima para Docker/Coolify: server.js autocontenido en .next/standalone.
@@ -46,7 +57,7 @@ const nextConfig = {
     return [
       {
         source: '/:path*',
-        headers: securityHeaders,
+        headers: headersDelEntorno,
       },
     ]
   },
