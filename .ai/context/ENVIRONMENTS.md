@@ -3,7 +3,7 @@
 | Entorno | Rama | Dónde | Estado (2026-10-15) |
 |---|---|---|---|
 | dev | `dev` | local: `docker compose up -d` (Postgres) + `npm run dev` | listo; ya no apunta a la base de producción |
-| test | `test` | recurso de Coolify aparte (mismo compose, base y volumen propios), dormido y se enciende a mano | **sin crear** |
+| test | `test` | Coolify `tvpro-test` (mismo compose, base y volumen propios), https://tvpro-test.51.91.253.54.sslip.io | **creado 2026-11-27**, base vacía hasta el ensayo de import |
 | prod | `main` | hoy Vercel + Supabase (v1.x). Tras el corte: recurso de Coolify | **`main` sin tocar**: el corte lo decide y ejecuta Mateo |
 
 ## Variables (solo nombres)
