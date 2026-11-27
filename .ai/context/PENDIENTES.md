@@ -1,7 +1,7 @@
 # Pendientes (los que son de Mateo, Regla de Oro #7, y los que siguen en el código)
 
 ## De Mateo (infra y credenciales)
-1. Coolify: crear el recurso `tvpro-test` (Docker Compose, repo `CodeTlon/academia-tvproacademy`, rama `test`, Compose Location `/docker-compose.coolify.yml`, dominio en el servicio `app` puerto 3000). Variables: `BETTER_AUTH_SECRET` (distinto), `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_GA_ID`. Esperar `db` y `app` healthy y `/api/health` 200.
+1. ~~Coolify: crear el recurso `tvpro-test`~~ **Hecho 2026-11-27** (dev1, por API): proyecto `TV Pro Academy` (uuid `aq89mxywbysxi9qf7i6k8agj`), app `tvpro-test` (uuid `jeropctlve0vm5ifupt2bxve`), rama `test`, `/docker-compose.coolify.yml`, dominio https://tvpro-test.51.91.253.54.sslip.io (sin DNS propio). Variables: `BETTER_AUTH_SECRET` propio, `NEXT_PUBLIC_SITE_URL` y `SERVICE_URL_APP`/`SERVICE_FQDN_APP` alineados al dominio, sin GA. Primer deploy (a3ad28b): `db` y `app` healthy, `/api/health` 200, rutas públicas 200, `/dashboard` y `/portal` redirigen a `/login`, slug inexistente 404. Base vacía (sin datos importados).
 2. Dar el token de la Management API de Supabase (solo lectura, `sbp_`) para correr el snapshot; revocarlo después.
 3. Ensayo en `test` con alumnos anonimizados: import, archivos, paridad, login real con un usuario de cada rol.  Los admins llegan con el import de usuarios (la imagen no trae `crear-usuario`).
 4. Backup a B2 (script + cron en el VPS) y simulacro de restauración antes de cargar datos reales.
