@@ -1,5 +1,7 @@
 # CURRENT_STATE.md
 
+**Actualizacion 2026-11-27:** `isomorphic-dompurify` → `sanitize-html`, misma lista blanca e iframes solo de YouTube; viene del fix de `main` (PR #7), donde jsdom no cargaba en Vercel y el blog daba 500. Verificado: 9 vectores de XSS, tsc, lint (7 avisos previos), build (2 avisos previos de `storage.ts`) y `npm audit --omit=dev` en 0. Produccion (`main`, Vercel + Supabase) tiene ademas Next 16.4.6 desde el hotfix #2/#4, y el 2026-11-27 se restauraron en Supabase los 5 articulos del seed de `posts`.
+
 **Actualizacion 2026-11-26:** Next 16.4.2 → 16.4.6 por advisories de seguridad (rama `feature/dev1-next-16-4-6`, promovida a `dev` y `test`; `main` sin tocar). Verificado: tsc, lint (7 avisos, los mismos que en `dev`) y build; `npm audit --omit=dev` en 0. E2E en la CI.
 
 **Actualizacion 2026-10-16:** la rama `feature/dev2-estandar-2026` (integrada en `dev` y `test`) lleva el proyecto al estandar de versiones de la flota: Next 16.4.2, React 19.3.1, Tailwind 4.3.3, TypeScript 6.0.3, ESLint 10.13.0 (nuevo), `proxy.ts`. Verificado: `tsc`, lint (0 errores), build, E2E (25 pasan, 2 omitidos por diseño; 3 viewports, con el flujo admin a alumno), imagen Docker Alpine, `npm audit --omit=dev` en 0. **Sin verificar:** despliegue en Coolify (sin recursos), scripts de migracion contra Supabase real. `main` sigue en v1.x.
